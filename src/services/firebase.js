@@ -1,4 +1,22 @@
 import messaging from '@react-native-firebase/messaging';
+// import firebase from '@react-native-firebase/app';
+
+// const RNfirebaseConfig = {
+//   apiKey: "",
+//   authDomain: "note-app-rn.firebaseapp.com",
+//   projectId: "note-app-rn",
+//   storageBucket: "note-app-rn.appspot.com",
+//   messagingSenderId: ".....",
+//   appId: "......"
+// };
+
+// let app;
+// if (firebase.apps.length === 0) {
+//     app = firebase.initializeApp(RNfirebaseConfig )
+// } else {
+//     app = firebase.app()
+// }
+
 export const getMessagingToken = saveFCMtoken => {
   // Get the device token
   messaging()

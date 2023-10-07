@@ -9,6 +9,7 @@ import {AuthNavigator} from './Auth.navigation';
 import {useGetUserByIdQuery} from '../features/auth/reducer/userApiSlice';
 import {setToken, setUser} from '@src/store/slices/userSlice';
 import {setIsLoading} from '../store/appSlice';
+import {AppNavigator} from './App.navigation';
 StatusBar.setBackgroundColor('black');
 const Navigator = () => {
   const userState = useSelector(state => state.user);
@@ -79,7 +80,8 @@ const Navigator = () => {
   //       )}
   return (
     <NavigationContainer>
-      <AuthNavigator></AuthNavigator>
+      {/* <AuthNavigator></AuthNavigator> */}
+      <AppNavigator></AppNavigator>
       {appState.isLoading && (
         <View
           style={{
