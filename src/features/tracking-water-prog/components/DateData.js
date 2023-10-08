@@ -8,6 +8,7 @@ import {splitObj, today} from '../utils';
 const screenWidth = Dimensions.get('window').width;
 
 export default function DateData(props) {
+  console.log('DateData', props);
   // Prop for selected day's data
   const [data, setData] = React.useState(null);
   // Prop for line chart's data

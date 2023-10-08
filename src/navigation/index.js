@@ -6,25 +6,16 @@ import {useDispatch, useSelector} from 'react-redux';
 
 import {AuthNavigator} from './Auth.navigation';
 // import {AppNavigator} from './app.navigator';
-import {useGetUserByIdQuery} from '../features/auth/reducer/userApiSlice';
-import {setToken, setUser} from '@src/store/slices/userSlice';
-import {setIsLoading} from '../store/appSlice';
+import {setIsLoading} from '../store/reducer/appSlice';
 import {AppNavigator} from './App.navigation';
+
 StatusBar.setBackgroundColor('black');
 const Navigator = () => {
-  const userState = useSelector(state => state.user);
+  const {user} = useSelector(state => state.user);
   const appState = useSelector(state => state.app);
   const dispatch = useDispatch();
   const [userCredentials, setCredentials] = useState({});
-  const {
-    data,
-    isSuccess,
-    refetch,
-    isLoading: isFetching,
-    error,
-  } = useGetUserByIdQuery(userCredentials.userId, {
-    skip: !userCredentials.userId,
-  });
+
   //   useEffect(() => {
   //     if (isSuccess && data) {
   //       dispatch(
@@ -68,20 +59,20 @@ const Navigator = () => {
   //     getUser();
   //   }, []);
 
-  //   {userState.user ? (
-  //     <View
-  //       style={{
-  //         flex: 1,
-  //       }}>
-  //       <StatusBar></StatusBar>
-  //       {/* <AppNavigator></AppNavigator> */}
-  //     </View>
-  //   ) : (
-  //       )}
   return (
     <NavigationContainer>
-      {/* <AuthNavigator></AuthNavigator> */}
-      <AppNavigator></AppNavigator>
+      {user ? (
+        <View
+          style={{
+            flex: 1,
+          }}>
+          <StatusBar></StatusBar>
+          <AppNavigator></AppNavigator>
+        </View>
+      ) : (
+        <AuthNavigator></AuthNavigator>
+      )}
+
       {appState.isLoading && (
         <View
           style={{

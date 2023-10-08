@@ -1,20 +1,30 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, StyleSheet, Dimensions} from 'react-native';
 import {Title, Text, Button, Chip, Snackbar, Portal} from 'react-native-paper';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
 import ChangeTargetDialog from '../components/ChangeTargetDialog';
 import valuesToPercentage, {today} from '../utils';
-// import * as firebase from "firebase";
+import {firebaseDatabase} from '../../../services/firebase';
 import CustomWaterDialog from '../components/CustomWaterDialog';
+import {
+  addSession,
+  getHistoryByDate,
+  setHistoryGoal,
+} from '../../../store/reducer/thunks/waterTrackingActions';
+import {useDispatch, useSelector} from 'react-redux';
 
 const screenWidth = Dimensions.get('window').width;
 
 export default function WaterTracking() {
+  const {todayProgress} = useSelector(state => state.waterTracking);
+  const dispatch = useDispatch();
+  console.log('todayProgress', todayProgress);
   const [target, setTarget] = useState(0);
   const [targetReach, setTargetReach] = useState(false);
   const [water, setWater] = useState(0);
   const [percentage, setPercentage] = useState(0);
-
+  console.log('percentage', percentage);
+  console.log('water', water);
   const [waterCup, setWaterCup] = useState(330);
   const [waterBottle, setWaterBottle] = useState(500);
 
@@ -30,60 +40,74 @@ export default function WaterTracking() {
   const [isCustomDialogVisible, setIsCustomDialogVisible] = useState(false);
 
   const defineTarget = userTarget => {
-    // firebase.database().ref('users/001/').update(
-    //     {'waterTarget': userTarget}
-    // ).then(() => null);
-    // firebase.database().ref('targets/001/').update(
-    //     {'waterTarget': userTarget}
-    // ).then(() => null);
+    dispatch(setHistoryGoal({historyId: todayProgress.id, goal: userTarget}));
   };
 
   const addWater = amount => {
     if (amount) {
-      // firebase.database().ref('users/001/' + today() + '/').update(
-      //     {
-      //         'waterAmount': water + amount,
-      //         'date': today(),
-      //         'percentage': valuesToPercentage(target, water + amount)
-      //     }
-      // ).then(() => null);
-      // onToggleSnackBar();
+      dispatch(addSession({historyId: todayProgress.id, amount}));
+
+      // firebaseDatabase
+      //   .ref('users/001/' + today() + '/')
+      //   .update({
+      //     waterAmount: water + amount,
+      //     date: today(),
+      //     percentage: valuesToPercentage(todayProgress.goal, water + amount),
+      //   })
+      //   .then(() => null);
+      onToggleSnackBar();
     }
-    if (valuesToPercentage(target, water + amount) >= 100) setTargetReach(true);
+    if (valuesToPercentage(todayProgress.goal, water + amount) >= 100)
+      setTargetReach(true);
   };
 
   const resetWater = () => {
-    // firebase.database().ref('users/001/' + today() + '/').update(
-    //     {'waterAmount': 0, 'date': today(), 'percentage': 0}
-    // ).then(() => null);
+    firebaseDatabase
+      .ref('users/001/' + today() + '/')
+      .update({waterAmount: 0, date: today(), percentage: 0})
+      .then(() => null);
     setPercentage(0);
   };
 
+  useEffect(() => {
+    if (todayProgress.sessions) {
+      const drankWater = todayProgress.sessions.reduce((acc, item, i) => {
+        return acc + item.amount;
+      }, 0);
+      if (drankWater > todayProgress.goal) {
+        setWater(todayProgress.goal);
+        setPercentage(100);
+      } else {
+        setWater(drankWater);
+        setPercentage(valuesToPercentage(todayProgress.goal, drankWater));
+      }
+    }
+  }, [todayProgress]);
   React.useEffect(() => {
-    // firebase.database().ref('targets/001/').on('value', snapshot => {
-    //     const data = snapshot.val();
+    // firebaseDatabase.ref('targets/001/').on('value', snapshot => {
+    //   const data = snapshot.val();
+    //   const prods = Object.values(data);
+    //   setTarget(prods[0]);
+    // });
+    // firebaseDatabase.ref('containers/001/').on('value', snapshot => {
+    //   const data = snapshot.val();
+    //   const prods = Object.values(data);
+    //   setWaterBottle(prods[0]);
+    //   setWaterCup(prods[1]);
+    // });
+    // firebaseDatabase.ref('users/001/' + today() + '/').on('value', snapshot => {
+    //   const data = snapshot.val();
+    //   if (data) {
     //     const prods = Object.values(data);
-    //     setTarget(prods[0]);
-    // })
-    // firebase.database().ref('containers/001/').on('value', snapshot => {
-    //     const data = snapshot.val();
-    //     const prods = Object.values(data);
-    //     setWaterBottle(prods[0]);
-    //     setWaterCup(prods[1]);
-    // })
-    // firebase.database().ref('users/001/' + today() + '/').on('value', snapshot => {
-    //     const data = snapshot.val();
-    //     if (data) {
-    //         const prods = Object.values(data);
-    //         setWater(prods[2]);
-    //         setPercentage(prods[1]);
-    //         if (prods[2]<100) {
-    //             setTargetReach(false);
-    //         }
-    //     } else {
-    //         addWater(0);
+    //     setWater(prods[2]);
+    //     setPercentage(prods[1]);
+    //     if (prods[2] < 100) {
+    //       setTargetReach(false);
     //     }
-    // })
+    //   } else {
+    //     addWater(0);
+    //   }
+    // });
   }, []);
 
   React.useEffect(() => {
@@ -103,7 +127,7 @@ export default function WaterTracking() {
         selectedColor="#2176FF"
         style={{marginTop: 10}}
         onPress={() => setIsTargetDialogVisible(true)}>
-        Water target: {target} ml
+        Water target: {todayProgress.goal || 0} ml
       </Chip>
       <View style={styles.content}>
         <AnimatedCircularProgress
@@ -149,7 +173,7 @@ export default function WaterTracking() {
           </View>
         </View>
       </View>
-      <Snackbar
+      {/* <Snackbar
         visible={visible}
         duration={2500}
         onDismiss={onDismissSnackBar}
@@ -158,8 +182,10 @@ export default function WaterTracking() {
           label: 'Reset',
           onPress: () => resetWater(),
         }}>
-        Your daily water intake level is now {percentage}%!
-      </Snackbar>
+        <Text style={{color: 'white'}}>
+          Your daily water intake level is now {percentage}%!
+        </Text>
+      </Snackbar> */}
       <Snackbar
         visible={targetSnackVisible}
         duration={2500}

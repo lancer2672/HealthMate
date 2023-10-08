@@ -1,21 +1,15 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
+import {createSlice} from '@reduxjs/toolkit';
+import {login, logoutUser, register, saveFCMToken} from './thunks/userActions';
 const initialState = {
   user: null,
   token: null,
   refreshToken: null,
 
-  registrationForm: null,
+  isLoading: false,
+  error: null,
 };
-export const logoutUser = createAsyncThunk('user/logout', async () => {
-  try {
-    const socket = getSocket();
-    await AsyncStorage.multiRemove(['userId', 'token', 'refreshToken']);
-  } catch (er) {
-    console.log('Logout error', er);
-  }
-});
-
+const actions = [register, login, saveFCMToken];
 export const userSlice = createSlice({
   name: 'user',
   initialState,
@@ -38,10 +32,27 @@ export const userSlice = createSlice({
     },
   },
   extraReducers: builder => {
+    actions.forEach(action => {
+      builder
+        .addCase(action.pending, state => {
+          state.isLoading = true;
+        })
+        .addCase(action.rejected, (state, action) => {
+          state.isLoading = false;
+          state.error = action.error.message;
+        });
+    });
     builder.addCase(logoutUser.fulfilled, state => {
       state.user = null;
       state.token = null;
       state.refreshToken = null;
+    });
+    builder.addCase(register.fulfilled, (state, {payload}) => {
+      console.log(payload);
+    });
+    builder.addCase(login.fulfilled, (state, {payload}) => {
+      console.log(payload);
+      state.user = payload;
     });
   },
 });

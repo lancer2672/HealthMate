@@ -1,33 +1,19 @@
 import messaging from '@react-native-firebase/messaging';
-// import firebase from '@react-native-firebase/app';
+import {firebase} from '@react-native-firebase/database';
+import {DB_URL} from '@env';
+export const firebaseDatabase = firebase.app().database(DB_URL);
 
-// const RNfirebaseConfig = {
-//   apiKey: "",
-//   authDomain: "note-app-rn.firebaseapp.com",
-//   projectId: "note-app-rn",
-//   storageBucket: "note-app-rn.appspot.com",
-//   messagingSenderId: ".....",
-//   appId: "......"
-// };
-
-// let app;
-// if (firebase.apps.length === 0) {
-//     app = firebase.initializeApp(RNfirebaseConfig )
-// } else {
-//     app = firebase.app()
-// }
-
-export const getMessagingToken = saveFCMtoken => {
+export const getMessagingToken = async () => {
   // Get the device token
-  messaging()
-    .getToken()
-    .then(token => {
-      console.log('Messaging Token', token);
-      saveFCMtoken(token);
-    })
-    .catch(er => {
-      console.log('get messaging token failed', er);
-    });
+  try {
+    const token = await messaging().getToken();
+    return token;
+  } catch (er) {
+    console.log('Get FCM token failed', er);
+  }
+};
+
+export const setUpMessagingListener = () => {
   messaging().setBackgroundMessageHandler(async remoteMessage => {
     console.log('Message handled in the background!', remoteMessage);
   });
@@ -51,8 +37,5 @@ export const getMessagingToken = saveFCMtoken => {
         // });
       }
     }
-  });
-  return messaging().onTokenRefresh(token => {
-    saveFCMtoken(token);
   });
 };

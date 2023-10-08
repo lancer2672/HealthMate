@@ -13,9 +13,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import InputText from '../components/InputText.component';
 import {accountSchema, handleValidateField} from '../../../utils/validation';
-import {setUser} from '../reducer/userSlice';
-import {setIsLoading} from '../../../store/appSlice';
-import {useLoginMutation} from '../reducer/authApiSlice';
+import {setIsLoading} from '../../../store/reducer/appSlice';
+import {login, register} from '../../../store/reducer/thunks/userActions';
 
 // GoogleSignin.configure({
 //   webClientId: WEB_API_KEY,
@@ -30,58 +29,44 @@ import {useLoginMutation} from '../reducer/authApiSlice';
 // });
 
 const Login = ({navigation}) => {
-  const [login, {error, isSuccess, isLoading: isLoginLoading, data}] =
-    useLoginMutation();
+  const {error, isLoading} = useSelector(state => state.user);
   const dispatch = useDispatch();
-  const [username, setUsername] = useState('');
+  const [email, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [savePassword, setSavePassword] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
   const refInputName = useRef();
   const refInputPassword = useRef();
-  const toggleSavePasswordCheck = () => {
-    setSavePassword(!savePassword);
-  };
-  const handleLoginSuccess = async (loginData, isLoading, isSuccess) => {
-    try {
-      if (isSuccess) {
-        const payload = {savePassword, ...loginData};
-        dispatch(setUser(payload));
-        //auto enable save password
-        if (true) {
-          ['token', 'refreshToken', 'username'].forEach(async key => {
-            await AsyncStorage.setItem(
-              key,
-              JSON.stringify(loginData[key]) || eval(key),
-            );
-          });
-          await AsyncStorage.setItem(
-            'userId',
-            JSON.stringify(loginData.user._id),
-          );
-        }
-      }
-    } catch (er) {
-      console.log('err', er);
-    }
-    dispatch(setIsLoading(isLoading));
-  };
+  // const toggleSavePasswordCheck = () => {
+  //   setSavePassword(!savePassword);
+  // };
+  // const handleLoginSuccess = async (loginData, isLoading, isSuccess) => {
+  //   try {
+  //     if (isSuccess) {
+  //       const payload = {savePassword, ...loginData};
+  //       dispatch(setUser(payload));
+  //     }
+  //   } catch (er) {
+  //     console.log('err', er);
+  //   }
+  //   dispatch(setIsLoading(isLoading));
+  // };
 
   // useEffect(() => {
   //   handleLoginSuccess(loginGGData, isLoginGGLoading, isLoginGGSuccess);
   // }, [isLoginGGLoading]);
 
-  useEffect(() => {
-    handleLoginSuccess(data, isLoginLoading, isSuccess);
-  }, [isLoginLoading]);
+  // useEffect(() => {
+  //   handleLoginSuccess(data, isLoginLoading, isSuccess);
+  // }, [isLoginLoading]);
 
   const handleLogin = () => {
-    refInputName.current.blur();
-    refInputPassword.current.blur();
-    console.log(Object.keys(validationErrors).length);
-    if (Object.keys(validationErrors).length == 0) {
-      login({username, password});
-    }
+    // refInputName.current.blur();
+    // refInputPassword.current.blur();
+    // console.log(Object.keys(validationErrors).length);
+    // if (Object.keys(validationErrors).length == 0) {
+    //   login({email, password});
+    // }
+    dispatch(login({email, password}));
   };
 
   const handleSendEmailResetPassword = () => {
@@ -94,24 +79,24 @@ const Login = ({navigation}) => {
   };
   console.log('validationErrors', validationErrors);
   return (
-    <View style={styles.container} isLoading={isLoginLoading}>
+    <View style={styles.container}>
       <View>
         <InputText
           ref={refInputName}
           iconLeft={'account'}
           setText={setUsername}
-          hasValidationError={validationErrors.username}
+          hasValidationError={validationErrors.email}
           placeholder={'Email'}
           onBlur={() =>
             handleValidateField(
               accountSchema,
-              'username',
-              username,
+              'email',
+              email,
               validationErrors,
               setValidationErrors,
             )
           }></InputText>
-        {validationErrors.username && <Text>{validationErrors.username}</Text>}
+        {validationErrors.email && <Text>{validationErrors.email}</Text>}
 
         <InputText
           ref={refInputPassword}
@@ -154,11 +139,16 @@ const Login = ({navigation}) => {
         </TouchableOpacity>
       </View>
       {error && <Text>Tên đăng nhập hoặc mật khẩu không hợp lệ</Text>}
-      <View style={{marginTop: 12}}>
-        <TouchableOpacity onPress={handleLogin}>
-          <Text>Đăng nhập</Text>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity
+        style={{
+          width: '100%',
+          padding: 4,
+          marginTop: 12,
+          backgroundColor: 'white',
+        }}
+        onPress={handleLogin}>
+        <Text style={{}}>Đăng nhập</Text>
+      </TouchableOpacity>
       <View
         style={{
           marginTop: 12,
