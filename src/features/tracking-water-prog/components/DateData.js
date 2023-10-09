@@ -6,7 +6,10 @@ import {LineChart} from 'react-native-chart-kit';
 import {splitObj, today} from '../utils';
 
 const screenWidth = Dimensions.get('window').width;
-
+function getCurrentDate() {
+  const date = new Date();
+  return `${date.getDate()}/${date.getMonth() + 1}`;
+}
 export default function DateData(props) {
   console.log('DateData', props);
   // Prop for selected day's data
@@ -14,30 +17,25 @@ export default function DateData(props) {
   // Prop for line chart's data
   const [chartData, setChartData] = React.useState({
     datasets: [{data: [0]}],
-    labels: [today()],
+    labels: [getCurrentDate()],
   });
+  console.log('chartData', chartData);
 
   React.useEffect(() => {
-    // firebase.database().ref('users/001/' + props.date + '/').on('value', snapshot => {
-    //     const data = snapshot.val();
-    //     if (data) {
-    //         const prods = Object.values(data);
-    //         setData(prods[2]);
-    //     } else {
-    //         setData(null);
-    //     }
-    // })
-
-    // Split waterData from HistoryScreen to a suitable format for line chart
-    setChartData(splitObj(props.chartData));
-  }, [props.date, props.chartData]);
+    if (props.chartData) {
+      setChartData({
+        ...splitObj(props.chartData),
+        legend: ['Lượng nước', 'Mục tiêu'],
+      });
+    }
+  }, [props.chartData]);
 
   const chartConfig = {
     backgroundColor: '#131A26',
     backgroundGradientFrom: '#131A26',
     backgroundGradientTo: '#131A26',
     fillShadowGradient: '#2176FF',
-    fillShadowGradientOpacity: '0.2',
+    fillShadowGradientOpacity: '0',
     color: (opacity = 1) => `rgba(33, 118, 255, ${opacity})`, // optional
     labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
     propsForDots: {

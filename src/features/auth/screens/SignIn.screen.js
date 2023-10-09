@@ -11,22 +11,20 @@ import React, {useState, useEffect, useRef} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import {
+  GoogleSignin,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
 import InputText from '../components/InputText.component';
 import {accountSchema, handleValidateField} from '../../../utils/validation';
 import {setIsLoading} from '../../../store/reducer/appSlice';
 import {login, register} from '../../../store/reducer/thunks/userActions';
+import {WEB_API_KEY} from '@env';
 
-// GoogleSignin.configure({
-//   webClientId: WEB_API_KEY,
-//   offlineAccess: true,
-//   scopes: [
-//     'profile',
-//     'email',
-//     'https://www.googleapis.com/auth/user.birthday.read',
-//     'https://www.googleapis.com/auth/user.phonenumbers.read',
-//     'https://www.googleapis.com/auth/user.gender.read',
-//   ],
-// });
+GoogleSignin.configure({
+  webClientId: WEB_API_KEY,
+  offlineAccess: true,
+});
 
 const Login = ({navigation}) => {
   const {error, isLoading} = useSelector(state => state.user);
@@ -73,6 +71,23 @@ const Login = ({navigation}) => {
     navigation.navigate('ForgotPassword', {});
   };
 
+  const handleSignInGoogle = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      console.log('userInfo', userInfo);
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        console.log('Sign in SIGN_IN_CANCELLED');
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        console.log('Sign in IN_PROGRESS');
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        console.log('Sign in PLAY_SERVICES_NOT_AVAILABLE');
+      } else {
+        console.error('Sign in ERROR', error);
+      }
+    }
+  };
   const navigateToRegister1Screen = () => {
     // setError(null);
     navigation.navigate('Register1', {});
@@ -157,7 +172,7 @@ const Login = ({navigation}) => {
           alignItems: 'center',
         }}>
         <Pressable
-          onPress={null}
+          onPress={handleSignInGoogle}
           style={[styles.google, {backgroundColor: 'white'}]}>
           <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
             <Image

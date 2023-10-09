@@ -74,41 +74,41 @@ export default function WaterTracking() {
       const drankWater = todayProgress.sessions.reduce((acc, item, i) => {
         return acc + item.amount;
       }, 0);
-      if (drankWater > todayProgress.goal) {
-        setWater(todayProgress.goal);
-        setPercentage(100);
-      } else {
-        setWater(drankWater);
-        setPercentage(valuesToPercentage(todayProgress.goal, drankWater));
-      }
+      setWater(drankWater);
+      setPercentage(valuesToPercentage(todayProgress.goal, drankWater));
+      // setWater(todayProgress.goal);
+      // if (drankWater > todayProgress.goal) {
+      //   setPercentage(100);
+      // } else {
+      // }
     }
   }, [todayProgress]);
-  React.useEffect(() => {
-    // firebaseDatabase.ref('targets/001/').on('value', snapshot => {
-    //   const data = snapshot.val();
-    //   const prods = Object.values(data);
-    //   setTarget(prods[0]);
-    // });
-    // firebaseDatabase.ref('containers/001/').on('value', snapshot => {
-    //   const data = snapshot.val();
-    //   const prods = Object.values(data);
-    //   setWaterBottle(prods[0]);
-    //   setWaterCup(prods[1]);
-    // });
-    // firebaseDatabase.ref('users/001/' + today() + '/').on('value', snapshot => {
-    //   const data = snapshot.val();
-    //   if (data) {
-    //     const prods = Object.values(data);
-    //     setWater(prods[2]);
-    //     setPercentage(prods[1]);
-    //     if (prods[2] < 100) {
-    //       setTargetReach(false);
-    //     }
-    //   } else {
-    //     addWater(0);
-    //   }
-    // });
-  }, []);
+  // React.useEffect(() => {
+  //   // firebaseDatabase.ref('targets/001/').on('value', snapshot => {
+  //   //   const data = snapshot.val();
+  //   //   const prods = Object.values(data);
+  //   //   setTarget(prods[0]);
+  //   // });
+  //   // firebaseDatabase.ref('containers/001/').on('value', snapshot => {
+  //   //   const data = snapshot.val();
+  //   //   const prods = Object.values(data);
+  //   //   setWaterBottle(prods[0]);
+  //   //   setWaterCup(prods[1]);
+  //   // });
+  //   // firebaseDatabase.ref('users/001/' + today() + '/').on('value', snapshot => {
+  //   //   const data = snapshot.val();
+  //   //   if (data) {
+  //   //     const prods = Object.values(data);
+  //   //     setWater(prods[2]);
+  //   //     setPercentage(prods[1]);
+  //   //     if (prods[2] < 100) {
+  //   //       setTargetReach(false);
+  //   //     }
+  //   //   } else {
+  //   //     addWater(0);
+  //   //   }
+  //   // });
+  // }, []);
 
   React.useEffect(() => {
     console.log('target state change ' + targetReach);

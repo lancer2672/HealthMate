@@ -9,21 +9,28 @@ export function today() {
 }
 
 export function splitObj(chartData) {
-  let alldata = [],
+  let amountData = [],
+    goalData = [],
     allkeys = [];
 
-  // Keys and values into two separate arrays
-  for (const l in chartData) {
-    if (chartData.hasOwnProperty(l)) {
-      if (l !== 'undefined' && chartData[l] !== null) {
-        const parsedKey = DateTime.fromSQL(l).weekdayShort;
-        allkeys.push(parsedKey);
-        alldata.push(chartData[l]);
+  chartData.forEach(element => {
+    for (let [key, value] of Object.entries(element)) {
+      if (key == 'goal') {
+        goalData.push(value);
+      } else {
+        allkeys.push(key);
+        amountData.push(value);
       }
     }
-  }
-  const keys = allkeys.slice(Math.max(allkeys.length - 7, 0));
-  const data = alldata.slice(Math.max(alldata.length - 7, 0));
+  });
+  // const keys = allkeys.slice(Math.max(allkeys.length - 7, 0));
+  // const data = amountData.slice(Math.max(amountData.length - 7, 0));
 
-  return {labels: keys, datasets: [{data}]};
+  return {
+    labels: allkeys,
+    datasets: [
+      {data: amountData},
+      {data: goalData, color: (opacity = 1) => `rgba(0, 255, 0, ${opacity})`},
+    ],
+  };
 }

@@ -2,11 +2,11 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import {createAsyncThunk} from '@reduxjs/toolkit';
 const usersRef = firestore().collection('user');
-import {createAsyncThunk} from '@reduxjs/toolkit';
+
 import {
   addNewHistory,
   addNewSession,
-  getHistoryByDate,
+  getHistoryBySelectedDate,
   setGoal,
 } from '../../../services/firebase/firestore/drinkTracking';
 
@@ -38,7 +38,7 @@ export const getHistoryByDate = createAsyncThunk(
   'user/getHistoryByDate',
   async (data, thunkAPI) => {
     try {
-      return await getHistoryByDate(data);
+      return await getHistoryBySelectedDate(data);
     } catch (error) {
       console.log('Get history by date error', error.message);
       return thunkAPI.rejectWithValue(error.message);

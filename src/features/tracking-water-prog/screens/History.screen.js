@@ -1,66 +1,79 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {Dimensions, StyleSheet, View} from 'react-native';
 import {Title} from 'react-native-paper';
 import {CalendarList} from 'react-native-calendars';
 import {today} from '../utils';
 import DateData from '../components/DateData';
+import firestore from '@react-native-firebase/firestore';
+
 import {useSelector} from 'react-redux';
-
+import {
+  getHistoryBySelectedDate,
+  getHistoryByMonth,
+} from '../../../services/firebase/firestore/drinkTracking';
 export default function WaterTrackingHistory() {
-  const [marked, setMarked] = React.useState({});
+  const [marked, setMarked] = useState({});
+  const {user} = useSelector(state => state.user);
   const {todayProgress} = useSelector(state => state.waterTracking);
-  const [waterObject, setWaterObject] = React.useState({});
-  const [selected, setSelected] = React.useState(null);
-
+  const [waterObject, setWaterObject] = useState({});
+  const [selected, setSelected] = useState(null);
+  const [historyList, setHistoryList] = useState();
+  const [streaks, setStreaks] = useState(0);
   // Currently breaks the app
-  React.useEffect(() => {
-    firebase
-      .database()
-      .ref('users/001/')
-      .on('value', snapshot => {
-        const data = snapshot.val();
-        const prods = Object.values(data);
-        const markedData = prods.reduce(
-          (obj, item) => ({...obj, [item.date]: {selected: true}}),
-          {},
-        );
-        const waterData = prods.reduce(
-          (obj, item) => ({...obj, [item.date]: item.waterAmount}),
-          {},
-        );
-        setMarked(markedData);
-        setWaterObject(waterData);
-      });
-    const sessions = todayProgress.sessions;
-    for (let session of todayProgress.sessions) {
-      const date = new Date(session.time).toISOString().split('T')[0];
+  const streakCount = listHistory => {
+    let day = new Date().getDate() - 1; // Ngày trong tháng (từ 1 đến 31)
+    let month = new Date().getMonth(); // Tháng trong năm (từ 0 đến 11, nên cần cộng thêm 1)
+    let year = new Date().getFullYear(); // Năm
+
+    // /1000 to convert mil -> second unit
+    let timestamp = new Date(year, month, day).getTime() / 1000;
+    let streakCount = 0;
+    // today is not count (listHistory contain today drink progress)
+    for (let i = listHistory.length - 2; i >= 0; i--) {
+      if (
+        listHistory[i].date._seconds == timestamp &&
+        isGoalAchieved(listHistory[i].goal, listHistory[i].sessions)
+      ) {
+        streakCount++;
+        timestamp = listHistory[i].date;
+      }
     }
+    console.log('streaks', streakCount);
+    setStreaks(streakCount);
+  };
+  const isGoalAchieved = (goal, sessions) => {
+    const totalAmount = sessions.reduce((ac, sess) => {
+      return ac + sess.amount;
+    }, 0);
+    return totalAmount >= goal;
+  };
+  useEffect(() => {
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth() + 1;
+    getHistoryByMonth({
+      userId: user.uid,
+      year: currentYear,
+      month: currentMonth,
+    })
+      .then(data => {
+        console.log('data', data);
+        const mappedData = data.map(history => {
+          const totalValue = history.sessions.reduce((ac, session, i) => {
+            return ac + session.amount;
+          }, 0);
+
+          const date = history.date.toDate();
+          return {
+            [`${date.getDate()}/${date.getMonth() + 1}`]: totalValue,
+            goal: history.goal,
+          };
+        });
+        streakCount(data);
+        console.log('mappedData', mappedData);
+        setHistoryList(mappedData);
+      })
+      .catch(er => console.log(er));
   }, []);
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const db = firebase.database().ref('users/X3jnZPB4T5fNMmfB1Pw0FTZVX6t2');
-  //     const snapshot = await db.once('value');
-  //     const data = snapshot.val();
-
-  //     let markedData = {};
-  //     let waterData = {};
-
-  //     for (let session of data.sessions) {
-  //       const date = new Date(session.time).toISOString().split('T')[0];
-  //       markedData[date] = { selected: true };
-
-  //       if (!waterData[date]) {
-  //         waterData[date] = 0;
-  //       }
-  //       waterData[date] += session.amount;
-  //     }
-
-  //     setMarked(markedData);
-  //     setWaterObject(waterData);
-  //   };
-
-  //   fetchData();
-  // }, []);
   return (
     <View style={styles.container}>
       <Title>Water intake history</Title>
@@ -93,7 +106,7 @@ export default function WaterTrackingHistory() {
         />
       </View>
       <View style={styles.content}>
-        <DateData date={selected} chartData={waterObject} />
+        <DateData date={selected} chartData={historyList} />
       </View>
     </View>
   );

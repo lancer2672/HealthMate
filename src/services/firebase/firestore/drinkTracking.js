@@ -20,7 +20,7 @@ export async function addNewSession({historyId, amount}) {
   }
 }
 
-export async function getHistoryByDate({userId, date}) {
+export async function getHistoryBySelectedDate({userId, date}) {
   const userHistoriesRef = drinkHistoryRef
     .where('userId', '==', userId)
     .where('date', '==', date);
@@ -35,6 +35,28 @@ export async function getHistoryByDate({userId, date}) {
     const historyDocRef = await drinkHistoryRef.add(newHistory);
     return {id: historyDocRef.id, ...newHistory};
   }
+}
+export async function getHistoryByMonth({userId, year, month}) {
+  const startDate = new Date(year, month - 1, 1);
+  const endDate = new Date(year, month, 0);
+  console.log({userId, year, month});
+  const userHistoriesRef = drinkHistoryRef
+    .where('userId', '==', userId)
+    .where('date', '>=', startDate)
+    .where('date', '<=', endDate);
+
+  const userHistoriesSnapshot = await userHistoriesRef.get();
+
+  if (userHistoriesSnapshot.empty) {
+    return [];
+  }
+
+  const histories = userHistoriesSnapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+
+  return histories;
 }
 
 export async function setGoal({historyId, goal}) {
