@@ -6,14 +6,17 @@ import {
   saveToken,
 } from '../../../services/firebase/firestore/user';
 
-export const logoutUser = createAsyncThunk('user/logout', async () => {
-  try {
-    return await logout();
-  } catch (er) {
-    console.log('Logout error', er);
-    return thunkAPI.rejectWithValue(er.message);
-  }
-});
+export const logoutUser = createAsyncThunk(
+  'user/logout',
+  async (_undefined, thunkAPI) => {
+    try {
+      return await logout();
+    } catch (er) {
+      console.log('Logout error', er);
+      return thunkAPI.rejectWithValue(er.message);
+    }
+  },
+);
 
 export const register = createAsyncThunk(
   'user/register',

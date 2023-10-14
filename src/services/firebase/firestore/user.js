@@ -1,7 +1,7 @@
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-
-const usersRef = firestore().collection('users');
+import AsyncStorage from '@react-native-async-storage/async-storage';
+const usersRef = firestore().collection('user');
 
 export async function logout() {
   try {
@@ -28,6 +28,7 @@ export async function registerUser({email, password, ...rest}) {
       ...rest,
     };
     await usersRef.doc(user.uid).set(userData);
+
     return userData;
   }
 }
@@ -52,9 +53,13 @@ export async function loginUser({email, password}) {
   }
 }
 
-export async function saveToken(FCMToken) {
+export async function saveToken({FCMToken, userId}) {
   try {
-    // Logic to save FCMToken
+    // Lưu trữ FCM token vào cơ sở dữ liệu
+    console.log(userId);
+    await usersRef.doc(userId).update({
+      FCMToken,
+    });
   } catch (error) {
     console.log('Save FCMToken error', error.message);
     throw error;

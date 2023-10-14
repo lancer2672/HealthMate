@@ -162,7 +162,7 @@ const Login = ({navigation}) => {
           backgroundColor: 'white',
         }}
         onPress={handleLogin}>
-        <Text style={{}}>Đăng nhập</Text>
+        <Text style={{textAlign: 'center'}}>Đăng nhập</Text>
       </TouchableOpacity>
       <View
         style={{
