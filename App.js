@@ -4,26 +4,12 @@ import Navigator from './src/navigation';
 import store from './src/store';
 import ThemeProviderComponent from './src/features/auth/components/ThemeProvider.component';
 import {DefaultTheme, Provider as PaperProvider} from 'react-native-paper';
+import {darkTheme, lightTheme} from './src/features/theme';
 
 export default function App() {
-  const theme = {
-    ...DefaultTheme,
-    dark: true,
-    mode: 'adaptive',
-    roundness: 15,
-    colors: {
-      ...DefaultTheme.colors,
-      primary: '#2176FF',
-      accent: '#33A1FD',
-      surface: '#131A26',
-      background: '#131A26',
-      text: '#FFFFFF',
-    },
-  };
-
   return (
     <ThemeProviderComponent>
-      <PaperProvider theme={theme}>
+      <PaperProvider theme={lightTheme}>
         <Provider store={store}>
           <Navigator />
           <FlashMessage position="top" />

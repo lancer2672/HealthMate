@@ -3,9 +3,10 @@ import auth from '@react-native-firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const usersRef = firestore().collection('user');
 
-export async function logout() {
+export async function logout({userId}) {
   try {
     await AsyncStorage.multiRemove(['userId', 'token', 'refreshToken']);
+    await usersRef.doc(userId).delete('FCMToken');
   } catch (er) {
     console.log('Logout error', er);
   }
@@ -56,7 +57,7 @@ export async function loginUser({email, password}) {
 export async function saveToken({FCMToken, userId}) {
   try {
     // Lưu trữ FCM token vào cơ sở dữ liệu
-    console.log(userId);
+    console.log('SAVE FCM', userId);
     await usersRef.doc(userId).update({
       FCMToken,
     });
