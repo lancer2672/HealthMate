@@ -8,9 +8,9 @@ import {
 
 export const logoutUser = createAsyncThunk(
   'user/logout',
-  async (_undefined, thunkAPI) => {
+  async (userId, thunkAPI) => {
     try {
-      return await logout();
+      return await logout({userId});
     } catch (er) {
       console.log('Logout error', er);
       return thunkAPI.rejectWithValue(er.message);
@@ -41,9 +41,9 @@ export const login = createAsyncThunk('user/login', async (data, thunkAPI) => {
 
 export const saveFCMToken = createAsyncThunk(
   'user/saveFCMToken',
-  async (FCMToken, thunkAPI) => {
+  async (data, thunkAPI) => {
     try {
-      return await saveToken(FCMToken);
+      return await saveToken(data);
     } catch (error) {
       console.log('Save FCMToken error', error.message);
       return thunkAPI.rejectWithValue(error.message);

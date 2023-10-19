@@ -1,7 +1,6 @@
 import React from 'react';
 import {Dimensions, StyleSheet, View} from 'react-native';
 import {Text, Surface} from 'react-native-paper';
-// import * as firebase from "firebase";
 import {LineChart} from 'react-native-chart-kit';
 import {splitObj, today} from '../utils';
 

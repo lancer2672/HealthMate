@@ -2,8 +2,10 @@
 #
 .DS_Store
 google-services.json
+.env
 # Xcode
 #
+
 build/
 *.pbxuser
 !default.pbxuser

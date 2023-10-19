@@ -9,7 +9,7 @@ const initialState = {
   isLoading: false,
   error: null,
 };
-const actions = [register, login, saveFCMToken];
+const actions = [logoutUser, register, login, saveFCMToken];
 export const userSlice = createSlice({
   name: 'user',
   initialState,
