@@ -3,8 +3,6 @@ import {createSlice} from '@reduxjs/toolkit';
 import {login, logoutUser, register, saveFCMToken} from './thunks/userActions';
 const initialState = {
   user: null,
-  token: null,
-  refreshToken: null,
 
   isLoading: false,
   error: null,
@@ -17,15 +15,10 @@ export const userSlice = createSlice({
     //set credentials
     setUser: (state, action) => {
       state.user = action.payload.user;
-      state.token = action.payload.token;
-      state.refreshToken = action.payload.refreshToken;
+      // state.token = action.payload.token;
     },
     setToken: (state, action) => {
       state.token = action.payload.token;
-      const refToken = action.payload.refreshToken;
-      if (refToken) {
-        state.refreshToken = refToken;
-      }
     },
     updateUserState: (state, action) => {
       state.user = action.payload;
@@ -45,7 +38,6 @@ export const userSlice = createSlice({
     builder.addCase(logoutUser.fulfilled, state => {
       state.user = null;
       state.token = null;
-      state.refreshToken = null;
     });
     builder.addCase(register.fulfilled, (state, {payload}) => {
       console.log(payload);

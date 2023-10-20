@@ -8,14 +8,18 @@ import {AuthNavigator} from './Auth.navigation';
 // import {AppNavigator} from './app.navigator';
 import {setIsLoading} from '../store/reducer/appSlice';
 import {AppNavigator} from './App.navigation';
-
+import auth from '@react-native-firebase/auth';
+import {setUser} from '../store/reducer/userSlice';
 StatusBar.setBackgroundColor('black');
 const Navigator = () => {
   const {user} = useSelector(state => state.user);
   const appState = useSelector(state => state.app);
   const dispatch = useDispatch();
   const [userCredentials, setCredentials] = useState({});
-
+  useEffect(() => {
+    const user = auth().currentUser;
+    dispatch(setUser({user}));
+  });
   //   useEffect(() => {
   //     if (isSuccess && data) {
   //       dispatch(

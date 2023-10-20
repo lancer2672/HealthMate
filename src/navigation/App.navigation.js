@@ -8,7 +8,7 @@ import Login from '../features/auth/screens/SignIn.screen';
 import WaterTracking from '../features/tracking-water-prog/screens/WaterTracking.screen';
 import {useDispatch, useSelector} from 'react-redux';
 import {saveFCMToken} from '../store/reducer/thunks/userActions';
-import {getHistoryByDate} from '../store/reducer/thunks/waterTrackingActions';
+import {getDateProgress} from '../store/reducer/thunks/waterTrackingActions';
 import WaterTrackingHistory from '../features/tracking-water-prog/screens/History.screen';
 import StepTracking from '../features/counting-steps/screens/StepTracking.screen';
 import {
@@ -17,6 +17,7 @@ import {
   onCreateTriggerNotification,
   onDisplayNotification,
 } from '../services/notifee/notification';
+import WaveAnimation from '../features/tracking-water-prog/screens/Wave.screen';
 
 const Stack = createNativeStackNavigator();
 
@@ -44,7 +45,7 @@ export const AppNavigator = () => {
     const now = new Date();
     const dateOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     dispatch(
-      getHistoryByDate({
+      getDateProgress({
         userId: user.uid,
         date: dateOnly,
       }),
@@ -55,10 +56,8 @@ export const AppNavigator = () => {
       try {
         const FCMToken = await getMessagingToken();
         dispatch(saveFCMToken({FCMToken, userId: user.uid}));
-        console.log('SET UP');
         await createNotifeeChannel();
         await onDisplayNotification();
-        console.log('SET UP 1');
       } catch (er) {
         console.log(er);
       }
@@ -84,7 +83,7 @@ export const AppNavigator = () => {
     <Stack.Navigator
       screenOptions={{headerShown: false}}
       initialRouteName="AppTabs">
-      <Stack.Screen name="AppTabs" component={WaterTracking} />
+      <Stack.Screen name="AppTabs" component={WaveAnimation} />
       <Stack.Screen name="WaterTracking" component={WaterTracking} />
       <Stack.Screen name="StepTracking" component={StepTracking} />
       <Stack.Screen

@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 import React, {useState, useEffect, useRef} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {
   GoogleSignin,
@@ -92,7 +91,6 @@ const Login = ({navigation}) => {
     // setError(null);
     navigation.navigate('Register1', {});
   };
-  console.log('validationErrors', validationErrors);
   return (
     <View style={styles.container}>
       <View>
