@@ -4,17 +4,17 @@ import {createAsyncThunk} from '@reduxjs/toolkit';
 const usersRef = firestore().collection('user');
 
 import {
-  addNewHistory,
+  addNewDrinkProgress,
   addNewSession,
-  getHistoryBySelectedDate,
+  getDrinkProgressByDate,
   setGoal,
-} from '../../../services/firebase/firestore/drinkTracking';
+} from '../../../services/firebase/firestore/drinkProgress';
 
-export const addHistory = createAsyncThunk(
-  'user/addHistory',
+export const addDrinkProgress = createAsyncThunk(
+  'user/addDrinkProgress',
   async (data, thunkAPI) => {
     try {
-      return await addNewHistory(data);
+      return await addNewDrinkProgress(data);
     } catch (error) {
       console.log('Add history error', error.message);
       return thunkAPI.rejectWithValue(error.message);
@@ -34,11 +34,11 @@ export const addSession = createAsyncThunk(
   },
 );
 
-export const getHistoryByDate = createAsyncThunk(
-  'user/getHistoryByDate',
+export const getDateProgress = createAsyncThunk(
+  'user/getDateProgress',
   async (data, thunkAPI) => {
     try {
-      return await getHistoryBySelectedDate(data);
+      return await getDrinkProgressByDate(data);
     } catch (error) {
       console.log('Get history by date error', error.message);
       return thunkAPI.rejectWithValue(error.message);
@@ -46,13 +46,13 @@ export const getHistoryByDate = createAsyncThunk(
   },
 );
 
-export const setHistoryGoal = createAsyncThunk(
-  'user/setHistoryGoal',
+export const setDrinkGoal = createAsyncThunk(
+  'user/setDrinkGoal',
   async (data, thunkAPI) => {
     try {
       return await setGoal(data);
     } catch (error) {
-      console.log('Set history goal error', error.message);
+      console.log('Set dink progress goal error', error.message);
       return thunkAPI.rejectWithValue(error.message);
     }
   },

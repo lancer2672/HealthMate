@@ -1,10 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {createSlice} from '@reduxjs/toolkit';
 import {
-  addHistory,
+  addDrinkProgress,
   addSession,
-  getHistoryByDate,
-  setHistoryGoal,
+  getDateProgress,
+  setDrinkGoal,
 } from './thunks/waterTrackingActions';
 const initialState = {
   todayProgress: {},
@@ -13,7 +13,7 @@ const initialState = {
   error: null,
 };
 
-const actions = [addHistory, getHistoryByDate, setHistoryGoal, addSession];
+const actions = [addDrinkProgress, getDateProgress, setDrinkGoal, addSession];
 
 export const waterTrackingSlice = createSlice({
   name: 'waterTracking',
@@ -31,16 +31,16 @@ export const waterTrackingSlice = createSlice({
           console.log('water tracking err', action.error);
         });
     });
-    builder.addCase(getHistoryByDate.fulfilled, (state, {payload}) => {
-      console.log('getHistoryByDate', payload);
+    builder.addCase(getDateProgress.fulfilled, (state, {payload}) => {
+      console.log('getDateProgress', payload);
       state.todayProgress = payload;
     });
     builder.addCase(addSession.fulfilled, (state, {payload}) => {
       console.log('addSession', payload);
       state.todayProgress = payload;
     });
-    builder.addCase(setHistoryGoal.fulfilled, (state, {payload}) => {
-      console.log('setHistoryGoal', payload);
+    builder.addCase(setDrinkGoal.fulfilled, (state, {payload}) => {
+      console.log('setDrinkGoal', payload);
       state.todayProgress = payload;
     });
   },
