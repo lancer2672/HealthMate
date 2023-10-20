@@ -8,9 +8,9 @@ import firestore from '@react-native-firebase/firestore';
 
 import {useSelector} from 'react-redux';
 import {
-  getHistoryBySelectedDate,
-  getHistoryByMonth,
-} from '../../../services/firebase/firestore/drinkTracking';
+  getDrinkProgressByDate,
+  getDrinkProgressByMonth,
+} from '../../../services/firebase/firestore/drinkProgress';
 export default function WaterTrackingHistory() {
   const [marked, setMarked] = useState({});
   const {user} = useSelector(state => state.user);
@@ -50,7 +50,7 @@ export default function WaterTrackingHistory() {
   useEffect(() => {
     const currentYear = new Date().getFullYear();
     const currentMonth = new Date().getMonth() + 1;
-    getHistoryByMonth({
+    getDrinkProgressByMonth({
       userId: user.uid,
       year: currentYear,
       month: currentMonth,

@@ -8,8 +8,8 @@ import {firebaseDatabase} from '../../../services/firebase';
 import CustomWaterDialog from '../components/CustomWaterDialog';
 import {
   addSession,
-  getHistoryByDate,
-  setHistoryGoal,
+  getDateProgress,
+  setDrinkGoal,
 } from '../../../store/reducer/thunks/waterTrackingActions';
 import {useDispatch, useSelector} from 'react-redux';
 
@@ -40,33 +40,18 @@ export default function WaterTracking() {
   const [isCustomDialogVisible, setIsCustomDialogVisible] = useState(false);
 
   const defineTarget = userTarget => {
-    dispatch(setHistoryGoal({historyId: todayProgress.id, goal: userTarget}));
+    dispatch(
+      setDrinkGoal({drinkProgressId: todayProgress.id, goal: userTarget}),
+    );
   };
 
   const addWater = amount => {
     if (amount) {
-      dispatch(addSession({historyId: todayProgress.id, amount}));
-
-      // firebaseDatabase
-      //   .ref('users/001/' + today() + '/')
-      //   .update({
-      //     waterAmount: water + amount,
-      //     date: today(),
-      //     percentage: valuesToPercentage(todayProgress.goal, water + amount),
-      //   })
-      //   .then(() => null);
+      dispatch(addSession({drinkProgressId: todayProgress.id, amount}));
       onToggleSnackBar();
     }
     if (valuesToPercentage(todayProgress.goal, water + amount) >= 100)
       setTargetReach(true);
-  };
-
-  const resetWater = () => {
-    firebaseDatabase
-      .ref('users/001/' + today() + '/')
-      .update({waterAmount: 0, date: today(), percentage: 0})
-      .then(() => null);
-    setPercentage(0);
   };
 
   useEffect(() => {
@@ -76,41 +61,9 @@ export default function WaterTracking() {
       }, 0);
       setWater(drankWater);
       setPercentage(valuesToPercentage(todayProgress.goal, drankWater));
-      // setWater(todayProgress.goal);
-      // if (drankWater > todayProgress.goal) {
-      //   setPercentage(100);
-      // } else {
-      // }
     }
   }, [todayProgress]);
-  // React.useEffect(() => {
-  //   // firebaseDatabase.ref('targets/001/').on('value', snapshot => {
-  //   //   const data = snapshot.val();
-  //   //   const prods = Object.values(data);
-  //   //   setTarget(prods[0]);
-  //   // });
-  //   // firebaseDatabase.ref('containers/001/').on('value', snapshot => {
-  //   //   const data = snapshot.val();
-  //   //   const prods = Object.values(data);
-  //   //   setWaterBottle(prods[0]);
-  //   //   setWaterCup(prods[1]);
-  //   // });
-  //   // firebaseDatabase.ref('users/001/' + today() + '/').on('value', snapshot => {
-  //   //   const data = snapshot.val();
-  //   //   if (data) {
-  //   //     const prods = Object.values(data);
-  //   //     setWater(prods[2]);
-  //   //     setPercentage(prods[1]);
-  //   //     if (prods[2] < 100) {
-  //   //       setTargetReach(false);
-  //   //     }
-  //   //   } else {
-  //   //     addWater(0);
-  //   //   }
-  //   // });
-  // }, []);
-
-  React.useEffect(() => {
+  useEffect(() => {
     console.log('target state change ' + targetReach);
     if (targetReach === true) {
       onToggleTargetSnackBar();
@@ -120,7 +73,6 @@ export default function WaterTracking() {
 
   return (
     <View style={styles.container}>
-      <Title>Today</Title>
       <Chip
         mode="outlined"
         icon="information"
@@ -173,19 +125,6 @@ export default function WaterTracking() {
           </View>
         </View>
       </View>
-      {/* <Snackbar
-        visible={visible}
-        duration={2500}
-        onDismiss={onDismissSnackBar}
-        theme={{colors: {surface: '#FFFFFF'}}}
-        action={{
-          label: 'Reset',
-          onPress: () => resetWater(),
-        }}>
-        <Text style={{color: 'white'}}>
-          Your daily water intake level is now {percentage}%!
-        </Text>
-      </Snackbar> */}
       <Snackbar
         visible={targetSnackVisible}
         duration={2500}
@@ -203,7 +142,7 @@ export default function WaterTracking() {
         <ChangeTargetDialog
           isDialogVisible={isTargetDialogVisible}
           setIsDialogVisible={setIsTargetDialogVisible}
-          setTarget={defineTarget}
+          onClick={defineTarget}
         />
         <CustomWaterDialog
           isDialogVisible={isCustomDialogVisible}

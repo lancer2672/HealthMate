@@ -1,36 +1,97 @@
-import React from 'react';
-import { Provider, Portal, Dialog, Button, TextInput } from "react-native-paper";
+import React, {useEffect, useState} from 'react';
+import {
+  View,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  Text,
+} from 'react-native';
+import Modal from 'react-native-modal';
+import {useTheme} from 'styled-components';
+const ChangeTargetDialog = ({isVisible, onClose, onClick}) => {
+  const [inputVal, setInputVal] = React.useState('');
+  const theme = useTheme();
+  return (
+    <Modal
+      isVisible={isVisible}
+      animationIn="fadeIn"
+      useNativeDriver={true}
+      animationOut="fadeOut"
+      onBackButtonPress={onClose}
+      onBackdropPress={onClose}
+      style={styles.modal}>
+      <View style={styles.container}>
+        {/* Bất kỳ nội dung của menu nào bạn muốn đặt ở đây */}
+        <Text style={styles.setting}>Water Target</Text>
 
-export default function ChangeTargetDialog(props) {
+        <View style={{flexDirection: 'row'}}>
+          <TextInput
+            placeholder="0 ml"
+            value={inputVal}
+            style={styles.input}
+            onChangeText={setInputVal}></TextInput>
+        </View>
 
-    const [inputVal, setInputVal] = React.useState(NaN);
+        <TouchableOpacity
+          onPress={async () => {
+            onClose();
+            if (!isNaN(inputVal) && inputVal > 0) {
+              await onClick(parseInt(inputVal));
+            }
+            setInputVal('');
+          }}
+          style={{}}>
+          <Text style={styles.category(theme)}>Done</Text>
+        </TouchableOpacity>
+      </View>
+    </Modal>
+  );
+};
 
-    return (
-        <Provider>
-            <Portal>
-                <Dialog
-                    visible={props.isDialogVisible}
-                    onDismiss={() => props.setIsDialogVisible(false)}>
-                    <Dialog.Title>Water target</Dialog.Title>
-                    <Dialog.Content>
-                        <TextInput
-                            label="Set water target"
-                            placeholder="in millilitres"
-                            underlineColor="#2176FF"
-                            theme={{colors: {primary: '#2176FF'}}}
-                            onChangeText={text => setInputVal(text)}
-                        />
-                    </Dialog.Content>
-                    <Dialog.Actions>
-                        <Button
-                            theme={{colors: {primary: '#2176FF'}}}
-                            onPress={() => {
-                                props.setIsDialogVisible(false);
-                                if (!isNaN(inputVal)) props.setTarget(parseInt(inputVal));
-                            }}>Done</Button>
-                    </Dialog.Actions>
-                </Dialog>
-            </Portal>
-        </Provider>
-    );
-}
+const styles = StyleSheet.create({
+  modal: {
+    margin: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  input: {
+    fontWeight: 'bold',
+    width: '100%',
+    fontSize: 16,
+  },
+  container: {
+    backgroundColor: 'white',
+    width: '80%',
+    padding: 20,
+    borderRadius: 24,
+  },
+  setting: {
+    fontSize: 32,
+    fontWeight: 'bold',
+  },
+  category: theme => ({
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'right',
+    color: theme.waterTracking.primary,
+  }),
+
+  //setting item
+  settingItemWrapper: {
+    flexDirection: 'row',
+    marginTop: 12,
+    justifyContent: 'space-between',
+  },
+  settingName: {
+    fontSize: 16,
+  },
+  settingValue: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  btn: {
+    padding: 4,
+  },
+});
+
+export default ChangeTargetDialog;
