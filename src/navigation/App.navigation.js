@@ -17,8 +17,6 @@ import {
   onCreateTriggerNotification,
   onDisplayNotification,
 } from '../services/notifee/notification';
-import WaveAnimation from '../features/tracking-water-prog/screens/Wave.screen';
-
 const Stack = createNativeStackNavigator();
 
 export const AppNavigator = () => {
@@ -82,8 +80,8 @@ export const AppNavigator = () => {
   return (
     <Stack.Navigator
       screenOptions={{headerShown: false}}
-      initialRouteName="AppTabs">
-      <Stack.Screen name="AppTabs" component={WaveAnimation} />
+      initialRouteName="WaterTracking">
+      <Stack.Screen name="AppTabs" component={WaterTracking} />
       <Stack.Screen name="WaterTracking" component={WaterTracking} />
       <Stack.Screen name="StepTracking" component={StepTracking} />
       <Stack.Screen

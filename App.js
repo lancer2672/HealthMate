@@ -5,7 +5,7 @@ import Navigator from './src/navigation';
 import store from './src/store';
 import ThemeProviderComponent from './src/features/theme';
 import {DefaultTheme, Provider as PaperProvider} from 'react-native-paper';
-import WaveAnimation from './src/features/tracking-water-prog/screens/Wave.screen';
+import WaveAnimation from './src/features/tracking-water-prog/screens/WaterTracking.screen';
 import WaterTracking from './src/features/tracking-water-prog/screens/WaterTracking.screen';
 
 export default function App() {

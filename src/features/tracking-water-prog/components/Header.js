@@ -2,15 +2,22 @@ import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import moment from 'moment';
 import Entypo from 'react-native-vector-icons/Entypo';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import {useNavigation} from '@react-navigation/native';
+
 import {useSelector} from 'react-redux';
 import {useTheme} from 'styled-components';
 
 const Header = ({openSideMenu}) => {
   const theme = useTheme();
+  const navigation = useNavigation();
   const {todayProgress} = useSelector(state => state.waterTracking);
   const today = moment();
   const formattedDate = today.format('dddd, D MMM YYYY');
+
+  const navigateToHistoryScreen = () => {
+    navigation.navigate('WaterTrackingHistory');
+  }; 
   return (
     <View style={styles.container(theme)}>
       <View>
@@ -20,6 +27,12 @@ const Header = ({openSideMenu}) => {
         </Text>
       </View>
       <View style={{flexDirection: 'row'}}>
+        <TouchableOpacity
+          style={{paddingHorizontal: 4, marginHorizontal: 12}}
+          onPress={navigateToHistoryScreen}>
+          <FontAwesome name="history" size={30} color="white" />
+        </TouchableOpacity>
+
         <TouchableOpacity style={{paddingHorizontal: 4}} onPress={openSideMenu}>
           <Entypo name="menu" size={30} color="white" />
         </TouchableOpacity>
