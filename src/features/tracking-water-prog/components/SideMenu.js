@@ -2,48 +2,48 @@ import React, {useEffect, useState} from 'react';
 import {View, StyleSheet, TouchableOpacity, Switch, Text} from 'react-native';
 import Modal from 'react-native-modal';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import {Title, Button, Chip, Snackbar, Portal} from 'react-native-paper';
 import ChangeTargetDialog from './ChangeTargetDialog';
+import notifee from '@notifee/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useTheme} from 'styled-components';
-import {DEFAULT_GOAL, IS_NOTIFICATION_ALLOWED} from '../../../constants';
+import {
+  DEFAULT_GOAL,
+  IS_REMINDING_NOTIFICATION_ALLOWED,
+} from '../../../constants';
+import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
+import {SettingItem, SettingItemWithButton} from './SettingItem';
+import {onCreateTriggerNotification} from '../../../services/notifee/notification';
 
-const SettingItem = ({name, unit = '', value = '', onClick = null}) => {
-  const theme = useTheme();
-  return (
-    <View style={styles.settingItemWrapper}>
-      <Text style={styles.settingName}>{name}</Text>
-      <TouchableOpacity style={styles.btn} onPress={onClick}>
-        <Text style={styles.settingValue(theme)}>{`${value} ${unit}`}</Text>
-      </TouchableOpacity>
-    </View>
-  );
+const getIntervalDate = () => {
+  const intervalDate = new Date();
+  intervalDate.setHours(0);
+  intervalDate.setMinutes(15);
+  intervalDate.setSeconds(0);
+  return intervalDate;
 };
-const SettingItemWithButton = ({name, onClick, defaultSwitchValue = false}) => {
-  const [isEnabled, setIsEnabled] = useState(defaultSwitchValue);
-  const theme = useTheme();
-  return (
-    <View style={styles.settingItemWrapper}>
-      <Text style={styles.settingName}>{name}</Text>
-      <Switch
-        trackColor={{false: '#767577', true: '#81b0ff'}}
-        thumbColor={isEnabled ? theme.waterTracking.primary : '#f4f3f4'}
-        ios_backgroundColor="#3e3e3e"
-        onValueChange={value => {
-          setIsEnabled(value);
-          onClick(value);
-        }}
-        value={isEnabled}
-      />
-    </View>
-  );
-};
+
 const SideMenu = ({isVisible, onClose}) => {
   const [isTargetDialogVisible, setIsTargetDialogVisible] = useState(false);
   const [isNotificationAllowed, setIsNotificationAllowed] = useState(false);
   const [dailyValue, setDailyValue] = useState(0);
-  const [timerValue, setTimerValue] = useState(15);
+  const [intervalTime, setIntervalTime] = useState(getIntervalDate());
+  const [startTime, setStartTime] = useState(new Date());
+  const [notificationId, setNotificationId] = useState(null);
 
+  const onSelectedChange = (event, selectedDate, setTime) => {
+    const currentDate = selectedDate;
+    setTime(currentDate);
+  };
+  const showTimePicker = setTime => {
+    DateTimePickerAndroid.open({
+      value: startTime,
+      onChange: (e, s) => {
+        onSelectedChange(e, s, setTime);
+      },
+      mode: 'time',
+      is24Hour: true,
+    });
+  };
   const generalSettings = [
     {
       name: 'Goal of the day',
@@ -61,9 +61,14 @@ const SideMenu = ({isVisible, onClose}) => {
       defaultSwitchValue: isNotificationAllowed,
       onClick: async isAllowed => {
         if (isAllowed) {
-          await AsyncStorage.setItem(IS_NOTIFICATION_ALLOWED, 'allow');
+          await AsyncStorage.setItem(
+            IS_REMINDING_NOTIFICATION_ALLOWED,
+            'allow',
+          );
+          setTrigger();
         } else {
-          await AsyncStorage.removeItem(IS_NOTIFICATION_ALLOWED);
+          await AsyncStorage.removeItem(IS_REMINDING_NOTIFICATION_ALLOWED);
+          await notifee.cancelTriggerNotifications([notificationId]);
         }
       },
     },
@@ -71,17 +76,19 @@ const SideMenu = ({isVisible, onClose}) => {
   const notificationSettings2 = [
     {
       name: 'Start time',
-      value: timerValue,
+      value: `${startTime.getHours()}h : ${startTime.getMinutes()}m`,
       onClick: () => {
-        setIsTargetDialogVisible(true);
+        showTimePicker(setStartTime);
+        setTrigger();
       },
-      unit: 'hour',
+      // unit: 'hour',
     },
     {
       name: 'Repeat interval',
-      value: timerValue,
+      value: `${intervalTime.getHours()}h : ${intervalTime.getMinutes()}m`,
       onClick: () => {
-        setIsTargetDialogVisible(true);
+        showTimePicker(setIntervalTime);
+        setTrigger();
       },
     },
   ];
@@ -89,7 +96,7 @@ const SideMenu = ({isVisible, onClose}) => {
     (async () => {
       const values = await AsyncStorage.multiGet([
         DEFAULT_GOAL,
-        IS_NOTIFICATION_ALLOWED,
+        IS_REMINDING_NOTIFICATION_ALLOWED,
       ]);
 
       if (values[0][1] != null) {
@@ -98,9 +105,23 @@ const SideMenu = ({isVisible, onClose}) => {
       if (values[1][1] != null) {
         setIsNotificationAllowed(true);
       }
+      await setTrigger();
     })();
   }, []);
 
+  const setTrigger = async () => {
+    const isAllowed = await AsyncStorage.getItem(
+      IS_REMINDING_NOTIFICATION_ALLOWED,
+    );
+    if (isAllowed) {
+      const notifyId = await onCreateTriggerNotification({
+        message: 'Reminder to drink water',
+        minutes: intervalTime.getHours() * 60 + intervalTime.getMinutes(),
+        startTime: startTime,
+      });
+      setNotificationId(notifyId);
+    }
+  };
   const setDailyTarget = async value => {
     await AsyncStorage.setItem(DEFAULT_GOAL, JSON.stringify(value));
     setDailyValue(() => value);
