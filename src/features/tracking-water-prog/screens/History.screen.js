@@ -1,29 +1,35 @@
 import React, {useState, useEffect} from 'react';
-import {Dimensions, StyleSheet, View} from 'react-native';
-import {Title} from 'react-native-paper';
-import {CalendarList} from 'react-native-calendars';
-import {today} from '../utils';
-import DateData from '../components/DateData';
-import firestore from '@react-native-firebase/firestore';
-
+import {
+  Dimensions,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+} from 'react-native';
+import HistoryChart from '../components/HistoryChart';
+import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import {useSelector} from 'react-redux';
 import {
   getDrinkProgressByDate,
   getDrinkProgressByMonth,
 } from '../../../services/firebase/firestore/drinkProgress';
+import MonthYearPicker from '../../../components/MonthYearPicker';
+import {useTheme} from 'styled-components';
 export default function WaterTrackingHistory() {
-  const [marked, setMarked] = useState({});
+  const theme = useTheme();
   const {user} = useSelector(state => state.user);
-  const {todayProgress} = useSelector(state => state.waterTracking);
-  const [waterObject, setWaterObject] = useState({});
   const [selected, setSelected] = useState(null);
-  const [historyList, setHistoryList] = useState();
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [chartData, setChartData] = useState([]);
   const [streaks, setStreaks] = useState(0);
-  // Currently breaks the app
+  const [mediumMonthAmount, setMediumMonthAmout] = useState(0);
+  const [isLoading, setIsLoading] = useState(0);
+
   const streakCount = listHistory => {
-    let day = new Date().getDate() - 1; // Ngày trong tháng (từ 1 đến 31)
-    let month = new Date().getMonth(); // Tháng trong năm (từ 0 đến 11, nên cần cộng thêm 1)
-    let year = new Date().getFullYear(); // Năm
+    let day = new Date().getDate() - 1;
+    let month = new Date().getMonth();
+    let year = new Date().getFullYear();
 
     // /1000 to convert mil -> second unit
     let timestamp = new Date(year, month, day).getTime() / 1000;
@@ -48,86 +54,118 @@ export default function WaterTrackingHistory() {
     return totalAmount >= goal;
   };
   useEffect(() => {
-    const currentYear = new Date().getFullYear();
-    const currentMonth = new Date().getMonth() + 1;
+    setIsLoading(true);
     getDrinkProgressByMonth({
       userId: user.uid,
-      year: currentYear,
-      month: currentMonth,
+      year: selectedYear,
+      month: selectedMonth + 1,
     })
       .then(data => {
-        console.log('data', data);
+        console.log('data drink progress', data);
+        let totalMonthAmount = 0;
         const mappedData = data.map(history => {
-          const totalValue = history.sessions.reduce((ac, session, i) => {
-            return ac + session.amount;
-          }, 0);
-
+          totalMonthAmount += history.totalAmount;
           const date = history.date.toDate();
           return {
-            [`${date.getDate()}/${date.getMonth() + 1}`]: totalValue,
+            [`${date.getDate()}/${date.getMonth() + 1}`]: history.totalAmount,
             goal: history.goal,
           };
         });
         streakCount(data);
-        console.log('mappedData', mappedData);
-        setHistoryList(mappedData);
+
+        setMediumMonthAmout(
+          data.length === 0 ? 0 : Math.floor(totalMonthAmount / data.length),
+        );
+
+        setChartData(mappedData);
       })
-      .catch(er => console.log(er));
-  }, []);
+      .catch(er => console.log(er))
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [selectedMonth, selectedYear]);
+  console.log('ChrTDaat', chartData);
   return (
-    <View style={styles.container}>
-      <Title>Water intake history</Title>
-      <View style={styles.calendar}>
-        <CalendarList
-          theme={{
-            calendarBackground: '#131A26',
-            textSectionTitleColor: '#ffffff',
-            selectedDayTextColor: '#ffffff',
-            selectedDayBackgroundColor: '#2176FF',
-            dayTextColor: '#ffffff',
-            monthTextColor: '#ffffff',
-            textMonthFontWeight: 'bold',
-          }}
-          firstDay={1}
-          horizontal={true}
-          pagingEnabled={true}
-          onDayPress={day => {
-            console.log('day, water object', day, waterObject);
-            if (!waterObject.hasOwnProperty(day['dateString'])) {
-              setSelected(null);
-            } else {
-              setSelected(day['dateString']);
-            }
-          }}
-          markedDates={{
-            ...marked,
-            [today()]: {selected: true, selectedColor: '#81c5fe'},
-          }}
-        />
+    <View style={styles.container(theme)}>
+      <View>
+        <TouchableOpacity onPress={null}></TouchableOpacity>
+        <Text style={styles.heading}>Your Progress</Text>
+        <MonthYearPicker
+          selectedMonth={selectedMonth}
+          selectedYear={selectedYear}
+          setSelectedYear={setSelectedYear}
+          setSelectedMonth={setSelectedMonth}></MonthYearPicker>
       </View>
       <View style={styles.content}>
-        <DateData date={selected} chartData={historyList} />
+        <View style={styles.subContent}>
+          <FontAwesome6
+            name="droplet"
+            size={40}
+            color={theme.waterTracking.primary}></FontAwesome6>
+          <Text style={styles.label}>Daily intake</Text>
+          <Text style={styles.text}>{mediumMonthAmount} ml</Text>
+        </View>
+        <View style={styles.subContent}>
+          <FontAwesome6
+            name="fire-flame-curved"
+            size={40}
+            color={'tomato'}></FontAwesome6>
+          <Text style={styles.label}>Current streak</Text>
+          <Text style={styles.text}>{streaks} day</Text>
+        </View>
       </View>
+      {chartData.length === 0 ? (
+        <View
+          style={{
+            flex: 1,
+            width: '100%',
+          }}></View>
+      ) : (
+        <HistoryChart isLoading={isLoading} chartData={chartData} />
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  container: theme => ({
     flex: 1,
-    flexDirection: 'column',
-    marginTop: 20,
     alignItems: 'center',
-  },
-  calendar: {
+    backgroundColor: theme.waterTracking.background,
+    justifyContent: 'space-between',
+  }),
+  subContent: {
     flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'space-evenly',
+    backgroundColor: 'white',
+    margin: 12,
+    borderRadius: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 2,
+  },
+  calendar: {},
+  heading: {
+    fontSize: 40,
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  text: {
+    fontSize: 28,
+    fontWeight: 'bold',
+  },
+  label: {
+    fontSize: 20,
+    fontWeight: 'bold',
   },
   content: {
     flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'space-evenly',
+    marginHorizontal: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   buttons: {
     flex: 0,

@@ -1,18 +1,18 @@
-import React from 'react';
+import React, {memo} from 'react';
 import {Dimensions, StyleSheet, View} from 'react-native';
 import {Text, Surface} from 'react-native-paper';
 import {LineChart} from 'react-native-chart-kit';
 import {splitObj, today} from '../utils';
 import {useTheme} from 'styled-components';
 
-const screenWidth = Dimensions.get('window').width;
+const SCREEN_WIDTH = Dimensions.get('window').width;
 function getCurrentDate() {
   const date = new Date();
   return `${date.getDate()}/${date.getMonth() + 1}`;
 }
-export default function HistoryChart(props) {
+function HistoryChart(props) {
   const theme = useTheme();
-  console.log('HistoryChart', props);
+
   // Prop for selected day's data
   const [data, setData] = React.useState(null);
   // Prop for line chart's data
@@ -32,8 +32,8 @@ export default function HistoryChart(props) {
 
   const chartConfig = {
     backgroundColor: 'red',
-    backgroundGradientFrom: 'gray',
-    backgroundGradientTo: 'gray',
+    backgroundGradientFrom: theme.waterTracking.background,
+    backgroundGradientTo: theme.waterTracking.background,
     fillShadowGradient: '#2176FF',
     fillShadowGradientOpacity: '1',
     color: (opacity = 1) => `rgba(33, 118, 255, ${opacity})`, // optional
@@ -52,10 +52,10 @@ export default function HistoryChart(props) {
   return (
     <LineChart
       data={chartData}
-      width={screenWidth}
+      width={SCREEN_WIDTH}
       height={300}
+      style={{flex: 1}}
       chartConfig={chartConfig}
-      style={{}}
     />
   );
 }
@@ -64,13 +64,15 @@ const styles = StyleSheet.create({
   surface: {
     flex: 1,
     padding: 10,
-    width: screenWidth,
+    width: SCREEN_WIDTH,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     elevation: 1,
   },
   graph: {
     flex: 1,
-    width: screenWidth,
+    width: SCREEN_WIDTH,
   },
 });
+
+export default HistoryChart;
