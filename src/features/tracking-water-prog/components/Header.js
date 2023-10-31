@@ -17,7 +17,7 @@ const Header = ({openSideMenu}) => {
 
   const navigateToHistoryScreen = () => {
     navigation.navigate('WaterTrackingHistory');
-  }; 
+  };
   return (
     <View style={styles.container(theme)}>
       <View>
@@ -46,7 +46,7 @@ export default Header;
 const styles = StyleSheet.create({
   container: theme => ({
     height: 70,
-    backgroundColor: theme.waterTracking.background,
+    backgroundColor: theme.background,
     flexDirection: 'row',
     padding: 12,
     alignItems: 'center',

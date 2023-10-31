@@ -27,20 +27,15 @@ import Animated, {
 import Svg, {Circle, Path} from 'react-native-svg';
 
 import {Title, Text, Button, Chip, Snackbar, Portal} from 'react-native-paper';
-import {AnimatedCircularProgress} from 'react-native-circular-progress';
 import valuesToPercentage, {today} from '../utils';
-import {firebaseDatabase} from '../../../services/firebase';
-import CustomWaterDialog from '../components/CustomWaterDialog';
 import {
   addSession,
   getDateProgress,
   setDrinkGoal,
 } from '../../../store/reducer/thunks/waterTrackingActions';
 import {useDispatch, useSelector} from 'react-redux';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import ChangeTargetDialog from '../components/ChangeTargetDialog';
 import {useTheme} from 'styled-components';
-import AddAmountDialog from '../components/AddAmountDialog';
+import Dialog from '../../../components/Dialog';
 
 const dimension = Dimensions.get('window');
 
@@ -65,17 +60,21 @@ export default function WaterTracking() {
   const onDismissTargetSnackBar = () => setTargetSnackVisible(false);
 
   const defineTarget = userTarget => {
-    dispatch(
-      setDrinkGoal({drinkProgressId: todayProgress.id, goal: userTarget}),
-    );
-    waterContainerHeight.value = withTiming(0, {
-      duration: 2000,
-    });
+    if (amount > 0) {
+      dispatch(
+        setDrinkGoal({drinkProgressId: todayProgress.id, goal: userTarget}),
+      );
+      waterContainerHeight.value = withTiming(0, {
+        duration: 2000,
+      });
+    }
   };
 
   const addWater = amount => {
     // if (amount) {
-    dispatch(addSession({drinkProgressId: todayProgress.id, amount}));
+    if (amount > 0) {
+      dispatch(addSession({drinkProgressId: todayProgress.id, amount}));
+    }
   };
 
   // Animation
@@ -176,12 +175,12 @@ export default function WaterTracking() {
           setMenuVisible(true);
         }}></Header>
       <Svg
-        style={{backgroundColor: theme.waterTracking.background}}
+        style={{backgroundColor: theme.background}}
         width={SCREEN_WIDTH}
         height={'100%'}
         viewBox={`0 0 ${SCREEN_WIDTH} ${SCREEN_HEIGHT}`}>
         <AnimatedPath
-          fill={theme.waterTracking.secondary}
+          fill={theme.accent}
           animatedProps={animatedProps}></AnimatedPath>
       </Svg>
       <View
@@ -251,14 +250,18 @@ export default function WaterTracking() {
           Congrats, you reached your water intake goal!
         </Snackbar>
       </View>
-      <ChangeTargetDialog
+      <Dialog
         onClick={defineTarget}
+        title={'Set target'}
+        buttonContent={'Done'}
         onClose={() => setIsTargetDialogVisible(false)}
-        isVisible={isTargetDialogVisible}></ChangeTargetDialog>
-      <AddAmountDialog
+        isVisible={isTargetDialogVisible}></Dialog>
+      <Dialog
         onClick={addWater}
+        title={'Add water'}
+        buttonContent={'Add'}
         onClose={() => setIsCustomDialogVisible(false)}
-        isVisible={isCustomDialogVisible}></AddAmountDialog>
+        isVisible={isCustomDialogVisible}></Dialog>
       <SideMenu
         isVisible={menuVisible}
         onClose={() => setMenuVisible(false)}></SideMenu>
@@ -269,7 +272,7 @@ export default function WaterTracking() {
 const styles = StyleSheet.create({
   container: theme => ({
     flex: 1,
-    backgroundColor: theme.waterTracking.background,
+    backgroundColor: theme.background,
   }),
   canvas: {
     flex: 1,
@@ -279,7 +282,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     marginVertical: 12,
     borderColor: theme.background,
-    backgroundColor: theme.waterTracking.background,
+    backgroundColor: theme.background,
   }),
   addContainer: {
     flexGrow: 0.45,

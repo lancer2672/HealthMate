@@ -21,7 +21,7 @@ const SettingItemWithButton = ({name, onClick, defaultSwitchValue = false}) => {
       <Text style={styles.settingName}>{name}</Text>
       <Switch
         trackColor={{false: '#767577', true: '#81b0ff'}}
-        thumbColor={isEnabled ? theme.waterTracking.primary : '#f4f3f4'}
+        thumbColor={isEnabled ? theme.primary : '#f4f3f4'}
         ios_backgroundColor="#3e3e3e"
         onValueChange={value => {
           setIsEnabled(value);
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
   settingValue: theme => ({
     fontSize: 16,
     fontWeight: 'bold',
-    color: theme.waterTracking.secondary,
+    color: theme.accent,
   }),
   btn: {
     padding: 4,

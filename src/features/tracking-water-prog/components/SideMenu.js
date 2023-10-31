@@ -2,17 +2,18 @@ import React, {useEffect, useState} from 'react';
 import {View, StyleSheet, TouchableOpacity, Switch, Text} from 'react-native';
 import Modal from 'react-native-modal';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import ChangeTargetDialog from './ChangeTargetDialog';
 import notifee from '@notifee/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useTheme} from 'styled-components';
+
 import {
-  DEFAULT_GOAL,
+  DEFAULT_WATER_AMOUNT,
   IS_REMINDING_NOTIFICATION_ALLOWED,
 } from '../../../constants';
 import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
 import {SettingItem, SettingItemWithButton} from './SettingItem';
 import {onCreateTriggerNotification} from '../../../services/notifee/notification';
+import Dialog from '../../../components/Dialog';
 
 const getIntervalDate = () => {
   const intervalDate = new Date();
@@ -95,7 +96,7 @@ const SideMenu = ({isVisible, onClose}) => {
   useEffect(() => {
     (async () => {
       const values = await AsyncStorage.multiGet([
-        DEFAULT_GOAL,
+        DEFAULT_WATER_AMOUNT,
         IS_REMINDING_NOTIFICATION_ALLOWED,
       ]);
 
@@ -123,7 +124,7 @@ const SideMenu = ({isVisible, onClose}) => {
     }
   };
   const setDailyTarget = async value => {
-    await AsyncStorage.setItem(DEFAULT_GOAL, JSON.stringify(value));
+    await AsyncStorage.setItem(DEFAULT_WATER_AMOUNT, JSON.stringify(value));
     setDailyValue(() => value);
   };
   return (
@@ -164,13 +165,12 @@ const SideMenu = ({isVisible, onClose}) => {
               {...item}></SettingItemWithButton>
           );
         })}
-
-        <ChangeTargetDialog
+        <Dialog
+          title={'Change Target'}
+          buttonContent={'Set'}
           onClick={setDailyTarget}
           isVisible={isTargetDialogVisible}
-          onClose={() =>
-            setIsTargetDialogVisible(() => false)
-          }></ChangeTargetDialog>
+          onClose={() => setIsTargetDialogVisible(() => false)}></Dialog>
       </View>
     </Modal>
   );
@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
   settingValue: theme => ({
     fontSize: 16,
     fontWeight: 'bold',
-    color: theme.waterTracking.secondary,
+    color: theme.accent,
   }),
   btn: {
     padding: 4,

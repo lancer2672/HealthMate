@@ -1,5 +1,5 @@
 import React, {memo} from 'react';
-import {Dimensions, StyleSheet, View} from 'react-native';
+import {Dimensions, ScrollView, StyleSheet, View} from 'react-native';
 import {Text, Surface} from 'react-native-paper';
 import {LineChart} from 'react-native-chart-kit';
 import {splitObj, today} from '../utils';
@@ -32,8 +32,8 @@ function HistoryChart(props) {
 
   const chartConfig = {
     backgroundColor: 'red',
-    backgroundGradientFrom: theme.waterTracking.background,
-    backgroundGradientTo: theme.waterTracking.background,
+    backgroundGradientFrom: theme.background,
+    backgroundGradientTo: theme.background,
     fillShadowGradient: '#2176FF',
     fillShadowGradientOpacity: '1',
     color: (opacity = 1) => `rgba(33, 118, 255, ${opacity})`, // optional
@@ -50,13 +50,15 @@ function HistoryChart(props) {
   };
 
   return (
-    <LineChart
-      data={chartData}
-      width={SCREEN_WIDTH}
-      height={300}
-      style={{flex: 1}}
-      chartConfig={chartConfig}
-    />
+    <ScrollView horizontal contentOffset={{x: 10000, y: 0}}>
+      <LineChart
+        data={chartData}
+        width={700}
+        height={300}
+        style={{flex: 1}}
+        chartConfig={chartConfig}
+      />
+    </ScrollView>
   );
 }
 

@@ -101,7 +101,7 @@ export default function WaterTrackingHistory() {
           <FontAwesome6
             name="droplet"
             size={40}
-            color={theme.waterTracking.primary}></FontAwesome6>
+            color={theme.primary}></FontAwesome6>
           <Text style={styles.label}>Daily intake</Text>
           <Text style={styles.text}>{mediumMonthAmount} ml</Text>
         </View>
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
   container: theme => ({
     flex: 1,
     alignItems: 'center',
-    backgroundColor: theme.waterTracking.background,
+    backgroundColor: theme.background,
     justifyContent: 'space-between',
   }),
   subContent: {

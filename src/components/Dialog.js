@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import Modal from 'react-native-modal';
 import {useTheme} from 'styled-components';
-const ChangeTargetDialog = ({isVisible, onClose, onClick}) => {
+const Dialog = ({isVisible, title, buttonContent, onClose, onClick}) => {
   const [inputVal, setInputVal] = React.useState('');
   const theme = useTheme();
   return (
@@ -21,12 +21,10 @@ const ChangeTargetDialog = ({isVisible, onClose, onClick}) => {
       onBackdropPress={onClose}
       style={styles.modal}>
       <View style={styles.container}>
-        {/* Bất kỳ nội dung của menu nào bạn muốn đặt ở đây */}
-        <Text style={styles.setting}>Water Target</Text>
-
+        <Text style={styles.setting}>{title}</Text>
         <View style={{flexDirection: 'row'}}>
           <TextInput
-            placeholder="0 ml"
+            placeholder="0"
             value={inputVal}
             style={styles.input}
             onChangeText={setInputVal}></TextInput>
@@ -35,13 +33,13 @@ const ChangeTargetDialog = ({isVisible, onClose, onClick}) => {
         <TouchableOpacity
           onPress={async () => {
             onClose();
-            if (!isNaN(inputVal) && inputVal > 0) {
+            if (!isNaN(inputVal)) {
               await onClick(parseInt(inputVal));
             }
             setInputVal('');
           }}
           style={{}}>
-          <Text style={styles.category(theme)}>Done</Text>
+          <Text style={styles.category(theme)}>{buttonContent}</Text>
         </TouchableOpacity>
       </View>
     </Modal>
@@ -63,7 +61,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     width: '80%',
     padding: 20,
-    borderRadius: 24,
+    borderRadius: 4,
   },
   setting: {
     fontSize: 32,
@@ -73,7 +71,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'right',
-    color: theme.waterTracking.primary,
+    color: theme.primary,
   }),
 
   //setting item
@@ -94,4 +92,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ChangeTargetDialog;
+export default Dialog;

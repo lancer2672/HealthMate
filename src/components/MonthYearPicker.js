@@ -130,7 +130,6 @@ const MonthYearPicker = ({
           value={date}
           minimumDate={new Date()}
           maximumDate={new Date(2025, 5)}
-          locale="ko"
         />
       )}
       <TouchableOpacity style={{width: 30}} onPress={onRightClick}>
