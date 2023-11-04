@@ -1,7 +1,7 @@
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import {createAsyncThunk} from '@reduxjs/toolkit';
-const usersRef = firestore().collection('user');
+const usersRef = firestore().collection('waterTracking');
 
 import {
   addNewDrinkProgress,
@@ -11,7 +11,7 @@ import {
 } from '../../../services/firebase/firestore/drinkProgress';
 
 export const addDrinkProgress = createAsyncThunk(
-  'user/addDrinkProgress',
+  'waterTracking/addDrinkProgress',
   async (data, thunkAPI) => {
     try {
       return await addNewDrinkProgress(data);
@@ -23,7 +23,7 @@ export const addDrinkProgress = createAsyncThunk(
 );
 
 export const addSession = createAsyncThunk(
-  'user/addSession',
+  'waterTracking/addSession',
   async (data, thunkAPI) => {
     try {
       return await addNewSession(data);
@@ -35,7 +35,7 @@ export const addSession = createAsyncThunk(
 );
 
 export const getDateProgress = createAsyncThunk(
-  'user/getDateProgress',
+  'waterTracking/getDateProgress',
   async (data, thunkAPI) => {
     try {
       return await getDrinkProgressByDate(data);
@@ -47,7 +47,7 @@ export const getDateProgress = createAsyncThunk(
 );
 
 export const setDrinkGoal = createAsyncThunk(
-  'user/setDrinkGoal',
+  'waterTracking/setDrinkGoal',
   async (data, thunkAPI) => {
     try {
       return await setGoal(data);
