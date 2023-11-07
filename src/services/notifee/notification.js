@@ -8,6 +8,20 @@ import notifee, {
   RepeatFrequency,
 } from '@notifee/react-native';
 
+export async function checkForInitialNotification() {
+  const initialNotification = await notifee.getInitialNotification();
+  if (initialNotification) {
+    console.log(
+      'Notification caused application to open',
+      initialNotification.notification,
+    );
+    console.log(
+      'Press action used to open the app',
+      initialNotification.pressAction,
+    );
+  }
+}
+
 export async function createNotifeeChannel() {
   return await notifee.createChannel({
     id: 'alarm',

@@ -16,27 +16,50 @@ import {LineChart} from 'react-native-chart-kit';
 import Dialog from 'src/components/Dialog';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {DEFAULT_STEP} from 'src/constants';
+import {DEFAULT_STEP_GOAL} from 'src/constants';
 import {useDispatch, useSelector} from 'react-redux';
 import {activitySelector, userSelector} from 'src/store/selectors';
-import {setStepTargetAction} from 'src/store/reducer/thunks/activityActions';
+import {updateUserActivityAction} from 'src/store/reducer/thunks/activityActions';
 import {useAppDispatch, useAppSelector} from 'src/store/hooks';
 import {getStepsByMonth} from 'src/services/firebase/database/activity';
 import StepChart from '../components/StepChart.component';
+import Header from '../components/Header.component';
+import moment from 'moment';
+import enableTrackingUserActivities, {
+  getPeriodCalories,
+  getPeriodDistance,
+  getPeriodMoveMins,
+  getPeriodSteps
+} from 'src/config/trackingActivities';
+import {getEndDayISO, getStartDayISO} from 'src/utils/dateTimeHelper';
+import DatePicker from 'react-native-date-picker';
 
 const StepCounter = () => {
   const theme = useTheme();
   const dispatch = useAppDispatch();
-  const {dailySteps, stepTarget} = useSelector(activitySelector);
+  const {todaySteps, todayCalories, todayDistance, stepTarget} =
+    useSelector(activitySelector);
   const {user} = useAppSelector(userSelector);
   const [monthSteps, setMonthSteps] = useState(new Date().getMonth());
-  console.log('dailySteps', dailySteps);
+  console.log('todayCalories', todayCalories);
   const [isModalVisible, setModalVisible] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [distance, setDistance] = useState(0);
+  const [steps, setSteps] = useState(0);
+  const [calories, setCalories] = useState(0);
+  const [moveMinutes, setMoveMinutes] = useState(0);
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const setTarget = async (target: number) => {
     if (target >= 0) {
-      dispatch(setStepTargetAction({userId: user.uid, stepTarget: target}));
-      await AsyncStorage.setItem(DEFAULT_STEP, JSON.stringify(target));
+      dispatch(
+        updateUserActivityAction({
+          userId: user.uid,
+          field: 'stepTarget',
+          value: target
+        })
+      );
+      await AsyncStorage.setItem(DEFAULT_STEP_GOAL, JSON.stringify(target));
     }
   };
 
@@ -45,25 +68,49 @@ const StepCounter = () => {
       await getStepsByMonth({userId: user.uid, month: new Date().getMonth()});
     })();
   }, [monthSteps]);
+  useEffect(() => {
+    (async () => {
+      if (await enableTrackingUserActivities()) {
+        const startTime = getStartDayISO(selectedDate);
+        const endTime = getEndDayISO(selectedDate);
+
+        console.log('selectdDate', todaySteps);
+        if (
+          selectedDate.setHours(0, 0, 0, 0) == new Date().setHours(0, 0, 0, 0)
+        ) {
+          setSteps(todaySteps);
+        } else {
+          const stepRes = await getPeriodSteps(startTime, endTime);
+          setSteps(stepRes || 0);
+        }
+
+        const calorieRes = await getPeriodCalories(startTime, endTime);
+        setCalories(Number(calorieRes || 0).toFixed(2));
+
+        const distanceRes = await getPeriodDistance(startTime, endTime);
+        setDistance(Number(distanceRes || 0).toFixed(2));
+
+        const moveRes = await getPeriodMoveMins(startTime, endTime);
+        setMoveMinutes(moveRes || 0);
+      }
+    })();
+  }, [selectedDate, todaySteps]);
 
   return (
     <View style={[styles.container, {backgroundColor: theme.background}]}>
-      <TouchableOpacity
-        style={{paddingHorizontal: 4, alignSelf: 'flex-end', marginRight: 24}}
-        onPress={() => setModalVisible(true)}>
-        <MaterialCommunityIcons name="shoe-sneaker" size={30} color="white" />
-      </TouchableOpacity>
+      <Header
+        openDatePicker={() => setShowDatePicker(true)}
+        selectedDate={selectedDate}></Header>
       <AnimatedCircularProgress
         size={220}
         width={10}
-        fill={stepTarget === 0 ? 100 : (dailySteps / stepTarget) * 100}
+        fill={stepTarget === 0 ? 100 : (steps / stepTarget) * 100}
         tintColor="#00e0ff"
         backgroundColor="#3d5875">
         {fill => (
           <View style={{alignItems: 'center'}}>
-            <Text style={styles.step}>{dailySteps}</Text>
-
-            <Text style={{color: 'white', fontSize: 16}}>
+            <Text style={styles.step}>{steps}</Text>
+            <Text style={{color: 'white', fontSize: 18}}>
               {stepTarget === 0 ? 'steps' : `of ${stepTarget} steps`}
             </Text>
           </View>
@@ -71,17 +118,27 @@ const StepCounter = () => {
       </AnimatedCircularProgress>
 
       <View style={styles.icons}>
-        <View>
+        <View style={{alignItems: 'center'}}>
           <Ionicons name={'timer-outline'} size={38} color={'white'}></Ionicons>
-          <Text>#time min</Text>
+          <Text style={styles.textIcon}>${moveMinutes} min</Text>
         </View>
-        <SimpleLineIcons
-          name={'energy'}
-          size={38}
-          color={'white'}></SimpleLineIcons>
+        <View style={{alignItems: 'center'}}>
+          <SimpleLineIcons
+            name={'energy'}
+            size={38}
+            color={'white'}></SimpleLineIcons>
+          <Text style={styles.textIcon}>{calories} kcal</Text>
+        </View>
+        <View style={{alignItems: 'center'}}>
+          <Ionicons
+            name={'footsteps-outline'}
+            size={38}
+            color={'white'}></Ionicons>
+          <Text style={styles.textIcon}>{distance} m</Text>
+        </View>
       </View>
-      <View style={{height: 200, backgroundColor: 'tomato'}}>
-        <StepChart></StepChart>
+      <View style={{height: 300, backgroundColor: 'tomato'}}>
+        <StepChart selectedDate={selectedDate}></StepChart>
       </View>
       <Dialog
         onClick={setTarget}
@@ -89,6 +146,21 @@ const StepCounter = () => {
         buttonContent={'Done'}
         onClose={() => setModalVisible(false)}
         isVisible={isModalVisible}></Dialog>
+
+      <DatePicker
+        mode="date"
+        date={selectedDate}
+        modal
+        open={showDatePicker}
+        onCancel={() => {
+          setShowDatePicker(false);
+        }}
+        onConfirm={date => {
+          console.log('Date', date);
+          setSelectedDate(date);
+          setShowDatePicker(false);
+        }}
+      />
     </View>
   );
 };
@@ -109,5 +181,10 @@ const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-evenly'
+  },
+  textIcon: {
+    fontSize: 20,
+    color: 'white',
+    fontWeight: 'bold'
   }
 });

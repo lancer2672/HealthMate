@@ -1,4 +1,4 @@
-import React, {memo, useEffect, useState} from 'react';
+import React, {memo, useEffect, useRef, useState} from 'react';
 import {Dimensions, ScrollView, StyleSheet, View} from 'react-native';
 import {Text, Surface} from 'react-native-paper';
 import {LineChart} from 'react-native-chart-kit';
@@ -15,17 +15,14 @@ type StepData = {
 };
 
 type StepChartProps = {};
-function StepChart() {
+function StepChart({selectedDate}) {
   const theme = useTheme();
   const {user} = useSelector(userSelector);
-
-  const [data, setData] = useState(null);
-  const [monthSteps, setMonthSteps] = useState(new Date().getMonth());
+  const scrollRef = useRef();
   const [chartData, setChartData] = useState({
     labels: ['22/2'],
     datasets: [{data: [129]}]
   });
-
   const getDataChartFromStepMonth = (stepMonthData: StepData[]) => {
     const labels = [];
     const data = [];
@@ -36,29 +33,37 @@ function StepChart() {
       console.log('item', item);
       for (let [key, value] of Object.entries(item)) {
         const label = getDateMonthLabel(key);
-
         labels.push(label);
         data.push(value);
       }
     });
+
     const chartStepData = {
       labels,
       datasets: [{data: data}]
     };
-    console.log('chartStepData', chartStepData);
-    setChartData(chartStepData);
+    setChartData(data.length === 0 ? null : chartStepData);
+  };
+  const onDataPointClick = data => {
+    console.log('onDataPointClick', data);
+    const {x, y} = data;
+    //scroll to the center
+    scrollRef.current.scrollTo({x: x - SCREEN_WIDTH / 2, y: 0, animated: true});
+    // {index: 1, value: 4189, dataset: {data:[4]}, x: 198, y: 16, …}
   };
   useEffect(() => {
     (async () => {
       const stepMonthData = await getStepsByMonth({
         userId: user.uid,
-        month: new Date().getMonth()
+        date: selectedDate
       });
       getDataChartFromStepMonth(stepMonthData);
+      console.log('useEffect', stepMonthData, selectedDate.getMonth());
     })();
-  }, [monthSteps]);
+  }, [selectedDate.getMonth()]);
+
   const chartConfig: any = {
-    backgroundColor: 'red',
+    backgroundColor: theme.background,
     backgroundGradientFrom: theme.background,
     backgroundGradientTo: theme.background,
     fillShadowGradient: '#2176FF',
@@ -79,11 +84,16 @@ function StepChart() {
     <ScrollView
       style={{backgroundColor: 'tomato'}}
       horizontal
+      showsHorizontalScrollIndicator={false}
+      ref={scrollRef}
       contentOffset={{x: 10000, y: 0}}>
-      {chartData && (
+      {chartData == null ? (
+        <View style={{height: 300, width: '100%'}}></View>
+      ) : (
         <LineChart
           data={chartData}
           width={600}
+          onDataPointClick={onDataPointClick}
           height={300}
           style={{flex: 1}}
           chartConfig={chartConfig}

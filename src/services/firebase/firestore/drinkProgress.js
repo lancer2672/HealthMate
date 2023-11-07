@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import firestore from '@react-native-firebase/firestore';
 import {transformDrinkProgressData} from '../../../utils/tranformData';
+import {DEFAULT_WATER_AMOUNT} from '../../../constants';
 const drinkHistoryRef = firestore().collection('drinkProgress');
 
 export async function addNewDrinkProgress({userId, date, goal}) {
@@ -41,8 +42,8 @@ export async function getDrinkProgressByDate({userId, date}) {
       return progress;
     } else {
       const newDrinkProgress = {userId, date, goal: 0, sessions: []};
-      const defaultGoal = await AsyncStorage.getItem('defaultGoal');
-      if (defaultGoal) {
+      const defaultGoal = await AsyncStorage.getItem(DEFAULT_WATER_AMOUNT);
+      if (defaultGoal != null) {
         newDrinkProgress.goal = JSON.parse(defaultGoal);
       }
       const drinkProgressRef = await drinkHistoryRef.add(newDrinkProgress);
