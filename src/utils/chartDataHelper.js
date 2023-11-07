@@ -15,10 +15,9 @@ export function createChartData(chartData) {
 }
 
 export const getDateMonthLabel = timestamp => {
-  //convert from timestamp to millis unit
-  const date = new Date(timestamp);
+  const date = new Date(Number(timestamp));
   const day = date.getDate();
   const month = date.getMonth() + 1;
-  console.log('date', timestamp, date, day, month);
+
   return `${day}/${month}`;
 };

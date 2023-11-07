@@ -9,10 +9,26 @@ export const getCurrentDateTimeStamp = () => {
   return timestamp;
 };
 
-export const getStartOfMonthTimeStamp = month => {
-  const now = new Date();
-  const date = new Date(now.getUTCFullYear(), month, 1);
-  date.setHours(0, 0, 0, 0);
-  const timestamp = date.getTime();
-  return timestamp;
+export const getStartDayISO = date => {
+  const startDate = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    0,
+    0,
+    0
+  );
+  return startDate.toISOString();
+};
+
+export const getEndDayISO = date => {
+  const endDate = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    23,
+    59,
+    59
+  );
+  return endDate.toISOString();
 };
