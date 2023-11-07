@@ -22,7 +22,7 @@ import Animated, {
   withTiming,
   withDelay,
   runOnJS,
-  Easing,
+  Easing
 } from 'react-native-reanimated';
 import Svg, {Circle, Path} from 'react-native-svg';
 
@@ -31,11 +31,11 @@ import valuesToPercentage, {today} from '../utils';
 import {
   addSession,
   getDateProgress,
-  setDrinkGoal,
-} from '../../../store/reducer/thunks/waterTrackingActions';
+  setDrinkGoal
+} from 'src/store/reducer/thunks/waterTrackingActions';
 import {useDispatch, useSelector} from 'react-redux';
 import {useTheme} from 'styled-components';
-import Dialog from '../../../components/Dialog';
+import Dialog from 'src/components/Dialog';
 
 const dimension = Dimensions.get('window');
 
@@ -62,10 +62,10 @@ export default function WaterTracking() {
   const defineTarget = userTarget => {
     if (amount > 0) {
       dispatch(
-        setDrinkGoal({drinkProgressId: todayProgress.id, goal: userTarget}),
+        setDrinkGoal({drinkProgressId: todayProgress.id, goal: userTarget})
       );
       waterContainerHeight.value = withTiming(0, {
-        duration: 2000,
+        duration: 2000
       });
     }
   };
@@ -90,15 +90,15 @@ export default function WaterTracking() {
       }, ${SCREEN_WIDTH} 0`,
 
       `V ${SCREEN_HEIGHT}`,
-      `H 0`,
+      `H 0`
     ].join(' ');
 
     return {
-      d: path,
+      d: path
     };
   });
 
-  const handleWave = () => {
+  const runWaveAnimation = () => {
     if (y.value == 0) {
       //reset y value
       y.value = WAVE_PHASE_HEIGHT;
@@ -116,10 +116,10 @@ export default function WaterTracking() {
           c1y.value = withTiming(
             y.value,
             {duration: y.value * 10},
-            runOnJS(handleWave),
+            runOnJS(runWaveAnimation)
           );
         }
-      },
+      }
     );
     c2y.value = withTiming(
       y.value,
@@ -129,17 +129,17 @@ export default function WaterTracking() {
           c2y.value = withTiming(
             -y.value,
             {duration: y.value * 10},
-            runOnJS(handleWave),
+            runOnJS(runWaveAnimation)
           );
         }
-      },
+      }
     );
   };
 
   useEffect(() => {
-    if (todayProgress.totalAmount != null) {
+    if (todayProgress.totalAmount != null && todayProgress.goal !== 0) {
       setPercentage(
-        valuesToPercentage(todayProgress.goal, todayProgress.totalAmount),
+        valuesToPercentage(todayProgress.goal, todayProgress.totalAmount)
       );
     }
   }, [todayProgress]);
@@ -162,9 +162,9 @@ export default function WaterTracking() {
         : (percentage * SCREEN_HEIGHT) / 100;
     waterContainerHeight.value = withTiming(newHeightValue, {
       duration: 1000,
-      easing: Easing.out(Easing.exp),
+      easing: Easing.out(Easing.exp)
     });
-    handleWave();
+    runWaveAnimation();
   }, [percentage]);
 
   return (
@@ -189,7 +189,7 @@ export default function WaterTracking() {
           position: 'absolute',
           flexDirection: 'column',
           marginTop: 80,
-          alignItems: 'center',
+          alignItems: 'center'
         }}>
         <Chip
           mode="outlined"
@@ -240,12 +240,12 @@ export default function WaterTracking() {
             colors: {
               surface: '#FFFFFF',
               onSurface: '#FDCA40',
-              accent: '#FFFFFF',
-            },
+              accent: '#FFFFFF'
+            }
           }}
           action={{
             label: 'Yay!',
-            onPress: () => onDismissTargetSnackBar(),
+            onPress: () => onDismissTargetSnackBar()
           }}>
           Congrats, you reached your water intake goal!
         </Snackbar>
@@ -272,17 +272,17 @@ export default function WaterTracking() {
 const styles = StyleSheet.create({
   container: theme => ({
     flex: 1,
-    backgroundColor: theme.background,
+    backgroundColor: theme.background
   }),
   canvas: {
-    flex: 1,
+    flex: 1
   },
   button: theme => ({
     borderRadius: 4,
     borderWidth: 2,
     marginVertical: 12,
     borderColor: theme.background,
-    backgroundColor: theme.background,
+    backgroundColor: theme.background
   }),
   addContainer: {
     flexGrow: 0.45,
@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
     width: SCREEN_WIDTH,
     alignContent: 'space-between',
     flexWrap: 'wrap',
-    justifyContent: 'space-evenly',
+    justifyContent: 'space-evenly'
   },
   buttons: {
     flexDirection: 'row',
@@ -299,17 +299,17 @@ const styles = StyleSheet.create({
     marginHorizontal: 28,
 
     flexWrap: 'wrap',
-    justifyContent: 'space-evenly',
+    justifyContent: 'space-evenly'
   },
   percentage: {
     fontSize: 62,
     textAlign: 'center',
-    color: 'white',
+    color: 'white'
   },
   amount: {
     fontSize: 32,
     textAlign: 'center',
-    color: 'white',
+    color: 'white'
   },
   progress: {
     width: 264,
@@ -318,6 +318,6 @@ const styles = StyleSheet.create({
     borderRadius: 300,
     borderWidth: 10,
     borderColor: '#0051d4',
-    overflow: 'hidden',
-  },
+    overflow: 'hidden'
+  }
 });

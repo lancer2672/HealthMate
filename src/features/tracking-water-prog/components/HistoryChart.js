@@ -18,14 +18,14 @@ function HistoryChart(props) {
   // Prop for line chart's data
   const [chartData, setChartData] = React.useState({
     datasets: [{data: [0]}],
-    labels: [getCurrentDate()],
+    labels: [getCurrentDate()]
   });
 
   React.useEffect(() => {
     if (props.chartData) {
       setChartData({
         ...splitObj(props.chartData),
-        legend: ['Water intake', 'Goal'],
+        legend: ['Water intake', 'Goal']
       });
     }
   }, [props.chartData]);
@@ -41,14 +41,14 @@ function HistoryChart(props) {
     propsForDots: {
       r: '5',
       strokeWidth: '3',
-      stroke: '#FFFFFF',
+      stroke: '#FFFFFF'
     },
     propsForBackgroundLines: {
-      strokeWidth: 0,
+      strokeWidth: 0
     },
-    barPercentage: 0.5,
+    barPercentage: 0.5
   };
-
+  console.log('chartData', chartData);
   return (
     <ScrollView horizontal contentOffset={{x: 10000, y: 0}}>
       <LineChart
@@ -69,12 +69,12 @@ const styles = StyleSheet.create({
     width: SCREEN_WIDTH,
     alignItems: 'center',
     justifyContent: 'space-between',
-    elevation: 1,
+    elevation: 1
   },
   graph: {
     flex: 1,
-    width: SCREEN_WIDTH,
-  },
+    width: SCREEN_WIDTH
+  }
 });
 
 export default HistoryChart;

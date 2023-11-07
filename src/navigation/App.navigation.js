@@ -12,52 +12,47 @@ import {
   createNotifeeChannel,
   enableForegroundNotification
 } from '../services/notifee/notification';
-import enableTrackingUserActivities, {
-  enableStepTracking,
-  getTodaySteps
-} from '../config/trackingActivities';
-import {addTodaySteps, setDailySteps} from 'src/store/reducer/activitySlice';
+import enableTrackingUserActivities from '../config/trackingActivities';
 import WaterTracking from 'src/features/tracking-water-prog/screens/WaterTracking.screen';
 import WaterTrackingHistory from 'src/features/tracking-water-prog/screens/History.screen';
 import StepCounter from 'src/features/counting-steps/screens/StepCounter.screen';
-import {updateTotalStepsAction} from 'src/store/reducer/thunks/activityActions';
 import {useSteps} from 'src/hooks/useStep';
-import {useMessaging} from 'src/hooks/useMessaging';
+import {useDistance} from 'src/hooks/useDistance';
+import {useCalories} from 'src/hooks/useCalories';
+import {useActivity} from 'src/hooks/useActivity';
+import googleFit from 'react-native-google-fit';
 const Stack = createNativeStackNavigator();
 
 export const AppNavigator = () => {
   const dispatch = useDispatch();
   const {user} = useSelector(state => state.user);
-  const {handleUpdateTotalSteps, handleAddSteps, handleGetTodaySteps} =
-    useSteps();
-  const {handleSaveMessagingToken} = useMessaging();
+  const {enableActivityTracking} = useActivity();
 
   useEffect(() => {
     const now = new Date();
-    const dateOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const userId = user.uid;
-    // tracking user's activties
-    (async () => {
-      let isAllowed = await enableTrackingUserActivities();
-      if (isAllowed) {
-        await enableStepTracking(handleAddSteps, handleUpdateTotalSteps);
-        await handleGetTodaySteps();
-      }
-    })();
-
+    const dateOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     //get daily water drink prog
     dispatch(getDateProgress({userId, date: dateOnly}));
     //notifee
     const unsubcribeLocalMessaging = enableForegroundNotification();
     checkForInitialNotification().catch(console.error);
-
+    // tracking user's activties
+    const trackUserActivities = async () => {
+      let isAllowed = await enableTrackingUserActivities();
+      if (isAllowed) {
+        enableActivityTracking();
+      }
+    };
     //FCM messaging
-
-    (async () => {
+    const setupFCMMessaging = async () => {
       const FCMToken = await getMessagingToken();
       dispatch(saveFCMToken({FCMToken, userId}));
       await createNotifeeChannel();
-    })();
+    };
+
+    trackUserActivities();
+    setupFCMMessaging();
     setUpMessagingListener();
 
     const unsubscribeRemoteMessaging = messaging().onMessage(remoteMessage => {
@@ -68,6 +63,7 @@ export const AppNavigator = () => {
       messaging().onTokenRefresh(FCMToken => {
         dispatch(saveFCMToken({FCMToken, userId}));
       });
+      googleFit.unsubscribeListeners();
       unsubscribeRemoteMessaging();
       unsubcribeLocalMessaging();
     };
