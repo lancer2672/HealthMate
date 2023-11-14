@@ -120,7 +120,7 @@ const StepCounter = () => {
       <View style={styles.icons}>
         <View style={{alignItems: 'center'}}>
           <Ionicons name={'timer-outline'} size={38} color={'white'}></Ionicons>
-          <Text style={styles.textIcon}>${moveMinutes} min</Text>
+          <Text style={styles.textIcon}>{moveMinutes} min</Text>
         </View>
         <View style={{alignItems: 'center'}}>
           <SimpleLineIcons
@@ -138,7 +138,9 @@ const StepCounter = () => {
         </View>
       </View>
       <View style={{height: 300, backgroundColor: 'tomato'}}>
-        <StepChart selectedDate={selectedDate}></StepChart>
+        <StepChart
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}></StepChart>
       </View>
       <Dialog
         onClick={setTarget}

@@ -15,40 +15,59 @@ type StepData = {
 };
 
 type StepChartProps = {};
-function StepChart({selectedDate}) {
+function StepChart({selectedDate, setSelectedDate}) {
   const theme = useTheme();
   const {user} = useSelector(userSelector);
-  const scrollRef = useRef();
+  const scrollRef = useRef<ScrollView>();
   const [chartData, setChartData] = useState({
     labels: ['22/2'],
     datasets: [{data: [129]}]
   });
   const getDataChartFromStepMonth = (stepMonthData: StepData[]) => {
-    const labels = [];
-    const data = [];
-
-    console.log('stepMonthData', stepMonthData);
-    stepMonthData.forEach((item, index) => {
-      // item = {key : value}
-      console.log('item', item);
-      for (let [key, value] of Object.entries(item)) {
-        const label = getDateMonthLabel(key);
-        labels.push(label);
-        data.push(value);
-      }
+    const map = new Map();
+    stepMonthData.forEach(data => {
+      const [timestamp, value] = Object.entries(data)[0];
+      const date = new Date(Number(timestamp)).getDate();
+      map.set(date, value);
     });
 
+    const labels = [];
+    const data = [];
+    const currentDate = new Date().getDate();
+    for (let i = 1; i <= currentDate; i++) {
+      const value = map.get(i);
+
+      data.push(value || 0);
+
+      labels.push(`${i}/${selectedDate.getMonth() + 1}`);
+    }
     const chartStepData = {
       labels,
       datasets: [{data: data}]
     };
     setChartData(data.length === 0 ? null : chartStepData);
   };
+
   const onDataPointClick = data => {
     console.log('onDataPointClick', data);
-    const {x, y} = data;
+    // const l =vvvvvvvvvvvvvvvvvvvvvvvv
+    const {x, y, index} = data;
+    const date = chartData.labels[index].split('/')[0];
+    console.log('chartData', date);
+
+    setSelectedDate(prevDate => {
+      const newDate = new Date(prevDate.getTime());
+      newDate.setDate(Number(date));
+      return newDate;
+    });
     //scroll to the center
-    scrollRef.current.scrollTo({x: x - SCREEN_WIDTH / 2, y: 0, animated: true});
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({
+        x: x - SCREEN_WIDTH / 2,
+        y: 0,
+        animated: true
+      });
+    }
     // {index: 1, value: 4189, dataset: {data:[4]}, x: 198, y: 16, …}
   };
   useEffect(() => {
