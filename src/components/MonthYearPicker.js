@@ -4,14 +4,14 @@ import {
   Text,
   TouchableOpacity,
   View,
-  FlatList,
+  FlatList
 } from 'react-native';
 import React, {
   useEffect,
   useRef,
   useLayoutEffect,
   useState,
-  useCallback,
+  useCallback
 } from 'react';
 import Entypo from 'react-native-vector-icons/Entypo';
 import MonthPicker from 'react-native-month-year-picker';
@@ -22,7 +22,7 @@ const MonthYearPicker = ({
   selectedYear,
   setSelectedYear,
   selectedMonth,
-  setSelectedMonth,
+  setSelectedMonth
 }) => {
   const ref = useRef();
   const [date, setDate] = useState(new Date());
@@ -31,8 +31,8 @@ const MonthYearPicker = ({
   useEffect(() => {
     setInitialScrollToIndex(selectedMonth);
   }, []);
+  console.log('SelectedMonth', selectedMonth);
   const showPicker = useCallback(value => setShow(value), []);
-  console.log('Date', date);
   const onValueChange = useCallback(
     (event, newDate) => {
       const selectedDate = newDate || date;
@@ -42,7 +42,7 @@ const MonthYearPicker = ({
       setSelectedMonth(selectedDate.getMonth());
       setSelectedYear(selectedDate.getFullYear());
     },
-    [date, showPicker],
+    [date, showPicker]
   );
 
   const months = [
@@ -57,7 +57,7 @@ const MonthYearPicker = ({
     'September',
     'October',
     'November',
-    'December',
+    'December'
   ];
   const onLeftClick = () => {
     let newMonth = selectedMonth - 1;
@@ -79,19 +79,25 @@ const MonthYearPicker = ({
   };
 
   useEffect(() => {
+    console.log('Called', selectedMonth);
     ref.current?.scrollToIndex({
       index: selectedMonth,
       animated: true,
-      viewPosition: 0.5,
+      viewPosition: 0
     });
   }, [selectedMonth]);
   return (
-    <View style={{flexDirection: 'row'}}>
+    <View
+      style={{
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: SCREEN_WIDTH - 80
+      }}>
       <TouchableOpacity style={{width: 30}} onPress={onLeftClick}>
         <Entypo name="chevron-left" size={32} color="white"></Entypo>
       </TouchableOpacity>
 
-      <View style={{flex: 1}}>
+      <View style={{width: SCREEN_WIDTH - 160}}>
         <FlatList
           contentContainerStyle={{flexGrow: 1}}
           data={months}
@@ -102,45 +108,55 @@ const MonthYearPicker = ({
             wait.then(() => {
               ref.current?.scrollToIndex({
                 index: info.index,
-                animated: true,
+                animated: true
               });
             });
           }}
           ref={ref}
           showsHorizontalScrollIndicator={false}
           renderItem={({item, index}) => (
-            <TouchableOpacity
-              onPress={showPicker}
-              style={{
-                width: SCREEN_WIDTH - 80,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <Text style={styles.date}>
-                {item} {selectedYear}
-              </Text>
-            </TouchableOpacity>
+            <MonthYearItem
+              item={item}
+              selectedYear={selectedYear}
+              onPress={showPicker}></MonthYearItem>
           )}
           keyExtractor={(item, index) => `month-picker-${index}`}
         />
       </View>
+      <TouchableOpacity style={{width: 30}} onPress={onRightClick}>
+        <Entypo name="chevron-right" size={32} color="white"></Entypo>
+      </TouchableOpacity>
       {show && (
         <MonthPicker
           onChange={onValueChange}
           value={date}
-          minimumDate={new Date()}
+          minimumDate={new Date(2020, 5)}
           maximumDate={new Date(2025, 5)}
         />
       )}
-      <TouchableOpacity style={{width: 30}} onPress={onRightClick}>
-        <Entypo name="chevron-right" size={32} color="white"></Entypo>
-      </TouchableOpacity>
     </View>
   );
 };
 
+const MonthYearItem = ({onPress, item, selectedYear}) => {
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      style={{
+        width: SCREEN_WIDTH - 160,
+        // width: SCREEN_WIDTH,
+
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}>
+      <Text style={styles.date}>
+        {item} {selectedYear}
+      </Text>
+    </TouchableOpacity>
+  );
+};
 export default MonthYearPicker;
 
 const styles = StyleSheet.create({
-  date: {textAlign: 'center', fontSize: 20, color: 'white', fontWeight: 'bold'},
+  date: {textAlign: 'center', fontSize: 20, color: 'white', fontWeight: 'bold'}
 });
