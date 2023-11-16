@@ -10,7 +10,7 @@ import {
 } from 'src/store/reducer/activitySlice';
 
 import {
-  observeSteps,
+  observerActivity,
   getPeriodSteps,
   observeCalories,
   getPeriodDistance
@@ -25,14 +25,16 @@ import {observeDistance, getTodayDistance} from 'src/config/trackingActivities';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {DEFAULT_STEP_GOAL} from 'src/constants';
 import {getEndDayISO, getStartDayISO} from 'src/utils/dateTimeHelper';
+import {addSession} from 'src/store/reducer/thunks/waterTrackingActions';
 
 export const useActivity = () => {
   const dispatch = useDispatch();
   const [isEnabled, setIsEnable] = useState(false);
   const {user} = useSelector(userSelector);
+  const {todayProgress} = useSelector(activitySelector);
   //step
   const saveUserTotalSteps = steps => {
-    //save steps to database
+    //save total steps to database
     dispatch(
       updateUserActivityAction({
         userId: user.uid,
@@ -80,7 +82,7 @@ export const useActivity = () => {
     if (isEnabled) {
       Promise.all([
         //update user activity records when steps change
-        observeSteps(
+        observerActivity(
           handleAddSteps,
           saveUserTotalSteps,
           handleSaveUserActivityRecords

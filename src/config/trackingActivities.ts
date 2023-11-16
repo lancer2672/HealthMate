@@ -1,6 +1,7 @@
 import GoogleFit, {BucketUnit, Scopes} from 'react-native-google-fit';
 import {requestActivityRecognitionPermission} from '../permissions';
 import {getEndDayISO, getStartDayISO} from 'src/utils/dateTimeHelper';
+import { trackingNotificationIns } from 'src/services/notifee/notification';
 
 const SAVE_RECORD_TIME_INTERVAL = 6000;
 
@@ -54,36 +55,50 @@ export const getPeriodSteps = async (startDate: string, endDate: string) => {
       return 0;
     });
 };
-export const observeSteps = async (
+export const observerActivity = async (
   handleAddStep: (steps: number) => void,
   handleUpdateTotalSteps: (totalSteps: number) => void,
-  handleSaveUserActivityRecords: ({ calorie, distance, moveMins  } : any) => Promise<any>
+  handleSaveUserActivityRecords: ({ calorie, distance, moveMins }: any) => Promise<any>
+  
 ) => {
   let saveRecordTimeout: any = null;
-  GoogleFit.observeSteps((result: any) => {
-    handleAddStep(result.steps);
-    if (saveRecordTimeout) {
-      console.log("Clear timeout")
-      clearTimeout(saveRecordTimeout);
-    }
-    
-    const startDate = getStartDayISO(new Date());
+  const startDate = getStartDayISO(new Date());
     const endDate = getEndDayISO(new Date());
     const promises = [
       getPeriodSteps(startDate, endDate),
       getPeriodCalories(startDate, endDate),
       getPeriodDistance(startDate, endDate),
       getPeriodMoveMins(startDate, endDate)
-    ];
-    
-    saveRecordTimeout = setTimeout(async () => {
-      const [todayTotalSteps, calorie, distance, moveMins] = await Promise.all(promises)
-      await handleSaveUserActivityRecords({ calorie, distance, moveMins });
-      handleUpdateTotalSteps(todayTotalSteps);
+  ]; 
+
+  //get total new unupdated steps in (PeriodSteps function)
+  saveRecordTimeout = setTimeout(()=>saveRecords(0,promises,handleUpdateTotalSteps,handleSaveUserActivityRecords), SAVE_RECORD_TIME_INTERVAL);
+  
+  let newUnupdatedStep = 0;
+  GoogleFit.observeSteps((result: any) => {
+    handleAddStep(result.steps);
+    if (saveRecordTimeout) { 
       
+      newUnupdatedStep += result.steps
+      console.log("STEPS",newUnupdatedStep, result.steps)
+      clearTimeout(saveRecordTimeout);
+    } 
+    saveRecordTimeout = setTimeout(() => {
+      saveRecords(newUnupdatedStep, promises, handleUpdateTotalSteps, handleSaveUserActivityRecords)
+      newUnupdatedStep = 0
     }, SAVE_RECORD_TIME_INTERVAL);
   });
 };
+
+const saveRecords = async (newUnupdatedStep, promises, handleUpdateTotalSteps,handleSaveUserActivityRecords) => {
+  const [todayTotalSteps, calorie, distance, moveMins] = await Promise.all(promises)
+  console.log("set saveRecordTimeout",todayTotalSteps + newUnupdatedStep, newUnupdatedStep)
+  handleUpdateTotalSteps(todayTotalSteps + newUnupdatedStep);
+
+  await handleSaveUserActivityRecords({ calorie, distance, moveMins });
+  await trackingNotificationIns.updateNotification({distance: Math.trunc(distance),steps:todayTotalSteps + newUnupdatedStep})
+  
+}
 
 export const getPeriodCalories = async (startDate: string, endDate: string) => {
   try {

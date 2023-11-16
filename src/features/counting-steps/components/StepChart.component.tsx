@@ -43,7 +43,7 @@ function StepChart({selectedDate, setSelectedDate}) {
     }
     const chartStepData = {
       labels,
-      datasets: [{data: data}]
+      datasets: [{data: data}, {data: [2000], withDots: false}]
     };
     setChartData(data.length === 0 ? null : chartStepData);
   };

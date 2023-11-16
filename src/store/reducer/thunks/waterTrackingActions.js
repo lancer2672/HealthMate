@@ -7,8 +7,8 @@ import {
   addNewDrinkProgress,
   addNewSession,
   getDrinkProgressByDate,
-  setGoal,
-} from '../../../services/firebase/firestore/drinkProgress';
+  setGoal
+} from 'src/services/firebase/firestore/drinkProgress';
 
 export const addDrinkProgress = createAsyncThunk(
   'waterTracking/addDrinkProgress',
@@ -19,7 +19,7 @@ export const addDrinkProgress = createAsyncThunk(
       console.log('Add history error', error.message);
       return thunkAPI.rejectWithValue(error.message);
     }
-  },
+  }
 );
 
 export const addSession = createAsyncThunk(
@@ -31,7 +31,7 @@ export const addSession = createAsyncThunk(
       console.log('Add session error', error.message);
       return thunkAPI.rejectWithValue(error.message);
     }
-  },
+  }
 );
 
 export const getDateProgress = createAsyncThunk(
@@ -43,7 +43,7 @@ export const getDateProgress = createAsyncThunk(
       console.log('Get history by date error', error.message);
       return thunkAPI.rejectWithValue(error.message);
     }
-  },
+  }
 );
 
 export const setDrinkGoal = createAsyncThunk(
@@ -55,5 +55,5 @@ export const setDrinkGoal = createAsyncThunk(
       console.log('Set dink progress goal error', error.message);
       return thunkAPI.rejectWithValue(error.message);
     }
-  },
+  }
 );

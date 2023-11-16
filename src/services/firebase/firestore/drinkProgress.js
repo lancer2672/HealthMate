@@ -20,6 +20,7 @@ export async function addNewSession({drinkProgressId, amount}) {
 
     const newData = {...drinkProgressData, id: drinkProgressDoc.id};
     const newProgress = transformDrinkProgressData(newData);
+
     return newProgress;
   } else {
     throw new Error('Drink Progress does not exist');
@@ -36,7 +37,7 @@ export async function getDrinkProgressByDate({userId, date}) {
     if (!userDrinkProgressSnapshot.empty) {
       const data = {
         ...userDrinkProgressSnapshot.docs[0].data(),
-        id: userDrinkProgressSnapshot.docs[0].id,
+        id: userDrinkProgressSnapshot.docs[0].id
       };
       const progress = transformDrinkProgressData(data);
       return progress;
@@ -72,7 +73,7 @@ export async function getDrinkProgressByMonth({userId, year, month}) {
   const dinkProgressList = userDrinkProgressSnapshot.docs.map(doc => {
     const data = {
       ...doc.data(),
-      id: doc.id,
+      id: doc.id
     };
     const progress = transformDrinkProgressData(data);
     return progress;

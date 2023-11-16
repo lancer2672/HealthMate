@@ -1,33 +1,49 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useCallback} from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import messaging from '@react-native-firebase/messaging';
-import notifee from '@notifee/react-native';
+import {AppState} from 'react-native';
 
 import {getMessagingToken, setUpMessagingListener} from '../services/firebase';
 import {saveFCMToken} from 'src/store/reducer/thunks/userActions';
 import {useDispatch, useSelector} from 'react-redux';
-import {getDateProgress} from 'src/store/reducer/thunks/waterTrackingActions';
+import {
+  addSession,
+  getDateProgress
+} from 'src/store/reducer/thunks/waterTrackingActions';
 import {
   checkForInitialNotification,
   createNotifeeChannel,
-  enableForegroundNotification
+  enableForegroundNotification,
+  registerForegroundService,
+  trackingNotificationIns
 } from '../services/notifee/notification';
+
 import enableTrackingUserActivities from '../config/trackingActivities';
 import WaterTracking from 'src/features/tracking-water-prog/screens/WaterTracking.screen';
 import WaterTrackingHistory from 'src/features/tracking-water-prog/screens/History.screen';
 import StepCounter from 'src/features/counting-steps/screens/StepCounter.screen';
-import {useSteps} from 'src/hooks/useStep';
-import {useDistance} from 'src/hooks/useDistance';
-import {useCalories} from 'src/hooks/useCalories';
 import {useActivity} from 'src/hooks/useActivity';
 import googleFit from 'react-native-google-fit';
+import {activitySelector, waterTrackingSelector} from 'src/store/selectors';
 const Stack = createNativeStackNavigator();
 
 export const AppNavigator = () => {
   const dispatch = useDispatch();
   const {user} = useSelector(state => state.user);
   const {enableActivityTracking} = useActivity();
+  const {todayProgress} = useSelector(waterTrackingSelector);
 
+  console.log('todayProgresstodayProgress', todayProgress);
+
+  const addWaterAmount = useCallback(
+    amount => {
+      console.log('called', todayProgress);
+      if (todayProgress && todayProgress.id) {
+        dispatch(addSession({drinkProgressId: todayProgress.id, amount}));
+      }
+    },
+    [todayProgress]
+  );
   useEffect(() => {
     const now = new Date();
     const userId = user.uid;
@@ -36,7 +52,12 @@ export const AppNavigator = () => {
     dispatch(getDateProgress({userId, date: dateOnly}));
     //notifee
     const unsubcribeLocalMessaging = enableForegroundNotification();
-    checkForInitialNotification().catch(console.error);
+    (async () => {
+      await checkForInitialNotification();
+      await registerForegroundService(addWaterAmount);
+      await trackingNotificationIns.checkingBatterySavingEnabled();
+      await trackingNotificationIns.displayActivityTrackingNotification();
+    })();
     // tracking user's activties
     const trackUserActivities = async () => {
       let isAllowed = await enableTrackingUserActivities();
@@ -69,10 +90,24 @@ export const AppNavigator = () => {
     };
   }, []);
 
+  useEffect(() => {
+    AppState.addEventListener('change', handleAppStateChange);
+  }, []);
+  const handleAppStateChange = async nextAppState => {
+    console.log('StateChanged', nextAppState);
+    if (nextAppState === 'active') {
+      trackingNotificationIns.show = false;
+      await trackingNotificationIns.stopForegroundService();
+    } else {
+      trackingNotificationIns.show = true;
+      await trackingNotificationIns.displayActivityTrackingNotification();
+    }
+  };
+
   return (
     <Stack.Navigator
       screenOptions={{headerShown: false}}
-      initialRouteName="StepCounter">
+      initialRouteName="WaterTracking">
       <Stack.Screen name="AppTabs" component={WaterTracking} />
       <Stack.Screen name="WaterTracking" component={WaterTracking} />
       <Stack.Screen name="StepCounter" component={StepCounter} />
