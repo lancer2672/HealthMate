@@ -50,14 +50,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: 12,
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'space-between'
   }),
   date: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
-    color: 'white',
+    color: 'white'
   },
   goal: {
-    color: 'white',
-  },
+    color: 'white'
+  }
 });

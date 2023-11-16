@@ -8,7 +8,7 @@ import {useTheme} from 'styled-components';
 
 import {
   DEFAULT_WATER_AMOUNT,
-  IS_REMINDING_NOTIFICATION_ALLOWED,
+  IS_REMINDING_NOTIFICATION_ALLOWED
 } from '../../../constants';
 import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
 import {SettingItem, SettingItemWithButton} from './SettingItem';
@@ -17,13 +17,13 @@ import Dialog from '../../../components/Dialog';
 
 const getIntervalDate = () => {
   const intervalDate = new Date();
-  intervalDate.setHours(0);
-  intervalDate.setMinutes(15);
+  intervalDate.setHours(3);
+  intervalDate.setMinutes(0);
   intervalDate.setSeconds(0);
   return intervalDate;
 };
 
-const SideMenu = ({isVisible, onClose}) => {
+const SideMenu = ({isVisible, onClose, defineTarget}) => {
   const [isTargetDialogVisible, setIsTargetDialogVisible] = useState(false);
   const [isNotificationAllowed, setIsNotificationAllowed] = useState(false);
   const [dailyValue, setDailyValue] = useState(0);
@@ -31,18 +31,30 @@ const SideMenu = ({isVisible, onClose}) => {
   const [startTime, setStartTime] = useState(new Date());
   const [notificationId, setNotificationId] = useState(null);
 
-  const onSelectedChange = (event, selectedDate, setTime) => {
-    const currentDate = selectedDate;
-    setTime(currentDate);
-  };
-  const showTimePicker = setTime => {
+  const showTimePicker = () => {
     DateTimePickerAndroid.open({
       value: startTime,
       onChange: (e, s) => {
-        onSelectedChange(e, s, setTime);
+        setStartTime(s);
+        setTrigger();
       },
       mode: 'time',
-      is24Hour: true,
+      is24Hour: true
+    });
+  };
+  const showTimeIntervalPicker = () => {
+    DateTimePickerAndroid.open({
+      value: intervalTime,
+      onChange: async (e, s) => {
+        setIntervalTime(s);
+        // await AsyncStorage.setItem(
+        //   IS_REMINDING_NOTIFICATION_ALLOWED,
+        //   'allow'
+        // );
+        setTrigger();
+      },
+      mode: 'time',
+      is24Hour: true
     });
   };
   const generalSettings = [
@@ -52,8 +64,8 @@ const SideMenu = ({isVisible, onClose}) => {
       onClick: () => {
         setIsTargetDialogVisible(true);
       },
-      unit: 'ml',
-    },
+      unit: 'ml'
+    }
   ];
 
   const notificationSettings1 = [
@@ -64,40 +76,40 @@ const SideMenu = ({isVisible, onClose}) => {
         if (isAllowed) {
           await AsyncStorage.setItem(
             IS_REMINDING_NOTIFICATION_ALLOWED,
-            'allow',
+            'allow'
           );
           setTrigger();
         } else {
+          console.log('RemoveTrigger', notificationId);
           await AsyncStorage.removeItem(IS_REMINDING_NOTIFICATION_ALLOWED);
           await notifee.cancelTriggerNotifications([notificationId]);
         }
-      },
-    },
+      }
+    }
   ];
   const notificationSettings2 = [
     {
       name: 'Start time',
       value: `${startTime.getHours()}h : ${startTime.getMinutes()}m`,
       onClick: () => {
-        showTimePicker(setStartTime);
-        setTrigger();
-      },
+        showTimePicker();
+      }
       // unit: 'hour',
     },
     {
       name: 'Repeat interval',
       value: `${intervalTime.getHours()}h : ${intervalTime.getMinutes()}m`,
       onClick: () => {
-        showTimePicker(setIntervalTime);
+        showTimeIntervalPicker();
         setTrigger();
-      },
-    },
+      }
+    }
   ];
   useEffect(() => {
     (async () => {
       const values = await AsyncStorage.multiGet([
         DEFAULT_WATER_AMOUNT,
-        IS_REMINDING_NOTIFICATION_ALLOWED,
+        IS_REMINDING_NOTIFICATION_ALLOWED
       ]);
 
       if (values[0][1] != null) {
@@ -112,13 +124,13 @@ const SideMenu = ({isVisible, onClose}) => {
 
   const setTrigger = async () => {
     const isAllowed = await AsyncStorage.getItem(
-      IS_REMINDING_NOTIFICATION_ALLOWED,
+      IS_REMINDING_NOTIFICATION_ALLOWED
     );
     if (isAllowed) {
       const notifyId = await onCreateTriggerNotification({
         message: 'Reminder to drink water',
         minutes: intervalTime.getHours() * 60 + intervalTime.getMinutes(),
-        startTime: startTime,
+        startTime: startTime
       });
       setNotificationId(notifyId);
     }
@@ -126,6 +138,7 @@ const SideMenu = ({isVisible, onClose}) => {
   const setDailyTarget = async value => {
     await AsyncStorage.setItem(DEFAULT_WATER_AMOUNT, JSON.stringify(value));
     setDailyValue(() => value);
+    defineTarget(value);
   };
   return (
     <Modal
@@ -141,7 +154,7 @@ const SideMenu = ({isVisible, onClose}) => {
           style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
-            alignItems: 'center',
+            alignItems: 'center'
           }}>
           <Text style={styles.setting}>Settings</Text>
           <TouchableOpacity onPress={onClose}>
@@ -179,17 +192,17 @@ const SideMenu = ({isVisible, onClose}) => {
 const styles = StyleSheet.create({
   modal: {
     margin: 0,
-    alignItems: 'flex-end',
+    alignItems: 'flex-end'
   },
   menuContainer: {
     backgroundColor: 'white',
     width: '80%',
     padding: 8,
-    height: '100%',
+    height: '100%'
   },
   setting: {
     fontSize: 32,
-    fontWeight: 'bold',
+    fontWeight: 'bold'
   },
   category: {
     fontSize: 24,
@@ -197,26 +210,26 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     marginTop: 8,
     fontWeight: 'bold',
-    color: 'gray',
+    color: 'gray'
   },
 
   //setting item
   settingItemWrapper: {
     flexDirection: 'row',
     marginTop: 12,
-    justifyContent: 'space-between',
+    justifyContent: 'space-between'
   },
   settingName: {
-    fontSize: 16,
+    fontSize: 16
   },
   settingValue: theme => ({
     fontSize: 16,
     fontWeight: 'bold',
-    color: theme.accent,
+    color: theme.accent
   }),
   btn: {
-    padding: 4,
-  },
+    padding: 4
+  }
 });
 
 export default SideMenu;

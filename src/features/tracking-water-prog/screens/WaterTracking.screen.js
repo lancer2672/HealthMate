@@ -1,17 +1,5 @@
 import {StatusBar} from 'expo-status-bar';
 import {Dimensions, StyleSheet, View} from 'react-native';
-// import {
-//   Canvas,
-//   LinearGradient,
-//   Path,
-//   Skia,
-//   useClockValue,
-//   useComputedValue,
-//   useTouchHandler,
-//   useValue,
-//   vec,
-// } from '@shopify/react-native-skia';
-// import {line, curveBasis} from 'd3';
 import {useState, useRef, useEffect, useLayoutEffect} from 'react';
 import Header from '../components/Header';
 import SideMenu from '../components/SideMenu';
@@ -36,6 +24,8 @@ import {
 import {useDispatch, useSelector} from 'react-redux';
 import {useTheme} from 'styled-components';
 import Dialog from 'src/components/Dialog';
+import BubbleEffect from '../components/BubbleEffect';
+import {trackingNotificationIns} from 'src/services/notifee/notification';
 
 const dimension = Dimensions.get('window');
 
@@ -43,6 +33,7 @@ const WAVE_PHASE_HEIGHT = 32;
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const AnimatedPath = Animated.createAnimatedComponent(Path);
+const Bubble = Animated.createAnimatedComponent(View);
 export default function WaterTracking() {
   const theme = useTheme();
   const dispatch = useDispatch();
@@ -60,7 +51,7 @@ export default function WaterTracking() {
   const onDismissTargetSnackBar = () => setTargetSnackVisible(false);
 
   const defineTarget = userTarget => {
-    if (amount > 0) {
+    if (userTarget > 0) {
       dispatch(
         setDrinkGoal({drinkProgressId: todayProgress.id, goal: userTarget})
       );
@@ -79,8 +70,10 @@ export default function WaterTracking() {
 
   // Animation
   const waterContainerHeight = useSharedValue(0);
+
   const y = useSharedValue(WAVE_PHASE_HEIGHT);
   const c1y = useSharedValue(30);
+  const [bubbleHeightLimit, setBubbleHeightLimit] = useState(0);
   const c2y = useSharedValue(-30);
   const animatedProps = useAnimatedProps(() => {
     const path = [
@@ -150,7 +143,6 @@ export default function WaterTracking() {
     }
   }, [targetReach]);
   useEffect(() => {
-    console.log('percentage', percentage);
     if (percentage >= 100) {
       setTargetReach(true);
     }
@@ -164,14 +156,18 @@ export default function WaterTracking() {
       duration: 1000,
       easing: Easing.out(Easing.exp)
     });
+    // abstract header's height
+    setBubbleHeightLimit(newHeightValue - 80);
+
+    trackingNotificationIns.updateNotification({
+      water: todayProgress.totalAmount
+    });
     runWaveAnimation();
   }, [percentage]);
-
   return (
     <View style={styles.container(theme)}>
       <Header
         openSideMenu={() => {
-          console.log('Clicked');
           setMenuVisible(true);
         }}></Header>
       <Svg
@@ -183,21 +179,23 @@ export default function WaterTracking() {
           fill={theme.accent}
           animatedProps={animatedProps}></AnimatedPath>
       </Svg>
+      <BubbleEffect heightLimit={bubbleHeightLimit}></BubbleEffect>
+
       <View
         style={{
           ...StyleSheet.absoluteFillObject,
-          position: 'absolute',
           flexDirection: 'column',
           marginTop: 80,
           alignItems: 'center'
         }}>
+        <View style={{backgroundColor: 'gray', flex: 1}}></View>
         <Chip
           mode="outlined"
           icon="water"
           selectedColor="#2176FF"
           style={{marginBottom: 10}}
           onPress={() => setIsTargetDialogVisible(true)}>
-          Water target: {todayProgress.goal || 0} ml
+          Water target {todayProgress.goal || 0} ml
         </Chip>
         <View style={styles.content}>
           <View style={{flex: 1}}>
@@ -264,6 +262,7 @@ export default function WaterTracking() {
         isVisible={isCustomDialogVisible}></Dialog>
       <SideMenu
         isVisible={menuVisible}
+        defineTarget={defineTarget}
         onClose={() => setMenuVisible(false)}></SideMenu>
     </View>
   );

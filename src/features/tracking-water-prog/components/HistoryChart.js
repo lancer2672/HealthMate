@@ -10,25 +10,8 @@ function getCurrentDate() {
   const date = new Date();
   return `${date.getDate()}/${date.getMonth() + 1}`;
 }
-function HistoryChart(props) {
+function HistoryChart({chartData}) {
   const theme = useTheme();
-
-  // Prop for selected day's data
-  const [data, setData] = React.useState(null);
-  // Prop for line chart's data
-  const [chartData, setChartData] = React.useState({
-    datasets: [{data: [0]}],
-    labels: [getCurrentDate()]
-  });
-
-  React.useEffect(() => {
-    if (props.chartData) {
-      setChartData({
-        ...splitObj(props.chartData),
-        legend: ['Water intake', 'Goal']
-      });
-    }
-  }, [props.chartData]);
 
   const chartConfig = {
     backgroundColor: 'red',
@@ -39,8 +22,8 @@ function HistoryChart(props) {
     color: (opacity = 1) => `rgba(33, 118, 255, ${opacity})`, // optional
     labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
     propsForDots: {
-      r: '5',
-      strokeWidth: '3',
+      r: '4',
+      strokeWidth: '1',
       stroke: '#FFFFFF'
     },
     propsForBackgroundLines: {
@@ -48,7 +31,6 @@ function HistoryChart(props) {
     },
     barPercentage: 0.5
   };
-  console.log('chartData', chartData);
   return (
     <ScrollView horizontal contentOffset={{x: 10000, y: 0}}>
       <LineChart
