@@ -9,7 +9,7 @@ export const AuthNavigator = () => (
   <Stack.Navigator
     initialRouteName="Login"
     screenOptions={{
-      headerShown: false,
+      headerShown: false
     }}>
     <Stack.Screen name="Login" component={Login} />
     <Stack.Screen name="Register" component={Register} />

@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import firestore from '@react-native-firebase/firestore';
 import {transformDrinkProgressData} from '../../../utils/tranformData';
+import {DEFAULT_WATER_AMOUNT} from '../../../constants';
 const drinkHistoryRef = firestore().collection('drinkProgress');
 
 export async function addNewDrinkProgress({userId, date, goal}) {
@@ -19,6 +20,7 @@ export async function addNewSession({drinkProgressId, amount}) {
 
     const newData = {...drinkProgressData, id: drinkProgressDoc.id};
     const newProgress = transformDrinkProgressData(newData);
+
     return newProgress;
   } else {
     throw new Error('Drink Progress does not exist');
@@ -35,14 +37,14 @@ export async function getDrinkProgressByDate({userId, date}) {
     if (!userDrinkProgressSnapshot.empty) {
       const data = {
         ...userDrinkProgressSnapshot.docs[0].data(),
-        id: userDrinkProgressSnapshot.docs[0].id,
+        id: userDrinkProgressSnapshot.docs[0].id
       };
       const progress = transformDrinkProgressData(data);
       return progress;
     } else {
       const newDrinkProgress = {userId, date, goal: 0, sessions: []};
-      const defaultGoal = await AsyncStorage.getItem('defaultGoal');
-      if (defaultGoal) {
+      const defaultGoal = await AsyncStorage.getItem(DEFAULT_WATER_AMOUNT);
+      if (defaultGoal != null) {
         newDrinkProgress.goal = JSON.parse(defaultGoal);
       }
       const drinkProgressRef = await drinkHistoryRef.add(newDrinkProgress);
@@ -71,7 +73,7 @@ export async function getDrinkProgressByMonth({userId, year, month}) {
   const dinkProgressList = userDrinkProgressSnapshot.docs.map(doc => {
     const data = {
       ...doc.data(),
-      id: doc.id,
+      id: doc.id
     };
     const progress = transformDrinkProgressData(data);
     return progress;

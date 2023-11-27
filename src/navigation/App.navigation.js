@@ -1,82 +1,111 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useCallback} from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import messaging from '@react-native-firebase/messaging';
-import notifee from '@notifee/react-native';
+import {AppState} from 'react-native';
 
 import {getMessagingToken, setUpMessagingListener} from '../services/firebase';
+import {saveFCMToken} from 'src/store/reducer/thunks/userActions';
 import Login from '../features/auth/screens/SignIn.screen';
 import WaterTracking from '../features/tracking-water-prog/screens/WaterTracking.screen';
 import CheckCalories from '../features/food/screens/CheckCalories.screen';
 import {useDispatch, useSelector} from 'react-redux';
-import {saveFCMToken} from '../store/reducer/thunks/userActions';
-import {getDateProgress} from '../store/reducer/thunks/waterTrackingActions';
-import WaterTrackingHistory from '../features/tracking-water-prog/screens/History.screen';
-import StepTracking from '../features/counting-steps/screens/StepTracking.screen';
 import {
+  addSession,
+  getDateProgress
+} from 'src/store/reducer/thunks/waterTrackingActions';
+import {
+  checkForInitialNotification,
   createNotifeeChannel,
   enableForegroundNotification,
-  onCreateTriggerNotification,
-  onDisplayNotification,
+  registerForegroundService,
+  trackingNotificationIns
 } from '../services/notifee/notification';
+
+import enableTrackingUserActivities from '../config/trackingActivities';
+import WaterTracking from 'src/features/tracking-water-prog/screens/WaterTracking.screen';
+import WaterTrackingHistory from 'src/features/tracking-water-prog/screens/History.screen';
+import StepCounter from 'src/features/counting-steps/screens/StepCounter.screen';
+import {useActivity} from 'src/hooks/useActivity';
+import googleFit from 'react-native-google-fit';
+import {activitySelector, waterTrackingSelector} from 'src/store/selectors';
 const Stack = createNativeStackNavigator();
 
 export const AppNavigator = () => {
   const dispatch = useDispatch();
   const {user} = useSelector(state => state.user);
+  const {enableActivityTracking} = useActivity();
+  const {todayProgress} = useSelector(waterTrackingSelector);
 
-  async function bootstrap() {
-    const initialNotification = await notifee.getInitialNotification();
-    if (initialNotification) {
-      console.log(
-        'Notification caused application to open',
-        initialNotification.notification,
-      );
-      console.log(
-        'Press action used to open the app',
-        initialNotification.pressAction,
-      );
+  console.log('todayProgresstodayProgress', todayProgress);
+
+  const addWaterAmount = useCallback(
+    amount => {
+      console.log('called', todayProgress);
+      if (todayProgress && todayProgress.id) {
+        dispatch(addSession({drinkProgressId: todayProgress.id, amount}));
+      }
+    },
+    [todayProgress]
+  );
+  useEffect(() => {
+    const now = new Date();
+    const userId = user.uid;
+    const dateOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    //get daily water drink prog
+    dispatch(getDateProgress({userId, date: dateOnly}));
+    //notifee
+    const unsubcribeLocalMessaging = enableForegroundNotification();
+    (async () => {
+      await checkForInitialNotification();
+      await registerForegroundService(addWaterAmount);
+      await trackingNotificationIns.checkingBatterySavingEnabled();
+      await trackingNotificationIns.displayActivityTrackingNotification();
+    })();
+    // tracking user's activties
+    const trackUserActivities = async () => {
+      let isAllowed = await enableTrackingUserActivities();
+      if (isAllowed) {
+        enableActivityTracking();
+      }
+    };
+    //FCM messaging
+    const setupFCMMessaging = async () => {
+      const FCMToken = await getMessagingToken();
+      dispatch(saveFCMToken({FCMToken, userId}));
+      await createNotifeeChannel();
+    };
+
+    trackUserActivities();
+    setupFCMMessaging();
+    setUpMessagingListener();
+
+    const unsubscribeRemoteMessaging = messaging().onMessage(remoteMessage => {
+      console.log('A new FCM message arrived!', remoteMessage);
+    });
+
+    return () => {
+      messaging().onTokenRefresh(FCMToken => {
+        dispatch(saveFCMToken({FCMToken, userId}));
+      });
+      googleFit.unsubscribeListeners();
+      unsubscribeRemoteMessaging();
+      unsubcribeLocalMessaging();
+    };
+  }, []);
+
+  useEffect(() => {
+    AppState.addEventListener('change', handleAppStateChange);
+  }, []);
+  const handleAppStateChange = async nextAppState => {
+    console.log('StateChanged', nextAppState);
+    if (nextAppState === 'active') {
+      trackingNotificationIns.show = false;
+      await trackingNotificationIns.stopForegroundService();
+    } else {
+      trackingNotificationIns.show = true;
+      await trackingNotificationIns.displayActivityTrackingNotification();
     }
-  }
-  // useEffect(() => {
-  //   //notifee
-  //   const unsubcribeLocalMessaging = enableForegroundNotification();
-  //   //get today drink progress
-  //   const now = new Date();
-  //   const dateOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  //   dispatch(
-  //     getDateProgress({
-  //       userId: user.uid,
-  //       date: dateOnly,
-  //     }),
-  //   );
-
-  //   //Firebase messaging
-  //   (async () => {
-  //     try {
-  //       const FCMToken = await getMessagingToken();
-  //       dispatch(saveFCMToken({FCMToken, userId: user.uid}));
-  //       await createNotifeeChannel();
-  //       await onDisplayNotification();
-  //     } catch (er) {
-  //       console.log(er);
-  //     }
-  //   })();
-  //   setUpMessagingListener();
-  //   const unsubscribeRemoteMessaging = messaging().onMessage(
-  //     async remoteMessage => {
-  //       console.log('A new FCM message arrived!', remoteMessage);
-  //     },
-  //   );
-  //   bootstrap().then().catch(console.error);
-
-  //   return () => {
-  //     messaging().onTokenRefresh(FCMToken => {
-  //       dispatch(saveFCMToken({FCMToken, userId: user.uid}));
-  //     });
-  //     unsubscribeRemoteMessaging();
-  //     unsubcribeLocalMessaging();
-  //   };
-  // }, []);
+  };
 
   return (
     <Stack.Navigator
@@ -84,7 +113,7 @@ export const AppNavigator = () => {
       initialRouteName="CheckCalories">
       <Stack.Screen name="AppTabs" component={WaterTracking} />
       <Stack.Screen name="WaterTracking" component={WaterTracking} />
-      <Stack.Screen name="StepTracking" component={StepTracking} />
+      <Stack.Screen name="StepCounter" component={StepCounter} />
       <Stack.Screen
         name="WaterTrackingHistory"
         component={WaterTrackingHistory}

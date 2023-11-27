@@ -23,14 +23,11 @@ export function splitObj(chartData) {
       }
     }
   });
-  // const keys = allkeys.slice(Math.max(allkeys.length - 7, 0));
-  // const data = amountData.slice(Math.max(amountData.length - 7, 0));
-
   return {
     labels: allkeys,
     datasets: [
       {data: amountData},
-      {data: goalData, color: (opacity = 1) => `rgba(0, 255, 0, ${opacity})`},
-    ],
+      {data: goalData, color: (opacity = 1) => `rgba(0, 255, 0, ${opacity})`}
+    ]
   };
 }

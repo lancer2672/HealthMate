@@ -2,25 +2,16 @@ const darkTheme = {
   primary: '#04a0d7',
   accent: '#00bbfb',
   surface: '#131A26',
-  background: '#131A26',
+  background: '#17354a',
   text: '#FFFFFF',
-  waterTracking: {
-    primary: '#04a0d7',
-    secondary: '#00bbfb',
-  },
 };
 
 const lightTheme = {
   primary: '#04a0d7',
   accent: '#00bbfb',
-  surface: '#FFFFFF',
-  background: '#FFFFFF',
+  surface: '#131A26',
+  background: '#17354a',
   text: '#000000',
-  waterTracking: {
-    primary: '#04a0d7',
-    secondary: '#00bbfb',
-    background: '#17354a',
-  },
 };
 
 export {darkTheme, lightTheme};

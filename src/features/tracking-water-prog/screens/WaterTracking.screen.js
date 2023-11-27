@@ -1,17 +1,5 @@
 import {StatusBar} from 'expo-status-bar';
 import {Dimensions, StyleSheet, View} from 'react-native';
-// import {
-//   Canvas,
-//   LinearGradient,
-//   Path,
-//   Skia,
-//   useClockValue,
-//   useComputedValue,
-//   useTouchHandler,
-//   useValue,
-//   vec,
-// } from '@shopify/react-native-skia';
-// import {line, curveBasis} from 'd3';
 import {useState, useRef, useEffect, useLayoutEffect} from 'react';
 import Header from '../components/Header';
 import SideMenu from '../components/SideMenu';
@@ -22,25 +10,22 @@ import Animated, {
   withTiming,
   withDelay,
   runOnJS,
-  Easing,
+  Easing
 } from 'react-native-reanimated';
 import Svg, {Circle, Path} from 'react-native-svg';
 
 import {Title, Text, Button, Chip, Snackbar, Portal} from 'react-native-paper';
-import {AnimatedCircularProgress} from 'react-native-circular-progress';
 import valuesToPercentage, {today} from '../utils';
-import {firebaseDatabase} from '../../../services/firebase';
-import CustomWaterDialog from '../components/CustomWaterDialog';
 import {
   addSession,
   getDateProgress,
-  setDrinkGoal,
-} from '../../../store/reducer/thunks/waterTrackingActions';
+  setDrinkGoal
+} from 'src/store/reducer/thunks/waterTrackingActions';
 import {useDispatch, useSelector} from 'react-redux';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import ChangeTargetDialog from '../components/ChangeTargetDialog';
 import {useTheme} from 'styled-components';
-import AddAmountDialog from '../components/AddAmountDialog';
+import Dialog from 'src/components/Dialog';
+import BubbleEffect from '../components/BubbleEffect';
+import {trackingNotificationIns} from 'src/services/notifee/notification';
 
 const dimension = Dimensions.get('window');
 
@@ -48,6 +33,7 @@ const WAVE_PHASE_HEIGHT = 32;
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const AnimatedPath = Animated.createAnimatedComponent(Path);
+const Bubble = Animated.createAnimatedComponent(View);
 export default function WaterTracking() {
   const theme = useTheme();
   const dispatch = useDispatch();
@@ -65,23 +51,29 @@ export default function WaterTracking() {
   const onDismissTargetSnackBar = () => setTargetSnackVisible(false);
 
   const defineTarget = userTarget => {
-    dispatch(
-      setDrinkGoal({drinkProgressId: todayProgress.id, goal: userTarget}),
-    );
-    waterContainerHeight.value = withTiming(0, {
-      duration: 2000,
-    });
+    if (userTarget > 0) {
+      dispatch(
+        setDrinkGoal({drinkProgressId: todayProgress.id, goal: userTarget})
+      );
+      waterContainerHeight.value = withTiming(0, {
+        duration: 2000
+      });
+    }
   };
 
   const addWater = amount => {
     // if (amount) {
-    dispatch(addSession({drinkProgressId: todayProgress.id, amount}));
+    if (amount > 0) {
+      dispatch(addSession({drinkProgressId: todayProgress.id, amount}));
+    }
   };
 
   // Animation
   const waterContainerHeight = useSharedValue(0);
+
   const y = useSharedValue(WAVE_PHASE_HEIGHT);
   const c1y = useSharedValue(30);
+  const [bubbleHeightLimit, setBubbleHeightLimit] = useState(0);
   const c2y = useSharedValue(-30);
   const animatedProps = useAnimatedProps(() => {
     const path = [
@@ -91,15 +83,15 @@ export default function WaterTracking() {
       }, ${SCREEN_WIDTH} 0`,
 
       `V ${SCREEN_HEIGHT}`,
-      `H 0`,
+      `H 0`
     ].join(' ');
 
     return {
-      d: path,
+      d: path
     };
   });
 
-  const handleWave = () => {
+  const runWaveAnimation = () => {
     if (y.value == 0) {
       //reset y value
       y.value = WAVE_PHASE_HEIGHT;
@@ -117,10 +109,10 @@ export default function WaterTracking() {
           c1y.value = withTiming(
             y.value,
             {duration: y.value * 10},
-            runOnJS(handleWave),
+            runOnJS(runWaveAnimation)
           );
         }
-      },
+      }
     );
     c2y.value = withTiming(
       y.value,
@@ -130,17 +122,17 @@ export default function WaterTracking() {
           c2y.value = withTiming(
             -y.value,
             {duration: y.value * 10},
-            runOnJS(handleWave),
+            runOnJS(runWaveAnimation)
           );
         }
-      },
+      }
     );
   };
 
   useEffect(() => {
-    if (todayProgress.totalAmount != null) {
+    if (todayProgress.totalAmount != null && todayProgress.goal !== 0) {
       setPercentage(
-        valuesToPercentage(todayProgress.goal, todayProgress.totalAmount),
+        valuesToPercentage(todayProgress.goal, todayProgress.totalAmount)
       );
     }
   }, [todayProgress]);
@@ -151,7 +143,6 @@ export default function WaterTracking() {
     }
   }, [targetReach]);
   useEffect(() => {
-    console.log('percentage', percentage);
     if (percentage >= 100) {
       setTargetReach(true);
     }
@@ -163,42 +154,48 @@ export default function WaterTracking() {
         : (percentage * SCREEN_HEIGHT) / 100;
     waterContainerHeight.value = withTiming(newHeightValue, {
       duration: 1000,
-      easing: Easing.out(Easing.exp),
+      easing: Easing.out(Easing.exp)
     });
-    handleWave();
-  }, [percentage]);
+    // abstract header's height
+    setBubbleHeightLimit(newHeightValue - 80);
 
+    trackingNotificationIns.updateNotification({
+      water: todayProgress.totalAmount
+    });
+    runWaveAnimation();
+  }, [percentage]);
   return (
     <View style={styles.container(theme)}>
       <Header
         openSideMenu={() => {
-          console.log('Clicked');
           setMenuVisible(true);
         }}></Header>
       <Svg
-        style={{backgroundColor: theme.waterTracking.background}}
+        style={{backgroundColor: theme.background}}
         width={SCREEN_WIDTH}
         height={'100%'}
         viewBox={`0 0 ${SCREEN_WIDTH} ${SCREEN_HEIGHT}`}>
         <AnimatedPath
-          fill={theme.waterTracking.secondary}
+          fill={theme.accent}
           animatedProps={animatedProps}></AnimatedPath>
       </Svg>
+      <BubbleEffect heightLimit={bubbleHeightLimit}></BubbleEffect>
+
       <View
         style={{
           ...StyleSheet.absoluteFillObject,
-          position: 'absolute',
           flexDirection: 'column',
           marginTop: 80,
-          alignItems: 'center',
+          alignItems: 'center'
         }}>
+        <View style={{backgroundColor: 'gray', flex: 1}}></View>
         <Chip
           mode="outlined"
           icon="water"
           selectedColor="#2176FF"
           style={{marginBottom: 10}}
           onPress={() => setIsTargetDialogVisible(true)}>
-          Water target: {todayProgress.goal || 0} ml
+          Water target {todayProgress.goal || 0} ml
         </Chip>
         <View style={styles.content}>
           <View style={{flex: 1}}>
@@ -241,26 +238,31 @@ export default function WaterTracking() {
             colors: {
               surface: '#FFFFFF',
               onSurface: '#FDCA40',
-              accent: '#FFFFFF',
-            },
+              accent: '#FFFFFF'
+            }
           }}
           action={{
             label: 'Yay!',
-            onPress: () => onDismissTargetSnackBar(),
+            onPress: () => onDismissTargetSnackBar()
           }}>
           Congrats, you reached your water intake goal!
         </Snackbar>
       </View>
-      <ChangeTargetDialog
+      <Dialog
         onClick={defineTarget}
+        title={'Set target'}
+        buttonContent={'Done'}
         onClose={() => setIsTargetDialogVisible(false)}
-        isVisible={isTargetDialogVisible}></ChangeTargetDialog>
-      <AddAmountDialog
+        isVisible={isTargetDialogVisible}></Dialog>
+      <Dialog
         onClick={addWater}
+        title={'Add water'}
+        buttonContent={'Add'}
         onClose={() => setIsCustomDialogVisible(false)}
-        isVisible={isCustomDialogVisible}></AddAmountDialog>
+        isVisible={isCustomDialogVisible}></Dialog>
       <SideMenu
         isVisible={menuVisible}
+        defineTarget={defineTarget}
         onClose={() => setMenuVisible(false)}></SideMenu>
     </View>
   );
@@ -269,17 +271,17 @@ export default function WaterTracking() {
 const styles = StyleSheet.create({
   container: theme => ({
     flex: 1,
-    backgroundColor: theme.waterTracking.background,
+    backgroundColor: theme.background
   }),
   canvas: {
-    flex: 1,
+    flex: 1
   },
   button: theme => ({
     borderRadius: 4,
     borderWidth: 2,
     marginVertical: 12,
     borderColor: theme.background,
-    backgroundColor: theme.waterTracking.background,
+    backgroundColor: theme.background
   }),
   addContainer: {
     flexGrow: 0.45,
@@ -288,7 +290,7 @@ const styles = StyleSheet.create({
     width: SCREEN_WIDTH,
     alignContent: 'space-between',
     flexWrap: 'wrap',
-    justifyContent: 'space-evenly',
+    justifyContent: 'space-evenly'
   },
   buttons: {
     flexDirection: 'row',
@@ -296,17 +298,17 @@ const styles = StyleSheet.create({
     marginHorizontal: 28,
 
     flexWrap: 'wrap',
-    justifyContent: 'space-evenly',
+    justifyContent: 'space-evenly'
   },
   percentage: {
     fontSize: 62,
     textAlign: 'center',
-    color: 'white',
+    color: 'white'
   },
   amount: {
     fontSize: 32,
     textAlign: 'center',
-    color: 'white',
+    color: 'white'
   },
   progress: {
     width: 264,
@@ -315,6 +317,6 @@ const styles = StyleSheet.create({
     borderRadius: 300,
     borderWidth: 10,
     borderColor: '#0051d4',
-    overflow: 'hidden',
-  },
+    overflow: 'hidden'
+  }
 });

@@ -1,17 +1,17 @@
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import {createAsyncThunk} from '@reduxjs/toolkit';
-const usersRef = firestore().collection('user');
+const usersRef = firestore().collection('waterTracking');
 
 import {
   addNewDrinkProgress,
   addNewSession,
   getDrinkProgressByDate,
-  setGoal,
-} from '../../../services/firebase/firestore/drinkProgress';
+  setGoal
+} from 'src/services/firebase/firestore/drinkProgress';
 
 export const addDrinkProgress = createAsyncThunk(
-  'user/addDrinkProgress',
+  'waterTracking/addDrinkProgress',
   async (data, thunkAPI) => {
     try {
       return await addNewDrinkProgress(data);
@@ -19,11 +19,11 @@ export const addDrinkProgress = createAsyncThunk(
       console.log('Add history error', error.message);
       return thunkAPI.rejectWithValue(error.message);
     }
-  },
+  }
 );
 
 export const addSession = createAsyncThunk(
-  'user/addSession',
+  'waterTracking/addSession',
   async (data, thunkAPI) => {
     try {
       return await addNewSession(data);
@@ -31,11 +31,11 @@ export const addSession = createAsyncThunk(
       console.log('Add session error', error.message);
       return thunkAPI.rejectWithValue(error.message);
     }
-  },
+  }
 );
 
 export const getDateProgress = createAsyncThunk(
-  'user/getDateProgress',
+  'waterTracking/getDateProgress',
   async (data, thunkAPI) => {
     try {
       return await getDrinkProgressByDate(data);
@@ -43,11 +43,11 @@ export const getDateProgress = createAsyncThunk(
       console.log('Get history by date error', error.message);
       return thunkAPI.rejectWithValue(error.message);
     }
-  },
+  }
 );
 
 export const setDrinkGoal = createAsyncThunk(
-  'user/setDrinkGoal',
+  'waterTracking/setDrinkGoal',
   async (data, thunkAPI) => {
     try {
       return await setGoal(data);
@@ -55,5 +55,5 @@ export const setDrinkGoal = createAsyncThunk(
       console.log('Set dink progress goal error', error.message);
       return thunkAPI.rejectWithValue(error.message);
     }
-  },
+  }
 );
