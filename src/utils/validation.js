@@ -21,7 +21,10 @@ export const accountSchema = object({
     ),
   confirmNewPassword: string()
     .required('Mật khẩu không được để trống')
-    .oneOf([ref('newPassword')], 'Mật khẩu không trùng khớp'),
+    .test('passwords-match', 'Mật khẩu không trùng khớp', function (value) {
+      return value === this.parent.newPassword;
+    }),
+  // .oneOf([ref('newPassword')], 'Mật khẩu không trùng khớp'),
   email: string()
     .email('Email không hợp lệ')
     .required('Email không được để trống'),
@@ -52,9 +55,16 @@ export const handleValidateField = (
   value,
   validationErrors,
   setValidationErrors,
+  data,
 ) => {
   let obj = {[key]: value};
   let s = schema.pick([key]);
+
+  if (key === 'confirmNewPassword') {
+    obj = {...obj, newPassword: data.newPassword};
+    s = schema.pick([key, 'newPassword']);
+  }
+
   s.validate(obj)
     .then(result => {
       const newValidationErros = {...validationErrors};
