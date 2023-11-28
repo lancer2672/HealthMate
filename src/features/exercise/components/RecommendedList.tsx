@@ -14,17 +14,26 @@ const RecommendedList = () => {
 
   useEffect(() => {
     (async () => {
-      const list = await exerciseApi.getAll();
+      const list = await exerciseApi.getAll(searchExercise.length + 10);
       setSearchExercise(list);
     })();
   }, []);
 
   const viewAll = () => {
-    // navigation.navigate("")
+    navigation.navigate('ListExercise', {
+      exercises: searchExercise
+    });
   };
+  const handleLoadMore = async () => {
+    const list = await exerciseApi.getAll(searchExercise.length + 10);
+    setSearchExercise(list);
+  };
+
   return (
     <View>
-      <DropDownCategory setExercise={setSearchExercise}></DropDownCategory>
+      <DropDownCategory
+        exercise={searchExercise}
+        setExercise={setSearchExercise}></DropDownCategory>
       <TouchableOpacity onPress={viewAll} style={{alignSelf: 'flex-end'}}>
         <Text style={styles.viewAll}>View all</Text>
       </TouchableOpacity>
@@ -33,6 +42,8 @@ const RecommendedList = () => {
         horizontal
         removeClippedSubviews={false}
         showsHorizontalScrollIndicator={false}
+        onEndReachedThreshold={0.5}
+        onEndReached={handleLoadMore}
         data={searchExercise}
         renderItem={({item}) => <ExerciseCardItem exercise={item} />}
       />

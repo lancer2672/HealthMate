@@ -6,7 +6,7 @@ import axiosClient from 'src/api/axiosClient';
 import exerciseApi from 'src/api/exerciseApi';
 import {EXERCISE_BASE_URL} from 'src/constants';
 
-const DropDownCategory = ({setExercise}) => {
+const DropDownCategory = ({exercise, setExercise}) => {
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
   const [bodyPartList, setBodyPartList] = useState([]);
@@ -39,8 +39,11 @@ const DropDownCategory = ({setExercise}) => {
   const onBodyPartSelected = async item => {
     setValue(item.value);
     setIsFocus(false);
-    const data = await exerciseApi.getExerciseByBodyPart(item.value);
-    setExercise(data);
+    const data = await exerciseApi.getExerciseByBodyPart({
+      bodyPart: item.value,
+      limit: exercise.length + 10
+    });
+    setExercise(() => data);
   };
   return (
     <View style={styles.container}>

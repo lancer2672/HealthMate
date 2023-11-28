@@ -7,11 +7,18 @@ import {
   Dimensions,
   TouchableOpacity
 } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 const {width} = Dimensions.get('screen');
 
 const ExerciseCardItem = ({exercise}) => {
+  const [isFavourite, setIsFavourite] = useState(false);
+  useEffect(() => {}, []);
+  const toggleFavourite = () => {
+    setIsFavourite(!isFavourite);
+  };
+  const addToPlan = () => {};
   return (
     <TouchableOpacity>
       <ImageBackground
@@ -34,8 +41,27 @@ const ExerciseCardItem = ({exercise}) => {
             }}>
             {exercise.name}
           </Text>
-          <View style={{position: 'absolute', top: 0, right: 0}}>
-            <Text>Add</Text>
+          <View
+            style={{
+              position: 'absolute',
+              top: 0,
+              right: 0,
+              flexDirection: 'row'
+            }}>
+            <TouchableOpacity
+              style={{marginRight: 12}}
+              onPress={toggleFavourite}>
+              <AntDesign
+                name={isFavourite ? 'star' : 'staro'}
+                color={isFavourite ? 'tomato' : 'black'}
+                size={28}></AntDesign>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={addToPlan}>
+              <FontAwesome
+                name={'plus'}
+                color={'black'}
+                size={28}></FontAwesome>
+            </TouchableOpacity>
           </View>
         </View>
       </ImageBackground>

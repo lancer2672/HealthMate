@@ -7,11 +7,12 @@ import {useNavigation} from '@react-navigation/native';
 
 import {useSelector} from 'react-redux';
 import {useTheme} from 'styled-components';
+import {userSelector} from 'src/store/selectors';
 
 const Header = ({}) => {
   const theme = useTheme();
   const navigation = useNavigation();
-
+  const {user} = useSelector(userSelector);
   const navigateToHistoryScreen = () => {
     navigation.navigate('WaterTrackingHistory');
   };
