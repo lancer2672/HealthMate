@@ -16,44 +16,26 @@ const ExerciseCardItem = ({exercise}) => {
     <TouchableOpacity>
       <ImageBackground
         style={styles.rmCard}
+        resizeMode="contain"
         source={{
-          uri: 'https://picsum.photos/200/300'
+          uri: exercise.gifUrl
         }}>
-        <Text
-          style={{
-            color: 'black',
-            fontSize: 20,
-            fontWeight: 'bold',
-            marginTop: 10
-          }}>
-          exercise name
-        </Text>
         <View
           style={{
             flex: 1,
-            justifyContent: 'space-between',
+            flexDirection: 'row',
             alignItems: 'flex-end'
           }}>
-          <View
+          <Text
             style={{
-              width: '100%',
-              flexDirection: 'row',
-              marginTop: 120,
-              justifyContent: 'space-between'
+              color: 'black',
+              fontSize: 20,
+              fontWeight: 'bold'
             }}>
-            <View style={{flexDirection: 'row'}}>
-              <Ionicons name="person-circle-outline" size={20} color="white" />
-              <Text style={{marginLeft: 5, color: 'white', fontSize: 17}}>
-                type
-              </Text>
-            </View>
-            <View
-              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-              {/* <Ionicons name="" size={20} color="white" /> */}
-              <Text style={{marginLeft: 5, color: 'white', fontSize: 17}}>
-                Nothing
-              </Text>
-            </View>
+            {exercise.name}
+          </Text>
+          <View style={{position: 'absolute', top: 0, right: 0}}>
+            <Text>Add</Text>
           </View>
         </View>
       </ImageBackground>
