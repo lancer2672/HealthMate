@@ -1,6 +1,6 @@
-import React, { memo, useState, forwardRef } from "react";
-import { StyleSheet } from "react-native";
-import { TextInput } from "react-native-paper";
+import React, {memo, useState, forwardRef} from 'react';
+import {StyleSheet} from 'react-native';
+import {TextInput} from 'react-native-paper';
 
 const InputText = forwardRef(
   (
@@ -16,7 +16,7 @@ const InputText = forwardRef(
       passwordType,
       hasValidationError,
     },
-    ref
+    ref,
   ) => {
     const [showPassword, setShowPassword] = useState(false);
     return (
@@ -26,7 +26,7 @@ const InputText = forwardRef(
           borderRadius: 25,
         }}
         editable={!disabled}
-        outlineColor={hasValidationError && "red"}
+        outlineColor={hasValidationError && 'red'}
         style={styles.textInput}
         secureTextEntry={passwordType && !showPassword}
         // disabled={disabled}
@@ -51,24 +51,24 @@ const InputText = forwardRef(
               onPress={() => {
                 setShowPassword(!showPassword);
               }}
-              icon={showPassword ? "eye" : "eye-off"}
+              icon={showPassword ? 'eye' : 'eye-off'}
             />
           )
         }
-        onChangeText={(newText) => setText(newText)}
-        placeholder={placeholder}
-      ></TextInput>
+        onChangeText={newText => setText(newText)}
+        placeholder={placeholder}></TextInput>
     );
-  }
+  },
 );
 
 export default memo(InputText);
 
 const styles = StyleSheet.create({
   textInput: {
-    backgroundColor: "white",
-    width: 250,
+    backgroundColor: 'white',
+    minWidth: '80%',
+    maxWidth: '80%',
     marginTop: 8,
-    fontSize: 14,
+    fontSize: 16,
   },
 });

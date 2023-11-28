@@ -17,7 +17,9 @@ import {
 import InputText from '../components/InputText.component';
 import {accountSchema, handleValidateField} from '../../../utils/validation';
 import {setIsLoading} from '../../../store/reducer/appSlice';
-import {login, register} from '../../../store/reducer/thunks/userActions';
+import {login} from '../../../store/reducer/thunks/userActions';
+import logoHealthMate from '../../../assets/imgs/LogoHealthMate.png';
+import SignUp from './SignUp.screen';
 import {WEB_API_KEY} from '@env';
 
 GoogleSignin.configure({
@@ -57,13 +59,19 @@ const Login = ({navigation}) => {
   // }, [isLoginLoading]);
 
   const handleLogin = () => {
-    // refInputName.current.blur();
-    // refInputPassword.current.blur();
+    refInputName.current.blur();
+    refInputPassword.current.blur();
     // console.log(Object.keys(validationErrors).length);
-    // if (Object.keys(validationErrors).length == 0) {
-    //   login({email, password});
+    if (Object.keys(validationErrors).length == 0) {
+      const data = login({email, password});
+      console.log('data', data);
+    }
+    // console.log('email1', email);
+    // if (email !== '' || password !== '') {
+    //   console.log('email', email);
+    //   dispatch(login({email, password}));
+    //   console.log();
     // }
-    dispatch(login({email, password}));
   };
 
   const handleSendEmailResetPassword = () => {
@@ -87,13 +95,26 @@ const Login = ({navigation}) => {
       }
     }
   };
+
   const navigateToRegister1Screen = () => {
     // setError(null);
-    navigation.navigate('Register1', {});
+    navigation.navigate('Register', {});
   };
   return (
     <View style={styles.container}>
-      <View>
+      <Image source={logoHealthMate} style={{width: 250, height: 250}} />
+      <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
+        <Text
+          style={{
+            fontSize: 20,
+            fontWeight: 'bold',
+            marginBottom: 10,
+            color: 'black',
+          }}>
+          Chào mừng!
+        </Text>
+      </View>
+      <View style={{flexDirection: 'column', alignItems: 'center', gap: 2}}>
         <InputText
           ref={refInputName}
           iconLeft={'account'}
@@ -109,7 +130,9 @@ const Login = ({navigation}) => {
               setValidationErrors,
             )
           }></InputText>
-        {validationErrors.email && <Text>{validationErrors.email}</Text>}
+        {validationErrors.email && (
+          <Text style={styles.error}>{validationErrors.email}</Text>
+        )}
 
         <InputText
           ref={refInputPassword}
@@ -127,41 +150,63 @@ const Login = ({navigation}) => {
             )
           }
           placeholder={'Mật khẩu'}></InputText>
-        {validationErrors.password && <Text>{validationErrors.password}</Text>}
+        {validationErrors.password && (
+          <Text style={styles.error}>{validationErrors.password}</Text>
+        )}
       </View>
+
+      <View
+        style={{
+          marginTop: 10,
+          width: '65%',
+          flexDirection: 'row',
+          justifyContent: 'flex-end',
+        }}>
+        <TouchableOpacity onPress={handleSendEmailResetPassword}>
+          <Text style={{fontSize: 16, color: '#01819E'}}>Quên mật khẩu?</Text>
+        </TouchableOpacity>
+      </View>
+
+      {error && (
+        <Text style={styles.error}>
+          Tên đăng nhập hoặc mật khẩu không hợp lệ
+        </Text>
+      )}
+      <TouchableOpacity style={styles.btnLogin} onPress={handleLogin}>
+        <Text
+          style={{
+            textAlign: 'center',
+            fontSize: 16,
+            fontWeight: 'bold',
+            color: 'white',
+          }}>
+          Đăng nhập
+        </Text>
+      </TouchableOpacity>
 
       <View
         style={{
           marginTop: 12,
           flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}>
-        <TouchableOpacity onPress={handleSendEmailResetPassword}>
-          <Text style={{fontSize: 16, color: 'white'}}>Quên mật khẩu ?</Text>
-        </TouchableOpacity>
+        <Text style={{fontSize: 16, color: 'black'}}>
+          Bạn chưa có tài khoản?
+        </Text>
         <TouchableOpacity onPress={navigateToRegister1Screen}>
           <Text
             style={{
-              marginLeft: 48,
+              marginLeft: 2,
               fontWeight: '500',
               fontSize: 16,
-              textDecorationLine: 'underline',
-              color: 'white',
+              color: '#01819E',
             }}>
             Đăng ký
           </Text>
         </TouchableOpacity>
       </View>
-      {error && <Text>Tên đăng nhập hoặc mật khẩu không hợp lệ</Text>}
-      <TouchableOpacity
-        style={{
-          width: '100%',
-          padding: 4,
-          marginTop: 12,
-          backgroundColor: 'white',
-        }}
-        onPress={handleLogin}>
-        <Text style={{textAlign: 'center'}}>Đăng nhập</Text>
-      </TouchableOpacity>
+
       <View
         style={{
           marginTop: 12,
@@ -170,24 +215,26 @@ const Login = ({navigation}) => {
           alignItems: 'center',
         }}>
         <Pressable
-          onPress={handleSignInGoogle}
-          style={[styles.google, {backgroundColor: 'white'}]}>
-          <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
-            <Image
-              resizeMode="contain"
-              style={styles.logo}
-              source={require('../../../assets/icons/google_icon.png')}></Image>
-            <Text
-              style={{
-                flex: 1,
-                color: 'black',
-                fontSize: 16,
-                textAlign: 'center',
-                paddingRight: 40,
-              }}>
-              Tiếp tục với Google
-            </Text>
-          </View>
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: 'white',
+          }}
+          onPress={handleSignInGoogle}>
+          <Image
+            resizeMode="contain"
+            style={styles.logo}
+            source={require('../../../assets/icons/google_icon.png')}
+          />
+          <Text
+            style={{
+              color: 'black',
+              fontSize: 16,
+              marginLeft: 3,
+            }}>
+            Đăng nhập với Google
+          </Text>
         </Pressable>
       </View>
     </View>
@@ -198,24 +245,35 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'black',
+    backgroundColor: 'white',
+  },
+  error: {
+    color: 'red',
   },
   logo: {
     width: 32,
     height: 32,
-    marginLeft: 8,
+    // marginLeft: 8,
   },
   google: {
-    width: 300,
+    width: '60%',
     height: 42,
-    borderRadius: 4,
-    elevation: 2,
+    borderRadius: 25,
+    // elevation: 2,
   },
   fb: {
     width: 50,
     height: 50,
     borderRadius: 25,
     elevation: 2,
+  },
+  btnLogin: {
+    width: '30%',
+    marginTop: 15,
+    marginBottom: 10,
+    padding: 12,
+    borderRadius: 25,
+    backgroundColor: '#01819E',
   },
 });
 export default Login;

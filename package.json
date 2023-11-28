@@ -45,6 +45,7 @@
     "react-native-circular-progress-indicator": "^4.4.2",
     "react-native-date-picker": "^4.3.3",
     "react-native-dotenv": "^3.4.9",
+    "react-native-elements": "^3.4.3",
     "react-native-flash-message": "^0.4.2",
     "react-native-gesture-handler": "^2.13.1",
     "react-native-google-fit": "^0.19.1",
