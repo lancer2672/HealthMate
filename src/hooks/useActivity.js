@@ -13,7 +13,8 @@ import {
   observerActivity,
   getPeriodSteps,
   observeCalories,
-  getPeriodDistance
+  getPeriodDistance,
+  getPeriodSleep
 } from 'src/config/trackingActivities';
 import {activitySelector, userSelector} from 'src/store/selectors';
 import {useEffect, useState} from 'react';
@@ -93,6 +94,7 @@ export const useActivity = () => {
         setDefaultStepTarget()
       ]).catch(error => console.error(error));
 
+      getPeriodSleep();
       (async () => {
         const startTime = getStartDayISO(new Date());
         const endTime = getEndDayISO(new Date());

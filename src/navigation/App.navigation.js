@@ -25,6 +25,8 @@ import StepCounter from 'src/features/counting-steps/screens/StepCounter.screen'
 import {useActivity} from 'src/hooks/useActivity';
 import googleFit from 'react-native-google-fit';
 import {activitySelector, waterTrackingSelector} from 'src/store/selectors';
+import {Tabs} from './tabs';
+import ExerciseHome from 'src/features/exercise/screens/ExerciseHome.screen';
 const Stack = createNativeStackNavigator();
 
 export const AppNavigator = () => {
@@ -107,9 +109,10 @@ export const AppNavigator = () => {
   return (
     <Stack.Navigator
       screenOptions={{headerShown: false}}
-      initialRouteName="WaterTracking">
-      <Stack.Screen name="AppTabs" component={WaterTracking} />
+      initialRouteName="ExerciseHome">
+      {/* <Stack.Screen name="AppTabs" component={Tabs} /> */}
       <Stack.Screen name="WaterTracking" component={WaterTracking} />
+      <Stack.Screen name="ExerciseHome" component={ExerciseHome} />
       <Stack.Screen name="StepCounter" component={StepCounter} />
       <Stack.Screen
         name="WaterTrackingHistory"

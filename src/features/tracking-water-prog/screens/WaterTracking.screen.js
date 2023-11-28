@@ -81,7 +81,6 @@ export default function WaterTracking() {
       `c ${SCREEN_WIDTH / 4} ${c1y.value},  ${(SCREEN_WIDTH * 3) / 4} ${
         c2y.value
       }, ${SCREEN_WIDTH} 0`,
-
       `V ${SCREEN_HEIGHT}`,
       `H 0`
     ].join(' ');
@@ -173,7 +172,7 @@ export default function WaterTracking() {
       <Svg
         style={{backgroundColor: theme.background}}
         width={SCREEN_WIDTH}
-        height={'100%'}
+        height={SCREEN_HEIGHT}
         viewBox={`0 0 ${SCREEN_WIDTH} ${SCREEN_HEIGHT}`}>
         <AnimatedPath
           fill={theme.accent}
@@ -192,8 +191,8 @@ export default function WaterTracking() {
         <Chip
           mode="outlined"
           icon="water"
-          selectedColor="#2176FF"
-          style={{marginBottom: 10}}
+          selectedColor="white"
+          style={{marginBottom: 10, backgroundColor: theme.background}}
           onPress={() => setIsTargetDialogVisible(true)}>
           Water target {todayProgress.goal || 0} ml
         </Chip>

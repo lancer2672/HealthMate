@@ -14,21 +14,14 @@ import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
 import {SettingItem, SettingItemWithButton} from './SettingItem';
 import {onCreateTriggerNotification} from '../../../services/notifee/notification';
 import Dialog from '../../../components/Dialog';
-
-const getIntervalDate = () => {
-  const intervalDate = new Date();
-  intervalDate.setHours(3);
-  intervalDate.setMinutes(0);
-  intervalDate.setSeconds(0);
-  return intervalDate;
-};
+import {createTimeSetter} from 'src/utils/dateTimeHelper';
 
 const SideMenu = ({isVisible, onClose, defineTarget}) => {
   const [isTargetDialogVisible, setIsTargetDialogVisible] = useState(false);
   const [isNotificationAllowed, setIsNotificationAllowed] = useState(false);
   const [dailyValue, setDailyValue] = useState(0);
-  const [intervalTime, setIntervalTime] = useState(getIntervalDate());
-  const [startTime, setStartTime] = useState(new Date());
+  const [intervalTime, setIntervalTime] = useState(createTimeSetter(3, 0, 0));
+  const [startTime, setStartTime] = useState(createTimeSetter(7, 0, 0));
   const [notificationId, setNotificationId] = useState(null);
 
   const showTimePicker = () => {

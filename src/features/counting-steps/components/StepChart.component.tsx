@@ -39,7 +39,7 @@ function StepChart({selectedDate, setSelectedDate}) {
 
       data.push(value || 0);
 
-      labels.push(`${i}/${selectedDate.getMonth() + 1}`);
+      labels.push(`${i}`);
     }
     const chartStepData = {
       labels,
