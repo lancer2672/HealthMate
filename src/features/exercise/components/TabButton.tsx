@@ -6,7 +6,7 @@ const TabButton = ({onButtonClick}) => {
   const onClick = index => {
     onButtonClick(index);
   };
-  const buttons = ['Personal', 'Group', 'History'];
+  const buttons = ['Personal', 'Group', 'Plan'];
   return (
     <View
       style={{

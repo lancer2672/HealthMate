@@ -6,7 +6,6 @@ import {AppState} from 'react-native';
 import {getMessagingToken, setUpMessagingListener} from '../services/firebase';
 import {saveFCMToken} from 'src/store/reducer/thunks/userActions';
 import Login from '../features/auth/screens/SignIn.screen';
-import WaterTracking from '../features/tracking-water-prog/screens/WaterTracking.screen';
 import CheckCalories from '../features/food/screens/CheckCalories.screen';
 import {useDispatch, useSelector} from 'react-redux';
 import {
@@ -30,6 +29,7 @@ import googleFit from 'react-native-google-fit';
 import {activitySelector, waterTrackingSelector} from 'src/store/selectors';
 import {Tabs} from './tabs';
 import ExerciseHome from 'src/features/exercise/screens/ExerciseHome.screen';
+import ListExercise from 'src/features/exercise/components/ListExercise';
 const Stack = createNativeStackNavigator();
 
 export const AppNavigator = () => {
@@ -116,6 +116,7 @@ export const AppNavigator = () => {
       {/* <Stack.Screen name="AppTabs" component={Tabs} /> */}
       <Stack.Screen name="WaterTracking" component={WaterTracking} />
       <Stack.Screen name="ExerciseHome" component={ExerciseHome} />
+      <Stack.Screen name="ListExercise" component={ListExercise} />
       <Stack.Screen name="StepCounter" component={StepCounter} />
       <Stack.Screen
         name="WaterTrackingHistory"

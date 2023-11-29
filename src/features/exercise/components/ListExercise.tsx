@@ -11,7 +11,7 @@ import exerciseApi from 'src/api/exerciseApi';
 const ListExercise = () => {
   const route = useRoute();
   const navigation = useNavigation();
-  const {exercises} = route.params;
+  const {exercises, type, value} = route.params;
   const [searchKeyword, setSearchKeyword] = useState<string>('');
   const [isSearching, setIsSearching] = useState(true);
   const [listExercise, setListExercise] = useState(exercises);
@@ -21,7 +21,18 @@ const ListExercise = () => {
 
   console.log('ex', listExercise);
   const loadMore = async () => {
-    const list = await exerciseApi.getAll(listExercise.length + 10);
+    let list = [];
+    switch (type) {
+      case 'target':
+        list = await exerciseApi.getTargetExercise(
+          value,
+          listExercise.length + 10
+        );
+        break;
+      default:
+        list = await exerciseApi.getAll(listExercise.length + 10);
+    }
+
     setListExercise(list);
   };
   const searchExerciseByName = () => {

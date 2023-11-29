@@ -9,24 +9,38 @@ import {
 } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import {useNavigation} from '@react-navigation/native';
+import exerciseApi from 'src/api/exerciseApi';
 
 const {width} = Dimensions.get('screen');
 
-const ExerciseCardItem = ({exercise}) => {
-  const [isFavourite, setIsFavourite] = useState(false);
+const TargetExerciseItem = ({target}) => {
+  const [listExercise, setListExercise] = useState([]);
+  const navigation = useNavigation();
   useEffect(() => {}, []);
-  const toggleFavourite = () => {
-    setIsFavourite(!isFavourite);
+
+  const openList = () => {
+    navigation.navigate('ListExercise', {
+      exercises: listExercise,
+      type: 'target',
+      value: target.name
+    });
   };
-  const addToPlan = () => {};
+
+  const getListExerciseByTarget = async () => {
+    const list = await exerciseApi.getTargetExercise(target.name);
+    setListExercise(list);
+  };
+
+  useEffect(() => {
+    getListExerciseByTarget();
+  }, []);
   return (
-    <TouchableOpacity>
+    <TouchableOpacity onPress={openList}>
       <ImageBackground
         style={styles.rmCard}
-        resizeMode="contain"
-        source={{
-          uri: exercise.gifUrl
-        }}>
+        resizeMode="cover"
+        source={target.imageUrl}>
         <View
           style={{
             flex: 1,
@@ -35,11 +49,11 @@ const ExerciseCardItem = ({exercise}) => {
           }}>
           <Text
             style={{
-              color: 'black',
+              color: 'white',
               fontSize: 20,
               fontWeight: 'bold'
             }}>
-            {exercise.name}
+            {`${target.name} -  ${listExercise.length} exercise`}
           </Text>
           <View
             style={{
@@ -56,12 +70,6 @@ const ExerciseCardItem = ({exercise}) => {
                 color={isFavourite ? 'tomato' : 'black'}
                 size={28}></AntDesign>
             </TouchableOpacity> */}
-            <TouchableOpacity onPress={addToPlan}>
-              <FontAwesome
-                name={'plus'}
-                color={'black'}
-                size={28}></FontAwesome>
-            </TouchableOpacity>
           </View>
         </View>
       </ImageBackground>
@@ -72,7 +80,7 @@ const ExerciseCardItem = ({exercise}) => {
 const styles = StyleSheet.create({
   rmCard: {
     width: width - 40,
-    height: 180,
+    height: 140,
     marginRight: 20,
     borderRadius: 10,
     overflow: 'hidden',
@@ -80,4 +88,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default memo(ExerciseCardItem);
+export default TargetExerciseItem;

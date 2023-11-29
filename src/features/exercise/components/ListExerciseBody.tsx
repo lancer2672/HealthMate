@@ -7,7 +7,7 @@ import ExerciseCardItem from './ExerciseCardItem';
 import {useNavigation} from '@react-navigation/native';
 import exerciseApi from 'src/api/exerciseApi';
 
-const RecommendedList = () => {
+const ListExerciseBody = () => {
   const [searchExercise, setSearchExercise] = useState([]);
 
   const navigation = useNavigation();
@@ -51,7 +51,7 @@ const RecommendedList = () => {
   );
 };
 
-export default RecommendedList;
+export default ListExerciseBody;
 
 const styles = StyleSheet.create({
   viewAll: {

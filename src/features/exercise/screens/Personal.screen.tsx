@@ -5,12 +5,14 @@ import {ScrollView} from 'react-native';
 import DropDownCategory from '../components/DropdownCategory';
 import axiosClient from 'src/api/axiosClient';
 import {EXERCISE_BASE_URL} from 'src/constants';
-import RecommendedList from '../components/RecommendedList';
+import ListExerciseBody from '../components/ListExerciseBody';
+import ListTargetExercise from '../components/ListTargetExercise';
 
 const Personal = () => {
   return (
     <ScrollView style={styles.container}>
-      <RecommendedList></RecommendedList>
+      <ListExerciseBody></ListExerciseBody>
+      <ListTargetExercise></ListTargetExercise>
       <Text style={styles.title}>Recommended for you</Text>
       <FlatList
         contentContainerStyle={{marginBottom: 20}}
