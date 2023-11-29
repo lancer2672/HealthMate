@@ -30,6 +30,8 @@ import {activitySelector, waterTrackingSelector} from 'src/store/selectors';
 import {Tabs} from './tabs';
 import ExerciseHome from 'src/features/exercise/screens/ExerciseHome.screen';
 import ListExercise from 'src/features/exercise/components/list/ListExercise';
+import DetailPlan from 'src/features/exercise/components/plan/DetailPlan';
+import DetailExercise from 'src/features/exercise/screens/DetailExercise';
 const Stack = createNativeStackNavigator();
 
 export const AppNavigator = () => {
@@ -118,6 +120,8 @@ export const AppNavigator = () => {
       <Stack.Screen name="ExerciseHome" component={ExerciseHome} />
       <Stack.Screen name="ListExercise" component={ListExercise} />
       <Stack.Screen name="StepCounter" component={StepCounter} />
+      <Stack.Screen name="DetailPlan" component={DetailPlan} />
+      <Stack.Screen name="DetailExercise" component={DetailExercise} />
       <Stack.Screen
         name="WaterTrackingHistory"
         component={WaterTrackingHistory}

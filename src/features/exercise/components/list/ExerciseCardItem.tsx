@@ -12,12 +12,14 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import {Modal} from 'react-native';
 import {TouchableWithoutFeedback} from 'react-native';
 import PlanListModal from '../plan/PlanListModal';
+import {useNavigation} from '@react-navigation/native';
 const {width} = Dimensions.get('screen');
 
 const ExerciseCardItem = ({exercise}) => {
   const [isFavourite, setIsFavourite] = useState(false);
   const [isShowMenu, setIsShowMenu] = useState(false);
   const [isShowPlanList, setIsShowPlanList] = useState(false);
+  const navigation = useNavigation();
   useEffect(() => {}, []);
   const toggleFavourite = () => {
     setIsFavourite(!isFavourite);
@@ -25,8 +27,13 @@ const ExerciseCardItem = ({exercise}) => {
   const openBottomMenu = () => {
     setIsShowMenu(true);
   };
+  const navigateToDetailExercise = () => {
+    navigation.navigate('DetailExercise', {
+      exercise
+    });
+  };
   return (
-    <TouchableOpacity>
+    <TouchableOpacity onPress={navigateToDetailExercise}>
       <ImageBackground
         style={styles.rmCard}
         resizeMode="contain"

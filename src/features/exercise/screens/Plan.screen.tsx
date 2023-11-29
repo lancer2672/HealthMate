@@ -12,11 +12,16 @@ import {ScrollView} from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import PlanItem from '../components/PlanItem';
 import {PlanType} from 'src/types/plan.type';
+import {useNavigation} from '@react-navigation/native';
 
 const Plan = () => {
   const [plans, setPlans] = useState<PlanType[]>();
+  const navigation = useNavigation();
+
   const createPlan = async () => {};
-  const viewDetailPlan = () => {};
+  const viewDetailPlan = () => {
+    navigation.navigate('DetailPlan');
+  };
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Your plan</Text>

@@ -12,9 +12,7 @@ const Header = ({}) => {
   const theme = useTheme();
   const navigation = useNavigation();
   const {user} = useSelector(userSelector);
-  const navigateToHistoryScreen = () => {
-    navigation.navigate('WaterTrackingHistory');
-  };
+  const navigateToHistoryScreen = () => {};
   const openSideMenu = () => {};
   return (
     <View style={styles.container}>

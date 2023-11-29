@@ -1,14 +1,14 @@
 import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 
-const DetailPlan = () => {
+const DetailPlanItem = () => {
   return (
     <View>
-      <Text>DetailPlan</Text>
+      <Text>DetailPlanItem</Text>
     </View>
   );
 };
 
-export default DetailPlan;
+export default DetailPlanItem;
 
 const styles = StyleSheet.create({});

@@ -23,7 +23,7 @@ const PlanItem = ({plan}: PlanItemProps) => {
     if (plan.exercise.length == 0) {
       return require('../../../assets/imgs/plan.jpg');
     } else {
-      return {uri: plan.exercise[0].gifs};
+      return {uri: plan.exercise[0].gifUrl};
     }
   };
   const openBottomMenu = () => {

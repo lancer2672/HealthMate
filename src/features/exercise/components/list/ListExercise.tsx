@@ -9,7 +9,7 @@ import ExerciseCardItem from './ExerciseCardItem';
 import exerciseApi from 'src/api/exerciseApi';
 
 const ListExercise = () => {
-  const route = useRoute();
+  const route = useRoute<any>();
   const navigation = useNavigation();
   const {exercises, type, value} = route.params;
   const [searchKeyword, setSearchKeyword] = useState<string>('');
