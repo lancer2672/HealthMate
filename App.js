@@ -5,16 +5,18 @@ import Navigator from './src/navigation';
 import store from './src/store';
 import ThemeProviderComponent from './src/features/theme';
 import {DefaultTheme, Provider as PaperProvider} from 'react-native-paper';
-
+import {ToastProvider} from 'react-native-toast-notifications';
 export default function App() {
   return (
     <ThemeProviderComponent>
-      <PaperProvider theme={DefaultTheme}>
-        <Provider store={store}>
-          <Navigator />
-          <FlashMessage position="top" />
-        </Provider>
-      </PaperProvider>
+      <ToastProvider>
+        <PaperProvider theme={DefaultTheme}>
+          <Provider store={store}>
+            <Navigator />
+            <FlashMessage position="top" />
+          </Provider>
+        </PaperProvider>
+      </ToastProvider>
     </ThemeProviderComponent>
   );
 }

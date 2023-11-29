@@ -1,12 +1,12 @@
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useState, useEffect} from 'react';
-import ExerciseCardItemScreen from '../components/ExerciseCardItem';
+import ExerciseCardItemScreen from '../components/list/ExerciseCardItem';
 import {ScrollView} from 'react-native';
 import DropDownCategory from '../components/DropdownCategory';
 import axiosClient from 'src/api/axiosClient';
 import {EXERCISE_BASE_URL} from 'src/constants';
-import ListExerciseBody from '../components/ListExerciseBody';
-import ListTargetExercise from '../components/ListTargetExercise';
+import ListExerciseBody from '../components/list/ListExerciseBody';
+import ListTargetExercise from '../components/list/ListTargetExercise';
 
 const Personal = () => {
   return (

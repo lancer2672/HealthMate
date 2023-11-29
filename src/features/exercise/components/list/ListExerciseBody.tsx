@@ -2,7 +2,7 @@ import {StyleSheet, Text, FlatList, TouchableOpacity, View} from 'react-native';
 import React, {useState, useEffect} from 'react';
 import axiosClient from 'src/api/axiosClient';
 import {EXERCISE_BASE_URL} from 'src/constants';
-import DropDownCategory from './DropdownCategory';
+import DropDownCategory from '../DropdownCategory';
 import ExerciseCardItem from './ExerciseCardItem';
 import {useNavigation} from '@react-navigation/native';
 import exerciseApi from 'src/api/exerciseApi';

@@ -29,7 +29,7 @@ import googleFit from 'react-native-google-fit';
 import {activitySelector, waterTrackingSelector} from 'src/store/selectors';
 import {Tabs} from './tabs';
 import ExerciseHome from 'src/features/exercise/screens/ExerciseHome.screen';
-import ListExercise from 'src/features/exercise/components/ListExercise';
+import ListExercise from 'src/features/exercise/components/list/ListExercise';
 const Stack = createNativeStackNavigator();
 
 export const AppNavigator = () => {

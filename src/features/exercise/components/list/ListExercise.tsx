@@ -1,7 +1,7 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {FlatList} from 'react-native';
-import ExerciseItem from './ExerciseItem';
+import ExerciseItem from '../ExerciseItem';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Searchbar, Snackbar} from 'react-native-paper';
 import {useNavigation, useRoute} from '@react-navigation/native';

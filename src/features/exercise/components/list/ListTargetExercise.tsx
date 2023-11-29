@@ -7,23 +7,23 @@ import TargetExerciseItem from './TargetExerciseItem';
 const data = [
   {
     name: 'pectorals',
-    imageUrl: require('../../../assets/imgs/pectorals.jpg')
+    imageUrl: require('../../../../assets/imgs/pectorals.jpg')
   },
   {
     name: 'biceps',
-    imageUrl: require('../../../assets/imgs/bicep.jpg')
+    imageUrl: require('../../../../assets/imgs/bicep.jpg')
   },
   {
     name: 'forearms',
-    imageUrl: require('../../../assets/imgs/forearm.jpg')
+    imageUrl: require('../../../../assets/imgs/forearm.jpg')
   },
   {
     name: 'calves',
-    imageUrl: require('../../../assets/imgs/calve.jpg')
+    imageUrl: require('../../../../assets/imgs/calve.jpg')
   },
   {
     name: 'quads',
-    imageUrl: require('../../../assets/imgs/quads.jpg')
+    imageUrl: require('../../../../assets/imgs/quads.jpg')
   }
 ];
 const ListTargetExercise = () => {
