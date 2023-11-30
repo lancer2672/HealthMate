@@ -22,12 +22,14 @@ const MonthYearPicker = ({
   selectedYear,
   setSelectedYear,
   selectedMonth,
-  setSelectedMonth
+  setSelectedMonth,
+  textColor
 }) => {
   const ref = useRef();
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
   const [initialScrollIndex, setInitialScrollToIndex] = useState(false);
+  const textcolor = textColor || 'white';
   useEffect(() => {
     setInitialScrollToIndex(selectedMonth);
   }, []);
@@ -94,7 +96,7 @@ const MonthYearPicker = ({
         width: SCREEN_WIDTH - 80
       }}>
       <TouchableOpacity style={{width: 30}} onPress={onLeftClick}>
-        <Entypo name="chevron-left" size={32} color="white"></Entypo>
+        <Entypo name="chevron-left" size={32} color={textcolor}></Entypo>
       </TouchableOpacity>
 
       <View style={{width: SCREEN_WIDTH - 160}}>
@@ -118,13 +120,14 @@ const MonthYearPicker = ({
             <MonthYearItem
               item={item}
               selectedYear={selectedYear}
-              onPress={showPicker}></MonthYearItem>
+              onPress={showPicker}
+              textcolor={textcolor}></MonthYearItem>
           )}
           keyExtractor={(item, index) => `month-picker-${index}`}
         />
       </View>
       <TouchableOpacity style={{width: 30}} onPress={onRightClick}>
-        <Entypo name="chevron-right" size={32} color="white"></Entypo>
+        <Entypo name="chevron-right" size={32} color={textcolor}></Entypo>
       </TouchableOpacity>
       {show && (
         <MonthPicker
@@ -138,7 +141,7 @@ const MonthYearPicker = ({
   );
 };
 
-const MonthYearItem = ({onPress, item, selectedYear}) => {
+const MonthYearItem = ({onPress, item, selectedYear, textcolor}) => {
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -149,7 +152,13 @@ const MonthYearItem = ({onPress, item, selectedYear}) => {
         justifyContent: 'center',
         alignItems: 'center'
       }}>
-      <Text style={styles.date}>
+      <Text
+        style={[
+          styles.date,
+          {
+            color: textcolor
+          }
+        ]}>
         {item} {selectedYear}
       </Text>
     </TouchableOpacity>

@@ -68,7 +68,7 @@ const Navigator = () => {
       {user ? (
         <View
           style={{
-            flex: 1,
+            flex: 1
           }}>
           <StatusBar></StatusBar>
           <AppNavigator></AppNavigator>
@@ -86,7 +86,7 @@ const Navigator = () => {
             top: 0,
             bottom: 0,
             left: 0,
-            right: 0,
+            right: 0
           }}>
           <ActivityIndicator size="large" color={'rgba(54, 100, 186,0.4)'} />
         </View>

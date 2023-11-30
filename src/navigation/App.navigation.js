@@ -6,8 +6,8 @@ import {AppState} from 'react-native';
 import {getMessagingToken, setUpMessagingListener} from '../services/firebase';
 import {saveFCMToken} from 'src/store/reducer/thunks/userActions';
 import Login from '../features/auth/screens/SignIn.screen';
-import WaterTracking from '../features/tracking-water-prog/screens/WaterTracking.screen';
 import CheckCalories from '../features/food/screens/CheckCalories.screen';
+import FoodHistory from '../features/food/screens/FoodHistory.screen';
 import {useDispatch, useSelector} from 'react-redux';
 import {
   addSession,
@@ -110,14 +110,15 @@ export const AppNavigator = () => {
   return (
     <Stack.Navigator
       screenOptions={{headerShown: false}}
-      initialRouteName="CheckCalories">
-      <Stack.Screen name="AppTabs" component={WaterTracking} />
+      initialRouteName="FoodHistory">
+      {/* <Stack.Screen name="AppTabs" component={WaterTracking} />
       <Stack.Screen name="WaterTracking" component={WaterTracking} />
       <Stack.Screen name="StepCounter" component={StepCounter} />
       <Stack.Screen
         name="WaterTrackingHistory"
         component={WaterTrackingHistory}
-      />
+      /> */}
+      <Stack.Screen name="FoodHistory" component={FoodHistory} />
       <Stack.Screen name="CheckCalories" component={CheckCalories} />
     </Stack.Navigator>
   );
