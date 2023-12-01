@@ -6,8 +6,10 @@ import {AppState} from 'react-native';
 import {getMessagingToken, setUpMessagingListener} from '../services/firebase';
 import {saveFCMToken} from 'src/store/reducer/thunks/userActions';
 import Login from '../features/auth/screens/SignIn.screen';
-import CheckCalories from '../features/food/screens/CheckCalories.screen';
-import FoodHistory from '../features/food/screens/FoodHistory.screen';
+import DetailMealDate from '../features/meal/screens/DetailMealDate.screen';
+import MealCalendar from '../features/meal/screens/MealCalendar.screen';
+import SearchFood from '../features/food/screens/SearchFood.screen';
+import LogFood from '../features/food/screens/LogFood.screen';
 import {useDispatch, useSelector} from 'react-redux';
 import {
   addSession,
@@ -110,7 +112,7 @@ export const AppNavigator = () => {
   return (
     <Stack.Navigator
       screenOptions={{headerShown: false}}
-      initialRouteName="FoodHistory">
+      initialRouteName="MealCalendar">
       {/* <Stack.Screen name="AppTabs" component={WaterTracking} />
       <Stack.Screen name="WaterTracking" component={WaterTracking} />
       <Stack.Screen name="StepCounter" component={StepCounter} />
@@ -118,8 +120,14 @@ export const AppNavigator = () => {
         name="WaterTrackingHistory"
         component={WaterTrackingHistory}
       /> */}
-      <Stack.Screen name="FoodHistory" component={FoodHistory} />
-      <Stack.Screen name="CheckCalories" component={CheckCalories} />
+      <Stack.Screen name="DetailMealDate" component={DetailMealDate} />
+      <Stack.Screen name="MealCalendar" component={MealCalendar} />
+      <Stack.Screen
+        name="Search food"
+        component={SearchFood}
+        options={{headerShown: true, headerTitle: 'Back'}}
+      />
+      <Stack.Screen name="LogFood" component={LogFood} />
     </Stack.Navigator>
   );
 };

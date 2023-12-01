@@ -11,20 +11,12 @@ import {
   ScrollView
 } from 'react-native';
 import React, {useState} from 'react';
-import SearchInput from '../components/SearchInput.component';
 import MonthYearPicker from '../../../components/MonthYearPicker';
-import Calendar from '../components/Calendar.component';
-import CheckCalories from './CheckCalories.screen';
+import Calendar from '../../meal/components/Calendar.component';
 
-export default function FoodHistory({navigation}) {
+export default function MealCalendar({navigation}) {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
-
-  const handleDateChange = (year, month) => {
-    // Do something with the selected year and month
-    console.log('Selected Year:', year);
-    console.log('Selected Month:', month);
-  };
 
   const colors = [
     '#8B0000',
@@ -37,7 +29,7 @@ export default function FoodHistory({navigation}) {
 
   const onDatePress = day => {
     console.log('Day pressed:', day);
-    navigation.navigate('CheckCalories', {
+    navigation.navigate('DetailMealDate', {
       data: {
         day: day,
         month: selectedMonth,
