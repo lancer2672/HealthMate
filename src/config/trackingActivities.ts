@@ -117,6 +117,18 @@ export const getPeriodCalories = async (startDate: string, endDate: string) => {
   }
 };
 
+
+export const getPeriodSleep = () => {
+  const opt = {
+    startDate: '2020-01-01T12:33:18.873Z', // required, timestamp or ISO8601 string
+    endDate: new Date().toISOString(), // required, timestamp or ISO8601 string
+  };
+  
+  GoogleFit.getSleepSamples(opt).then((res) => {
+    console.log("SEEP SAMPLES",res)
+  });
+}
+
 export const getPeriodDistance = async (startDate: string, endDate: string) => {
   const opt = {
     startDate,

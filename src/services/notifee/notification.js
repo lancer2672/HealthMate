@@ -119,6 +119,8 @@ export const registerForegroundService = addWaterAmount => {
               case 'stop':
                 await notifee.stopForegroundService();
                 console.log('Clicked stop');
+
+                trackingNotificationIns.show = false;
                 break;
               case '100':
                 addWaterAmount(100);
@@ -128,7 +130,6 @@ export const registerForegroundService = addWaterAmount => {
               case '200':
                 addWaterAmount(200);
                 console.log('Clicked 200');
-
                 break;
               default:
                 console.log('No handler for this action');

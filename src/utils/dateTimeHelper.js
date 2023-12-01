@@ -32,3 +32,11 @@ export const getEndDayISO = date => {
   );
   return endDate.toISOString();
 };
+
+export const createTimeSetter = (hours, minutes, seconds) => () => {
+  const date = new Date();
+  date.setHours(hours);
+  date.setMinutes(minutes);
+  date.setSeconds(seconds);
+  return date;
+};

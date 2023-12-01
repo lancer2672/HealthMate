@@ -58,23 +58,7 @@ const SearchInput = ({handleSetSearchResults}) => {
           autoFocus={true}
         />
       </View>
-      {/* <ScrollView
-          style={{backgroundColor: 'white'}}
-          showsVerticalScrollIndicator={true}>
-          {Array.isArray(commonResults) && commonResults.length > 0 ? (
-            <>
-              <Text style={styles.textHeading}>Common</Text>
-              <ListCommonFood searchResults={searchResults} />
-            </>
-          ) : null}
-          {Array.isArray(searchResults.branded) &&
-          searchResults.branded.length > 0 ? (
-            <>
-              <Text style={styles.textHeading}>Branded</Text>
-              <ListBrandedFood searchResults={searchResults} />
-            </>
-          ) : null}
-        </ScrollView> */}
+      {/*  */}
     </View>
   );
 };
