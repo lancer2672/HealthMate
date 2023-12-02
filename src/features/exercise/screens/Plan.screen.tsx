@@ -13,19 +13,31 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import PlanItem from '../components/PlanItem';
 import {PlanType} from 'src/types/plan.type';
 import {useNavigation} from '@react-navigation/native';
+import {useDispatch, useSelector} from 'react-redux';
+import {setSelectedPlan} from 'src/store/reducer/exerciseSlice';
+import CreatePlanModal from '../components/plan/CreatePlanModal';
+import {exerciseSelector, userSelector} from 'src/store/selectors';
+import {getPlanAction} from 'src/store/reducer/thunks/exerciseActions';
 
 const Plan = () => {
-  const [plans, setPlans] = useState<PlanType[]>();
-  const navigation = useNavigation();
-
-  const createPlan = async () => {};
-  const viewDetailPlan = () => {
+  const [createModalShow, setCreateModalShow] = useState(false);
+  const {user} = useSelector(userSelector);
+  const {plans} = useSelector(exerciseSelector);
+  const navigation = useNavigation<any>();
+  const dispatch = useDispatch<any>();
+  const showModal = async () => {
+    setCreateModalShow(true);
+  };
+  console.log('Plan', plans);
+  const viewDetailPlan = plan => {
+    dispatch(setSelectedPlan(plan));
     navigation.navigate('DetailPlan');
   };
+
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Your plan</Text>
-      <TouchableOpacity onPress={createPlan} style={styles.createPlanWraper}>
+      <TouchableOpacity onPress={showModal} style={styles.createPlanWraper}>
         <View style={styles.createPlan}>
           <FontAwesome name={'plus'} color={'black'} size={28}></FontAwesome>
         </View>
@@ -35,45 +47,19 @@ const Plan = () => {
         <FlatList
           contentContainerStyle={{marginBottom: 20}}
           removeClippedSubviews={false}
-          data={[
-            {
-              name: 'new name',
-              exercise: [],
-              createdAt: new Date()
-            },
-            {
-              name: 'new name',
-              exercise: [],
-              createdAt: new Date()
-            },
-            {
-              name: 'new name',
-              exercise: [],
-              createdAt: new Date()
-            },
-            {
-              name: 'new name',
-              exercise: [],
-              createdAt: new Date()
-            },
-            {
-              name: 'new name',
-              exercise: [],
-              createdAt: new Date()
-            },
-            {
-              name: 'new name',
-              exercise: [],
-              createdAt: new Date()
-            }
-          ]}
+          data={plans}
           renderItem={({item}) => (
-            <Pressable onPress={viewDetailPlan}>
+            <Pressable onPress={() => viewDetailPlan(item)}>
               <PlanItem plan={item} />
             </Pressable>
           )}
         />
       </View>
+      <CreatePlanModal
+        visible={createModalShow}
+        onClose={() => {
+          setCreateModalShow(false);
+        }}></CreatePlanModal>
     </ScrollView>
   );
 };

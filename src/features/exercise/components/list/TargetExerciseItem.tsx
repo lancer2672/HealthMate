@@ -53,7 +53,7 @@ const TargetExerciseItem = ({target}) => {
               fontSize: 20,
               fontWeight: 'bold'
             }}>
-            {`${target.name} -  ${listExercise.length} exercise`}
+            {`${target.name}`}
           </Text>
           <View
             style={{

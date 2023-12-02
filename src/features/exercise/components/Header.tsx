@@ -17,7 +17,7 @@ const Header = ({}) => {
   return (
     <View style={styles.container}>
       <View>
-        <Text style={styles.date}>{`Hello $username`}</Text>
+        <Text style={styles.date}>Healthmate</Text>
         {/* <Text style={styles.goal}></Text> */}
       </View>
       <View style={{flexDirection: 'row'}}>

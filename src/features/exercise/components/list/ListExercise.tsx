@@ -11,15 +11,24 @@ import exerciseApi from 'src/api/exerciseApi';
 const ListExercise = () => {
   const route = useRoute<any>();
   const navigation = useNavigation();
-  const {exercises, type, value} = route.params;
+  const {exercises = null, type, value} = route.params;
   const [searchKeyword, setSearchKeyword] = useState<string>('');
   const [isSearching, setIsSearching] = useState(true);
-  const [listExercise, setListExercise] = useState(exercises);
+  const [listExercise, setListExercise] = useState(exercises || []);
   const searchTimeout = useRef<any>();
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [isTyping, setIstyping] = useState(true);
 
   console.log('ex', listExercise);
+  useEffect(() => {
+    if (!exercises) {
+      const getAllExercise = async () => {
+        const list = await exerciseApi.getAll(10);
+        setListExercise(() => list);
+      };
+      getAllExercise();
+    }
+  }, []);
   const loadMore = async () => {
     let list = [];
     switch (type) {
@@ -99,6 +108,7 @@ const ListExercise = () => {
         data={listExercise}
         onEndReached={loadMore}
         onEndReachedThreshold={0.5}
+        keyExtractor={(item, index) => `x2${index}`}
         renderItem={({item}) => <ExerciseCardItem exercise={item} />}
       />
     </View>

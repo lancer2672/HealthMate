@@ -6,11 +6,11 @@ const TabButton = ({onButtonClick}) => {
   const onClick = index => {
     onButtonClick(index);
   };
-  const buttons = ['Personal', 'Group', 'Plan'];
+  const buttons = ['Exercise', 'Group', 'Plan'];
   return (
     <View
       style={{
-        paddingHorizontal: 12,
+        paddingHorizontal: 4,
         flexDirection: 'row',
         justifyContent: 'space-between'
       }}>
@@ -33,10 +33,13 @@ export default TabButton;
 
 const styles = StyleSheet.create({
   button: {
-    borderRadius: 4,
+    borderRadius: 12,
     borderWidth: 2,
     marginVertical: 12,
-    borderColor: 'black',
-    backgroundColor: 'black'
+    flex: 1,
+    // minWidth: 100,
+    marginHorizontal: 6,
+    borderColor: '#f27638',
+    backgroundColor: '#f27638'
   }
 });

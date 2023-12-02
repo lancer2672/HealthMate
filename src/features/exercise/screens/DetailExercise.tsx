@@ -1,22 +1,32 @@
 import {Image, StyleSheet, TouchableOpacity, Text, View} from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {Button} from 'react-native-paper';
+import buttonStyles from 'src/features/theme/styles/button';
+import PlanListModal from '../components/plan/AddPlanModal';
+import {useTheme} from 'styled-components';
 
 const DetailExercise = () => {
   const route = useRoute<any>();
   const navigation = useNavigation();
+  const theme = useTheme();
+  const [isShowPlanList, setIsShowPlanList] = useState(false);
 
   const {exercise} = route.params;
   const navigateBack = () => {
     navigation.goBack();
   };
+  const handleAddSongToPlaylist = () => {};
+  const openPlanList = () => {
+    setIsShowPlanList(true);
+  };
   return (
     <>
       <View style={{paddingBottom: 2}}>
-        <View style={styles.header}>
+        <View style={[styles.header, {backgroundColor: theme.secondary}]}>
           <TouchableOpacity onPress={navigateBack}>
-            <Ionicons name="arrow-back" size={28} color="black" />
+            <Ionicons name="arrow-back" size={28} color="white" />
           </TouchableOpacity>
           <Text style={styles.title}>List exercise</Text>
         </View>
@@ -27,13 +37,24 @@ const DetailExercise = () => {
         <View>
           {exercise.instructions.map((instruction, i) => {
             return (
-              <Text style={styles.instruction}>
+              <Text key={`instruction${i}`} style={styles.instruction}>
                 {i} - {instruction}
               </Text>
             );
           })}
         </View>
+        <Button
+          style={buttonStyles.primary}
+          mode="contained"
+          onPress={openPlanList}>
+          Add to plan
+        </Button>
       </View>
+      <PlanListModal
+        visible={isShowPlanList}
+        onClose={() => {
+          setIsShowPlanList(false);
+        }}></PlanListModal>
     </>
   );
 };
@@ -53,7 +74,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     marginLeft: 12,
 
-    color: 'black'
+    color: 'white'
   },
   header: {
     elevation: 2,

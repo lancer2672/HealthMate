@@ -44,6 +44,7 @@ const ListExerciseBody = () => {
         showsHorizontalScrollIndicator={false}
         onEndReachedThreshold={0.5}
         onEndReached={handleLoadMore}
+        keyExtractor={(item, index) => `x3${index}`}
         data={searchExercise}
         renderItem={({item}) => <ExerciseCardItem exercise={item} />}
       />

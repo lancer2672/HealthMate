@@ -11,15 +11,17 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {Modal} from 'react-native';
 import {TouchableWithoutFeedback} from 'react-native';
-import PlanListModal from '../plan/PlanListModal';
+import AddPlanModal from '../plan/AddPlanModal';
 import {useNavigation} from '@react-navigation/native';
+import {useDispatch} from 'react-redux';
 const {width} = Dimensions.get('screen');
 
 const ExerciseCardItem = ({exercise}) => {
   const [isFavourite, setIsFavourite] = useState(false);
   const [isShowMenu, setIsShowMenu] = useState(false);
   const [isShowPlanList, setIsShowPlanList] = useState(false);
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
+
   useEffect(() => {}, []);
   const toggleFavourite = () => {
     setIsFavourite(!isFavourite);
@@ -69,7 +71,7 @@ const ExerciseCardItem = ({exercise}) => {
                 color={isFavourite ? 'tomato' : 'black'}
                 size={28}></AntDesign>
             </TouchableOpacity> */}
-            <TouchableOpacity onPress={openBottomMenu}>
+            <TouchableOpacity style={{padding: 4}} onPress={openBottomMenu}>
               <FontAwesome
                 name={'plus'}
                 color={'black'}
@@ -78,11 +80,12 @@ const ExerciseCardItem = ({exercise}) => {
           </View>
         </View>
       </ImageBackground>
-      <PlanListModal
+      <AddPlanModal
+        exercise={exercise}
         visible={isShowPlanList}
         onClose={() => {
           setIsShowPlanList(false);
-        }}></PlanListModal>
+        }}></AddPlanModal>
 
       <BottomMenu
         visible={isShowMenu}

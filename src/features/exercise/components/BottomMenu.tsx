@@ -2,10 +2,17 @@ import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import React from 'react';
 import {Modal} from 'react-native';
 import {TouchableWithoutFeedback} from 'react-native';
-const BottomMenu = ({visible, onClose}) => {
-  const deleteNotification = () => {
+import {useDispatch, useSelector} from 'react-redux';
+import {removePlanAction} from 'src/store/reducer/thunks/exerciseActions';
+import {userSelector} from 'src/store/selectors';
+const BottomMenu = ({visible, onClose, plan}) => {
+  const dispatch = useDispatch();
+  const {user} = useSelector(userSelector);
+  const removePlan = () => {
+    dispatch(removePlanAction({userId: user.uid, planName: plan.planName}));
     onClose();
   };
+
   return (
     <Modal
       animationType="slide"
@@ -33,15 +40,11 @@ const BottomMenu = ({visible, onClose}) => {
                 borderBottomWidth: 2,
                 marginBottom: 12
               }}></View>
+
             <TouchableOpacity
-              style={[
-                styles.optionContainer,
-                {
-                  width: '100%'
-                }
-              ]}
-              onPress={deleteNotification}>
-              <Text style={styles.option}>Delete</Text>
+              style={[styles.optionContainer]}
+              onPress={removePlan}>
+              <Text style={styles.option}>Delete plan</Text>
             </TouchableOpacity>
           </View>
         </View>

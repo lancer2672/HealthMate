@@ -4,6 +4,7 @@ const darkTheme = {
   surface: '#131A26',
   background: '#17354a',
   text: '#FFFFFF',
+  secondary: '#f27638'
 };
 
 const lightTheme = {
@@ -12,6 +13,7 @@ const lightTheme = {
   surface: '#131A26',
   background: '#17354a',
   text: '#000000',
+  secondary: '#f27638'
 };
 
 export {darkTheme, lightTheme};

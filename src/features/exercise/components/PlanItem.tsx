@@ -14,18 +14,19 @@ import BottomMenu from './BottomMenu';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 type PlanItemProps = {
-  plan: PlanType
+  plan: PlanType,
+  isSelected?: boolean
 };
-const PlanItem = ({plan}: PlanItemProps) => {
+const PlanItem = ({plan, isSelected = false}: PlanItemProps) => {
   const [isShowMenu, setIsShowMenu] = useState(false);
-
   const getPlanImage = () => {
+    return require('../../../assets/imgs/plan.jpg');
     if (plan.exercise.length == 0) {
-      return require('../../../assets/imgs/plan.jpg');
     } else {
       return {uri: plan.exercise[0].gifUrl};
     }
   };
+  console.log('PlanItem', plan);
   const openBottomMenu = () => {
     setIsShowMenu(true);
   };
@@ -33,8 +34,11 @@ const PlanItem = ({plan}: PlanItemProps) => {
     <View style={styles.wraper}>
       <Image source={getPlanImage()} style={styles.createPlan}></Image>
       <View style={{flex: 1, marginLeft: 12}}>
-        <Text style={styles.planText}>{plan.name}</Text>
-        <Text style={styles.planSubText}>
+        <Text style={[styles.planText, {color: isSelected ? 'white' : null}]}>
+          {plan.planName}
+        </Text>
+        <Text
+          style={[styles.planSubText, {color: isSelected ? 'white' : null}]}>
           {plan.exercise.length === 0
             ? 'No exericse yet'
             : `${plan.exercise.length} exercise`}
@@ -44,6 +48,7 @@ const PlanItem = ({plan}: PlanItemProps) => {
         <Feather name={'more-vertical'} color={'black'} size={28}></Feather>
       </TouchableOpacity>
       <BottomMenu
+        plan={plan}
         visible={isShowMenu}
         onClose={() => {
           setIsShowMenu(false);
