@@ -30,7 +30,7 @@ import {activitySelector, waterTrackingSelector} from 'src/store/selectors';
 import {Tabs} from './tabs';
 import ExerciseHome from 'src/features/exercise/screens/ExerciseHome.screen';
 import ListExercise from 'src/features/exercise/components/list/ListExercise';
-import DetailPlan from 'src/features/exercise/components/plan/DetailPlan';
+import DetailPlan from 'src/features/exercise/screens/DetailPlan';
 import DetailExercise from 'src/features/exercise/screens/DetailExercise';
 const Stack = createNativeStackNavigator();
 

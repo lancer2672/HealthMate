@@ -40,3 +40,14 @@ export const createTimeSetter = (hours, minutes, seconds) => () => {
   date.setSeconds(seconds);
   return date;
 };
+
+export function convertSecondsToMinutesAndSeconds(totalSeconds) {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  if (minutes === 0) {
+    return `${seconds} giây`;
+  } else {
+    return `${minutes} phút ${seconds} giây`;
+  }
+}

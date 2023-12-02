@@ -17,10 +17,12 @@ const exerciseApi = {
     return data.data;
   },
   getTargetList: async () => {
+    return [];
     const data = await axiosClient.get(`${EXERCISE_BASE_URL}/targetList`, {});
     return data.data;
   },
   getTargetExercise: async (target, limit) => {
+    return [];
     const data = await axiosClient.get(
       `${EXERCISE_BASE_URL}/target/${target}`,
       {
@@ -32,6 +34,7 @@ const exerciseApi = {
     return data.data;
   },
   getExerciseByBodyPart: async ({bodyPart, limit}) => {
+    return [];
     const data = await axiosClient.get(
       `${EXERCISE_BASE_URL}/bodyPart/${bodyPart}`,
       {
