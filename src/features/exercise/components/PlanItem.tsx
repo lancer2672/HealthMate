@@ -10,7 +10,7 @@ import {
 import React, {useState} from 'react';
 import Feather from 'react-native-vector-icons/Feather';
 import {PlanType} from 'src/types/plan.type';
-import BottomMenu from './BottomMenu';
+import BottomMenu from './plan/BottomMenu';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 type PlanItemProps = {

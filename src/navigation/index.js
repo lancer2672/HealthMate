@@ -10,7 +10,7 @@ import {setIsLoading} from '../store/reducer/appSlice';
 import {AppNavigator} from './App.navigation';
 import auth from '@react-native-firebase/auth';
 import {setUser} from '../store/reducer/userSlice';
-import {setPlans} from 'src/store/reducer/exerciseSlice';
+import {setPlans, setWorkoutPlan} from 'src/store/reducer/exerciseSlice';
 import {getUserData} from 'src/services/firebase/firestore/user';
 StatusBar.setBackgroundColor('black');
 const Navigator = () => {
@@ -31,6 +31,7 @@ const Navigator = () => {
   useEffect(() => {
     if (user) {
       dispatch(setPlans(user.plans || []));
+      dispatch(setWorkoutPlan(user.workoutPlan || []));
     }
   }, [user]);
   return (

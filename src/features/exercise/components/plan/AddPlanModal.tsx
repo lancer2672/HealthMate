@@ -17,6 +17,7 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {useDispatch, useSelector} from 'react-redux';
 import {exerciseSelector, userSelector} from 'src/store/selectors';
 import {addExerciseAction} from 'src/store/reducer/thunks/exerciseActions';
+import InputText from 'src/components/TextInput';
 
 const AddPlanModal = ({visible, onClose, exercise}) => {
   const [selectedItems, setSelectedItems] = useState({});
@@ -114,13 +115,18 @@ const AddPlanModal = ({visible, onClose, exercise}) => {
                 marginLeft: 6,
                 justifyContent: 'space-between'
               }}>
-              <TextInput
+              {/* <TextInput
                 style={styles.input}
                 keyboardType="numeric"
                 onChangeText={setDuration}
                 placeholder="Duration"
                 value={duration}
-              />
+              /> */}
+              <InputText
+                keyboardType="numeric"
+                onChangeText={setDuration}
+                placeholder="Duration"
+                value={duration}></InputText>
               {/* <View style={styles.inputContainer}>
                 <Text style={styles.suffix}>seconds</Text>
               </View> */}

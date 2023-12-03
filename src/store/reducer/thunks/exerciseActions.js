@@ -5,7 +5,9 @@ import {
   addExercise,
   removeExercise,
   updateExercise,
-  getUserPlan
+  getUserPlan,
+  updateWorkoutPlan,
+  updateDailyWorkoutPlan
 } from '../../../services/firebase/firestore/exercise';
 
 export const addPlanAction = createAsyncThunk(
@@ -73,6 +75,29 @@ export const updateExerciseAction = createAsyncThunk(
   async (data, thunkAPI) => {
     try {
       return await updateExercise(data);
+    } catch (error) {
+      console.log('Update exercise error', error.message);
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
+export const updateWorkoutPlanAction = createAsyncThunk(
+  'exercise/updateWorkoutPlan',
+  async (data, thunkAPI) => {
+    try {
+      return await updateWorkoutPlan(data);
+    } catch (error) {
+      console.log('Update exercise error', error.message);
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+export const updateDailyWorkoutPlanAction = createAsyncThunk(
+  'exercise/updateDailyWorkoutPlan',
+  async (data, thunkAPI) => {
+    try {
+      return await updateDailyWorkoutPlan(data);
     } catch (error) {
       console.log('Update exercise error', error.message);
       return thunkAPI.rejectWithValue(error.message);

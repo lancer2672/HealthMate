@@ -26,6 +26,8 @@ export async function registerUser({email, password, ...rest}) {
     const userData = {
       uid: user.uid,
       email: user.email,
+      weeklyPlan: {},
+      plans: [],
       ...rest
     };
     await usersRef.doc(user.uid).set(userData);

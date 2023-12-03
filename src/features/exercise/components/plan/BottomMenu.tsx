@@ -1,18 +1,51 @@
 import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import {Modal} from 'react-native';
 import {TouchableWithoutFeedback} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
-import {removePlanAction} from 'src/store/reducer/thunks/exerciseActions';
+import {
+  removePlanAction,
+  updateDailyWorkoutPlanAction,
+  updateWorkoutPlanAction
+} from 'src/store/reducer/thunks/exerciseActions';
 import {userSelector} from 'src/store/selectors';
+import InputText from 'src/components/TextInput';
+import WeekDateDropDown from 'src/components/WeekDateDropDown';
+import {updateWorkoutPlan} from 'src/services/firebase/firestore/exercise';
 const BottomMenu = ({visible, onClose, plan}) => {
-  const dispatch = useDispatch();
+  const [selectedDate, setSelectedDate] = useState(null);
+
+  const dispatch = useDispatch<any>();
   const {user} = useSelector(userSelector);
   const removePlan = () => {
     dispatch(removePlanAction({userId: user.uid, planName: plan.planName}));
     onClose();
   };
 
+  const handleSetSelectedDate = dateIndex => {
+    setSelectedDate(dateIndex);
+  };
+  const handleAddToWorkoutDaily = () => {
+    dispatch(
+      updateDailyWorkoutPlanAction({
+        userId: user.uid,
+        planId: plan.id
+      })
+    );
+    onClose();
+  };
+  const handleAddToWorkoutPlan = () => {
+    console.log('selectedDate', selectedDate);
+    if (!selectedDate) return;
+    dispatch(
+      updateWorkoutPlanAction({
+        userId: user.uid,
+        planId: plan.id,
+        id: selectedDate
+      })
+    );
+    onClose();
+  };
   return (
     <Modal
       animationType="slide"
@@ -46,6 +79,24 @@ const BottomMenu = ({visible, onClose, plan}) => {
               onPress={removePlan}>
               <Text style={styles.option}>Delete plan</Text>
             </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.optionContainer]}
+              onPress={handleAddToWorkoutDaily}>
+              <Text style={styles.option}>Repeat daily</Text>
+            </TouchableOpacity>
+
+            <View
+              style={[
+                styles.optionContainer,
+                {flexDirection: 'row', alignItems: 'center'}
+              ]}>
+              <WeekDateDropDown
+                onItemSelected={handleSetSelectedDate}></WeekDateDropDown>
+              <TouchableOpacity onPress={handleAddToWorkoutPlan}>
+                <Text style={styles.option}>Add to workout plan</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </TouchableWithoutFeedback>

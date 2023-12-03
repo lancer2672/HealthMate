@@ -18,24 +18,43 @@ import {setSelectedPlan} from 'src/store/reducer/exerciseSlice';
 import CreatePlanModal from '../components/plan/CreatePlanModal';
 import {exerciseSelector, userSelector} from 'src/store/selectors';
 import {getPlanAction} from 'src/store/reducer/thunks/exerciseActions';
+import WeekList from 'src/components/WeekList';
+import WorkoutItem from '../components/plan/WorkoutPlanItem';
 
 const Plan = () => {
   const [createModalShow, setCreateModalShow] = useState(false);
+  const [selectedDay, setSelectedDay] = useState(new Date().getDay());
   const {user} = useSelector(userSelector);
-  const {plans} = useSelector(exerciseSelector);
+  const {plans, workoutPlan} = useSelector(exerciseSelector);
   const navigation = useNavigation<any>();
   const dispatch = useDispatch<any>();
   const showModal = async () => {
     setCreateModalShow(true);
   };
-  console.log('Plan', plans);
+  console.log(
+    'workoutPlan',
+    selectedDay,
+    workoutPlan[1],
+    workoutPlan[selectedDay],
+    workoutPlan
+  );
   const viewDetailPlan = plan => {
     dispatch(setSelectedPlan(plan));
     navigation.navigate('DetailPlan');
   };
 
+  const onDayItemClick = i => {
+    console.log('i', i);
+    setSelectedDay(i);
+  };
   return (
     <ScrollView style={styles.container}>
+      <View>
+        <Text style={styles.title}>Weekly Workout Plan</Text>
+        <WeekList onItemClick={onDayItemClick}></WeekList>
+        <WorkoutItem planId={workoutPlan[selectedDay]}></WorkoutItem>
+      </View>
+
       <Text style={styles.title}>Your plan</Text>
       <TouchableOpacity onPress={showModal} style={styles.createPlanWraper}>
         <View style={styles.createPlan}>
@@ -74,6 +93,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
+    fontWeight: 'bold',
     marginBottom: 4
   },
   createPlan: {

@@ -24,6 +24,7 @@ const ListExerciseBody = () => {
       exercises: searchExercise
     });
   };
+
   const handleLoadMore = async () => {
     const list = await exerciseApi.getAll(searchExercise.length + 10);
     setSearchExercise(list);

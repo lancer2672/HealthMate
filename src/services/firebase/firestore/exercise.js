@@ -7,11 +7,12 @@ const returnPlans = async userId => {
   const user = await usersRef.doc(userId).get();
   return user.data().plans;
 };
-
 export async function getUserPlan(userId) {
   try {
     const user = await usersRef.doc(userId).get();
-    return user.data().plans;
+    const plans = user.data().plans;
+    const activePlans = plans.filter(plan => !plan.deletedAt);
+    return activePlans;
   } catch (error) {
     console.log('Get user plan error', error.message);
     throw error;
@@ -20,8 +21,10 @@ export async function getUserPlan(userId) {
 
 export async function addPlan({userId, plan}) {
   try {
+    const planId = new Date().getTime().toString();
+    const planWithId = {...plan, id: planId};
     await usersRef.doc(userId).update({
-      plans: firestore.FieldValue.arrayUnion(plan)
+      plans: firestore.FieldValue.arrayUnion(planWithId)
     });
 
     return returnPlans(userId);
@@ -35,8 +38,12 @@ export async function removePlan({userId, planName}) {
   try {
     const user = await usersRef.doc(userId).get();
     const plans = user.data().plans;
-    const updatedPlans = plans.filter(plan => plan.planName !== planName);
-
+    const updatedPlans = plans.map(plan => {
+      if (plan.planName === planName) {
+        return {...plan, deletedAt: new Date()};
+      }
+      return plan;
+    });
     await usersRef.doc(userId).update({
       plans: updatedPlans
     });
@@ -116,6 +123,57 @@ export async function updateExercise({
     return updatedPlan;
   } catch (error) {
     console.log('Update exercise error', error.message);
+    throw error;
+  }
+}
+export async function updateWorkoutPlan({userId, planId, id}) {
+  try {
+    const user = await usersRef.doc(userId).get();
+    const weeklyPlans = user.data().weeklyPlans;
+
+    const existingPlan = weeklyPlans[id];
+
+    if (existingPlan) {
+      const updatedPlan = {...existingPlan, planId};
+      weeklyPlans[id] = updatedPlan;
+
+      await usersRef.doc(userId).update({
+        workoutPlan: weeklyPlans
+      });
+
+      return updatedPlan;
+    } else {
+      weeklyPlans[id] = planId;
+
+      await usersRef.doc(userId).update({
+        workoutPlan: weeklyPlans
+      });
+
+      return newPlan;
+    }
+  } catch (error) {
+    console.log('Add plan to weekly plans error', error.message);
+    throw error;
+  }
+}
+
+export async function updateDailyWorkoutPlan({userId, planId}) {
+  try {
+    const user = await usersRef.doc(userId).get();
+    const weeklyPlans = user.data().weeklyPlans;
+
+    // Set tất cả id từ 0 -> 6
+    for (let id = 0; id <= 6; id++) {
+      weeklyPlans[id] = planId;
+    }
+
+    await usersRef.doc(userId).update({
+      workoutPlan: weeklyPlans
+    });
+
+    return weeklyPlans;
+  } catch (error) {
+    console.log('Update daily workout plans error', error.message);
     throw error;
   }
 }

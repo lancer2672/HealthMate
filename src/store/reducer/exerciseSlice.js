@@ -6,12 +6,15 @@ import {
   getPlanAction,
   removeExerciseAction,
   removePlanAction,
-  updateExerciseAction
+  updateDailyWorkoutPlanAction,
+  updateExerciseAction,
+  updateWorkoutPlanAction
 } from './thunks/exerciseActions';
 
 const initialState = {
   selectedPlan: {},
   plans: [],
+  workoutPlan: {},
   isLoading: false,
   error: null
 };
@@ -22,6 +25,7 @@ const exerciseAction = [
   removeExerciseAction,
   updateExerciseAction
 ];
+
 export const exerciseSlice = createSlice({
   name: 'exercise',
   initialState: initialState,
@@ -31,9 +35,18 @@ export const exerciseSlice = createSlice({
     },
     setPlans: (state, action) => {
       state.plans = action.payload;
+    },
+    setWorkoutPlan: (state, action) => {
+      state.workoutPlan = action.payload;
     }
   },
   extraReducers: builder => {
+    builder.addCase(updateWorkoutPlanAction.fulfilled, (state, action) => {
+      state.workoutPlan = action.payload;
+    });
+    builder.addCase(updateDailyWorkoutPlanAction.fulfilled, (state, action) => {
+      state.workoutPlan = action.payload;
+    });
     actions.forEach(action => {
       builder
         .addCase(action.pending, state => {
@@ -67,4 +80,5 @@ export const exerciseSlice = createSlice({
   }
 });
 
-export const {setSelectedPlan, setPlans} = exerciseSlice.actions;
+export const {setSelectedPlan, setWorkoutPlan, setPlans} =
+  exerciseSlice.actions;
