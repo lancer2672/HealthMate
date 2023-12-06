@@ -5,7 +5,7 @@ const axiosClient = axios.create({
   baseURL: '',
   headers: {
     'Content-Type': 'application/json',
-    'X-RapidAPI-KEY': '4ff50f08eemsh71f325be441af71p1fee05jsnc76684fedd23',
+    'X-RapidAPI-KEY': 'e8ea896f4cmshf9c9db258dc782ap1a18a2jsn91526e0254b4',
     'X-RapidAPI-Host': RAPID_HOST
   }
 });

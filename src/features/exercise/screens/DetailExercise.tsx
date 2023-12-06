@@ -34,7 +34,13 @@ const DetailExercise = () => {
       <View style={styles.container}>
         <Text style={styles.name}>{exercise.name}</Text>
         <Image source={{uri: exercise.gifUrl}} style={styles.img}></Image>
-        <View>
+        <View
+          style={{
+            elevation: 3,
+            backgroundColor: 'white',
+            paddingVertical: 12,
+            paddingHorizontal: 8
+          }}>
           {exercise.instructions.map((instruction, i) => {
             return (
               <Text key={`instruction${i}`} style={styles.instruction}>
@@ -51,6 +57,7 @@ const DetailExercise = () => {
         </Button>
       </View>
       <PlanListModal
+        exercise={exercise}
         visible={isShowPlanList}
         onClose={() => {
           setIsShowPlanList(false);
@@ -91,6 +98,6 @@ const styles = StyleSheet.create({
   img: {width: 100, height: 100},
   instruction: {
     marginTop: 4,
-    fontSize: 15
+    fontSize: 16
   }
 });

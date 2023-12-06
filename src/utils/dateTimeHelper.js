@@ -46,8 +46,8 @@ export function convertSecondsToMinutesAndSeconds(totalSeconds) {
   const seconds = totalSeconds % 60;
 
   if (minutes === 0) {
-    return `${seconds} giây`;
+    return `${seconds} s`;
   } else {
-    return `${minutes} phút ${seconds} giây`;
+    return `${minutes} m ${seconds} s`;
   }
 }

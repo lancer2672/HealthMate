@@ -3,6 +3,7 @@ import axiosClient from './axiosClient';
 
 const exerciseApi = {
   getAll: async limit => {
+    return [];
     try {
       const data = await axiosClient.get(`${EXERCISE_BASE_URL}`, {
         params: {limit}
@@ -13,8 +14,19 @@ const exerciseApi = {
     }
   },
   getListBodyPart: async () => {
-    const data = await axiosClient.get(`${EXERCISE_BASE_URL}/bodyPartList`, {});
-    return data.data;
+    return [];
+    try {
+      console.log('GetListBodyPart');
+      const data = await axiosClient.get(
+        `${EXERCISE_BASE_URL}/bodyPartList`,
+        {}
+      );
+      console.log('GetListBodyPart data', data);
+
+      return data.data;
+    } catch (er) {
+      console.error('GetListBodyPart', er);
+    }
   },
   getTargetList: async () => {
     return [];

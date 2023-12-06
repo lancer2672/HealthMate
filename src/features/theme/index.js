@@ -4,7 +4,11 @@ const darkTheme = {
   surface: '#131A26',
   background: '#17354a',
   text: '#FFFFFF',
-  secondary: '#f27638'
+  secondary: '#f27638',
+  success: '#29c478',
+  green1: '#5c8973',
+  green2: '#5c8973',
+  green3: '#5c8973'
 };
 
 const lightTheme = {
@@ -13,6 +17,11 @@ const lightTheme = {
   surface: '#131A26',
   background: '#17354a',
   text: '#000000',
+  success: '#29c478',
+
+  green1: '#5c8973',
+  green2: '#5c8973',
+  green3: '#5c8973',
   secondary: '#f27638'
 };
 

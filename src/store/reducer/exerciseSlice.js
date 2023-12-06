@@ -6,6 +6,7 @@ import {
   getPlanAction,
   removeExerciseAction,
   removePlanAction,
+  saveHistoryExerciseAction,
   updateDailyWorkoutPlanAction,
   updateExerciseAction,
   updateWorkoutPlanAction
@@ -13,7 +14,9 @@ import {
 
 const initialState = {
   selectedPlan: {},
+  currentExercise: null,
   plans: [],
+  doExercise: [],
   workoutPlan: {},
   isLoading: false,
   error: null
@@ -38,6 +41,12 @@ export const exerciseSlice = createSlice({
     },
     setWorkoutPlan: (state, action) => {
       state.workoutPlan = action.payload;
+    },
+    setCurrentExercise: (state, action) => {
+      state.currentExercise = action.payload;
+    },
+    setDoExercise: (state, action) => {
+      state.doExercise = action.payload;
     }
   },
   extraReducers: builder => {
@@ -46,6 +55,9 @@ export const exerciseSlice = createSlice({
     });
     builder.addCase(updateDailyWorkoutPlanAction.fulfilled, (state, action) => {
       state.workoutPlan = action.payload;
+    });
+    builder.addCase(saveHistoryExerciseAction.fulfilled, (state, action) => {
+      state.doExercise = [];
     });
     actions.forEach(action => {
       builder
@@ -80,5 +92,10 @@ export const exerciseSlice = createSlice({
   }
 });
 
-export const {setSelectedPlan, setWorkoutPlan, setPlans} =
-  exerciseSlice.actions;
+export const {
+  setSelectedPlan,
+  setDoExercise,
+  setCurrentExercise,
+  setWorkoutPlan,
+  setPlans
+} = exerciseSlice.actions;

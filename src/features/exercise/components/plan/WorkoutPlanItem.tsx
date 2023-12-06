@@ -11,9 +11,10 @@ import React, {useEffect, useLayoutEffect, useState} from 'react';
 import Feather from 'react-native-vector-icons/Feather';
 import {PlanType} from 'src/types/plan.type';
 import BottomMenu from './BottomMenu';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {exerciseSelector} from 'src/store/selectors';
 import {useNavigation} from '@react-navigation/native';
+import {setSelectedPlan} from 'src/store/reducer/exerciseSlice';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 type WorkoutItemProps = {
@@ -23,6 +24,7 @@ const WorkoutItem = ({planId}: WorkoutItemProps) => {
   const [plan, setPlan] = useState(null);
   const {plans} = useSelector(exerciseSelector);
   const navigation = useNavigation();
+  const dispatch = useDispatch();
   useEffect(() => {
     console.log('planId', planId, plans);
     setPlan(plans.find(p => p.id === planId));
@@ -39,7 +41,8 @@ const WorkoutItem = ({planId}: WorkoutItemProps) => {
   //     setIsShowMenu(true);
   //   };
   const handleStartPlanSession = () => {
-    navigation.navigate('StartPlan', {planId});
+    dispatch(setSelectedPlan(plan));
+    navigation.navigate('StartPlan');
   };
   if (!plan) {
     return (

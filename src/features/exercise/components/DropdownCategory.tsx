@@ -19,6 +19,7 @@ const DropDownCategory = ({exercise, setExercise}) => {
         value: item
       };
     });
+    console.log('listbody part', data);
     setBodyPartList(list);
   };
   useEffect(() => {

@@ -30,7 +30,7 @@ const WeekItem: FC = ({day, index, onClick, isSelected = false}) => {
   const theme = useTheme();
   const currentDay = new Date().getDay();
   console.log('currentDay', currentDay);
-  const isPast = index <= currentDay;
+  const isPast = index < currentDay;
 
   const backgroundColor = isSelected ? theme.secondary : 'gray';
   const opacity = isPast ? 0.6 : 1;

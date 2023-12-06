@@ -26,12 +26,15 @@ const BottomMenu = ({visible, onClose, plan}) => {
     setSelectedDate(dateIndex);
   };
   const handleAddToWorkoutDaily = () => {
-    dispatch(
-      updateDailyWorkoutPlanAction({
-        userId: user.uid,
-        planId: plan.id
-      })
-    );
+    if (plan.exercise.length > 0) {
+      dispatch(
+        updateDailyWorkoutPlanAction({
+          userId: user.uid,
+          planId: plan.id
+        })
+      );
+    }
+
     onClose();
   };
   const handleAddToWorkoutPlan = () => {

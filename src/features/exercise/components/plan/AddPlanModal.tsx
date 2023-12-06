@@ -22,6 +22,7 @@ import InputText from 'src/components/TextInput';
 const AddPlanModal = ({visible, onClose, exercise}) => {
   const [selectedItems, setSelectedItems] = useState({});
   const [duration, setDuration] = useState(0);
+  const [breakDuration, setBreakDuration] = useState(0);
   const {plans} = useSelector(exerciseSelector);
 
   const toast = useToast();
@@ -32,7 +33,8 @@ const AddPlanModal = ({visible, onClose, exercise}) => {
     if (duration > 0) {
       let newEx = {
         ...exercise,
-        duration
+        duration,
+        breakDuration
       };
       console.log('selectedPlans', selectedItems);
       for (let [planName, value] of Object.entries(selectedItems)) {
@@ -73,11 +75,16 @@ const AddPlanModal = ({visible, onClose, exercise}) => {
       };
     });
   };
+  const handleClose = () => {
+    onClose();
+    setBreakDuration(0);
+    setDuration(0);
+  };
   return (
     <Modal
       animationType="fade"
       transparent={true}
-      onRequestClose={onClose}
+      onRequestClose={handleClose}
       visible={visible}>
       <TouchableWithoutFeedback onPress={null}>
         <View style={{flex: 1}}>
@@ -86,7 +93,7 @@ const AddPlanModal = ({visible, onClose, exercise}) => {
           <View style={styles.subModalContainer}>
             <View style={styles.header}>
               <Text style={styles.modalHeading}>Your plan</Text>
-              <TouchableOpacity onPress={onClose}>
+              <TouchableOpacity onPress={handleClose}>
                 <AntDesign name="close" size={24} color="black" />
               </TouchableOpacity>
             </View>
@@ -108,12 +115,25 @@ const AddPlanModal = ({visible, onClose, exercise}) => {
               )}
               keyExtractor={item => `${item.name}plan`}
             />
+            <View style={{flexDirection: 'row'}}>
+              <InputText
+                keyboardType="numeric"
+                onChangeText={setDuration}
+                placeholder="Duration"
+                value={duration}></InputText>
+
+              <InputText
+                keyboardType="numeric"
+                onChangeText={setBreakDuration}
+                placeholder="Break time"
+                value={breakDuration}></InputText>
+            </View>
             <View
               style={{
                 flexDirection: 'row',
                 width: '100%',
                 marginLeft: 6,
-                justifyContent: 'space-between'
+                justifyContent: 'flex-end'
               }}>
               {/* <TextInput
                 style={styles.input}
@@ -122,11 +142,6 @@ const AddPlanModal = ({visible, onClose, exercise}) => {
                 placeholder="Duration"
                 value={duration}
               /> */}
-              <InputText
-                keyboardType="numeric"
-                onChangeText={setDuration}
-                placeholder="Duration"
-                value={duration}></InputText>
               {/* <View style={styles.inputContainer}>
                 <Text style={styles.suffix}>seconds</Text>
               </View> */}

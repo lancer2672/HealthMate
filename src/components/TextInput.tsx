@@ -18,8 +18,8 @@ const InputText = forwardRef(
         contentStyle={{
           margin: 0
         }}
-        placeholderTextColor={'white'}
-        textColor={'white'}
+        placeholderTextColor={'black'}
+        textColor={'black'}
         style={styles.textInput}
         value={value}
         keyboardType={keyboardType ?? 'default'}
@@ -38,6 +38,6 @@ const styles = StyleSheet.create({
     width: SCREEN_WIDTH - 32,
     fontSize: 14,
     padding: 0,
-    color: 'white'
+    color: 'black'
   }
 });
