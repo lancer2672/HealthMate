@@ -1,7 +1,7 @@
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {getCurrentDateTimeStamp} from 'src/utils/dateTimeHelper';
+import {getSpecificDateTimeStamp} from 'src/utils/dateTimeHelper';
 const usersRef = firestore().collection('user');
 
 const returnPlans = async userId => {
@@ -61,7 +61,14 @@ export async function addExercise({userId, planName, exercise}) {
     const plans = user.data().plans;
     const updatedPlans = plans.map(plan => {
       if (plan.planName === planName) {
-        plan.exercise.push(exercise);
+        const exerciseIndex = plan.exercises.findIndex(
+          ex => ex.id === exercise.id
+        );
+        if (exerciseIndex > -1) {
+          plan.exercises[exerciseIndex] = exercise; // replace the existing exercise
+        } else {
+          plan.exercises.push(exercise); // add the new exercise
+        }
       }
       return plan;
     });
@@ -99,13 +106,18 @@ export async function removeExercise({userId, planName, exerciseName}) {
   }
 }
 
-export async function updateExercise({userId, id, newExerciseList}) {
+export async function updatePlanExercise({userId, id, exericse}) {
   try {
     const user = await usersRef.doc(userId).get();
     const plans = user.data().plans;
     const updatedPlans = plans.map(plan => {
       if (plan.id === id) {
-        plan.exercise = newExerciseList;
+        plan.exercise = plan.exercise.map(e => {
+          if (e.id === exericse.id) {
+            return exericse;
+          }
+          return e;
+        });
       }
       return plan;
     });
@@ -114,7 +126,7 @@ export async function updateExercise({userId, id, newExerciseList}) {
       plans: updatedPlans
     });
 
-    const updatedPlan = updatedPlans.find(plan => plan.planName === planName);
+    const updatedPlan = updatedPlans.find(plan => plan.id === planId);
     return updatedPlan;
   } catch (error) {
     console.log('Update exercise error', error.message);
@@ -172,20 +184,46 @@ export async function updateDailyWorkoutPlan({userId, planId}) {
     throw error;
   }
 }
-
-export async function saveHistoryExercise({userId, doExercise}) {
+export async function saveHistoryExercise({userId, planId, doExercise}) {
   try {
-    const dateKey = getCurrentDateTimeStamp();
-    const exerciseHistory = {[dateKey]: doExercise};
+    const dateKey = getSpecificDateTimeStamp();
 
-    await usersRef.doc(userId).set(
-      {
-        exerciseHistory: firestore.FieldValue.arrayUnion(exerciseHistory)
-      },
-      {merge: true}
-    );
+    const newExerciseHistory = {
+      [dateKey]: {
+        finishPlanId: planId,
+        detailExercise: doExercise
+      }
+    };
+
+    const userDoc = await usersRef.doc(userId).get();
+    const userData = userDoc.data();
+
+    if (userData.exerciseHistory) {
+      userData.exerciseHistory = {
+        ...userData.exerciseHistory,
+        ...newExerciseHistory
+      };
+    } else {
+      userData.exerciseHistory = newExerciseHistory;
+    }
+    console.log('saveHistoryExercise', newExerciseHistory);
+    await usersRef.doc(userId).set(userData, {merge: true});
   } catch (error) {
     console.log('Save history exercise error', error.message);
+    throw error;
+  }
+}
+
+export async function getHistoryByDate({userId, dateKey}) {
+  try {
+    const userDoc = await usersRef.doc(userId).get();
+    const userData = userDoc.data();
+
+    const exerciseHistory = userData.exerciseHistory[dateKey];
+
+    return exerciseHistory;
+  } catch (error) {
+    console.log('Get history by date error', error.message);
     throw error;
   }
 }

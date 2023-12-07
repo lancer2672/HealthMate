@@ -6,6 +6,7 @@ const darkTheme = {
   text: '#FFFFFF',
   secondary: '#f27638',
   success: '#29c478',
+  failed: '#ff6357',
   green1: '#5c8973',
   green2: '#5c8973',
   green3: '#5c8973'
@@ -18,6 +19,7 @@ const lightTheme = {
   background: '#17354a',
   text: '#000000',
   success: '#29c478',
+  failed: '#ff6357',
 
   green1: '#5c8973',
   green2: '#5c8973',

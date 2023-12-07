@@ -4,7 +4,7 @@ import {
   removePlan,
   addExercise,
   removeExercise,
-  updateExercise,
+  updatePlanExercise,
   getUserPlan,
   updateWorkoutPlan,
   updateDailyWorkoutPlan,
@@ -71,11 +71,11 @@ export const removeExerciseAction = createAsyncThunk(
   }
 );
 
-export const updateExerciseAction = createAsyncThunk(
-  'exercise/updateExercise',
+export const updatePlanExerciseAction = createAsyncThunk(
+  'exercise/updatePlanExercise',
   async (data, thunkAPI) => {
     try {
-      return await updateExercise(data);
+      return await updatePlanExercise(data);
     } catch (error) {
       console.log('Update exercise error', error.message);
       return thunkAPI.rejectWithValue(error.message);

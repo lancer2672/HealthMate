@@ -73,13 +73,19 @@ const DoExercise = () => {
         ...doExercise,
         {
           exerciseId: currentExercise.id,
-          duration: exerciseTime,
+          duration: currentExercise.duration - exerciseTime,
           breakDuration: 0
         }
       ])
     );
     if (currentExercise.index === selectedPlan.exercise.length - 1) {
-      dispatch(saveHistoryExerciseAction({userId: user.uid, doExercise}));
+      dispatch(
+        saveHistoryExerciseAction({
+          userId: user.uid,
+          planId: selectedPlan.id,
+          doExercise
+        })
+      );
       navigation.navigate('FinishScreen');
     } else {
       navigation.navigate('BreakScreen', {

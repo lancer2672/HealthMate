@@ -33,6 +33,13 @@ const exerciseApi = {
     const data = await axiosClient.get(`${EXERCISE_BASE_URL}/targetList`, {});
     return data.data;
   },
+  getExerciseById: async id => {
+    const data = await axiosClient.get(
+      `${EXERCISE_BASE_URL}/exercise/${id}`,
+      {}
+    );
+    return data.data;
+  },
   getTargetExercise: async (target, limit) => {
     return [];
     const data = await axiosClient.get(

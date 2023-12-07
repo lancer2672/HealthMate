@@ -18,12 +18,14 @@ import DraggableFlatList, {
   NestableScrollContainer,
   NestableDraggableFlatList
 } from 'react-native-draggable-flatlist';
+import {Modal as PaperModal, Portal} from 'react-native-paper';
 
 import {exerciseSelector, userSelector} from 'src/store/selectors';
 import {useDispatch, useSelector} from 'react-redux';
 import {
   removeExerciseAction,
-  updateExerciseAction
+  updateExerciseAction,
+  updatePlanExerciseAction
 } from 'src/store/reducer/thunks/exerciseActions';
 import {useTheme} from 'styled-components';
 import {Button} from 'react-native-paper';
@@ -31,11 +33,12 @@ import buttonStyles from 'src/features/theme/styles/button';
 import {convertSecondsToMinutesAndSeconds} from 'src/utils/dateTimeHelper';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {setCurrentExercise} from 'src/store/reducer/exerciseSlice';
+import InputText from 'src/components/TextInput';
 const DetailPlan = () => {
   const [selectedIndex, setSelectedIndex] = useState();
 
   const {user} = useSelector(userSelector);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<any>();
   const {selectedPlan, plans} = useSelector(exerciseSelector);
   const [listExercise, setListExercise] = useState([]);
   // const [exercise, setListExercise] = useState(selectedPlan.exercise);
@@ -106,7 +109,7 @@ const DetailPlan = () => {
               <Ionicons name="arrow-back" size={28} color="white" />
             </TouchableOpacity>
 
-            <Text style={styles.title}>{selectedPlan.planName}</Text>
+            <Text style={styles.title}>Plan</Text>
           </View>
         </View>
         <View style={styles.container}>
@@ -167,8 +170,10 @@ const DetailPlan = () => {
 
 const DetailPlanItem = ({isSelected, move, exercise, index, onSelect}) => {
   const [isShowMenu, setIsShowMenu] = useState(false);
+  const [updateModalVisible, setUpdateModalVisible] = useState(false);
+  const {selectedPlan} = useSelector(exerciseSelector);
   const theme = useTheme();
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const openMenu = () => {
     setIsShowMenu(true);
   };
@@ -242,25 +247,40 @@ const DetailPlanItem = ({isSelected, move, exercise, index, onSelect}) => {
             color={isSelected ? 'white' : 'gray'}
           />
         </TouchableOpacity>
-        <TouchableOpacity onPress={openMenu}>
-          <Feather
-            name="more-vertical"
-            size={24}
-            color={isSelected ? 'white' : 'gray'}
-          />
-        </TouchableOpacity>
+        {/* not allowed to modify recommended exercise */}
+        {selectedPlan.isRecommendedPlan ? (
+          <></>
+        ) : (
+          <TouchableOpacity onPress={openMenu}>
+            <Feather
+              name="more-vertical"
+              size={24}
+              color={isSelected ? 'white' : 'gray'}
+            />
+          </TouchableOpacity>
+        )}
       </TouchableOpacity>
       <BottomMenu
         exercise={exercise}
         visible={isShowMenu}
+        openUpdateModal={() => {
+          setUpdateModalVisible(true);
+        }}
         onClose={() => {
           setIsShowMenu(false);
         }}></BottomMenu>
+      <UpdateExerciseModal
+        exercise={exercise}
+        visible={updateModalVisible}
+        onClose={() => {
+          setUpdateModalVisible(false);
+        }}></UpdateExerciseModal>
     </>
   );
 };
 
-const BottomMenu = ({visible, onClose, exercise}) => {
+const BottomMenu = ({visible, onClose, openUpdateModal, exercise}) => {
+  const [updateModalVisible, setUpdateModalVisible] = useState(false);
   const {user} = useSelector(userSelector);
   const {selectedPlan} = useSelector(exerciseSelector);
   const dispatch = useDispatch();
@@ -274,7 +294,10 @@ const BottomMenu = ({visible, onClose, exercise}) => {
     );
     onClose();
   };
-
+  const handleOpenUpdateModal = () => {
+    onClose();
+    openUpdateModal();
+  };
   return (
     <Modal
       animationType="slide"
@@ -290,6 +313,11 @@ const BottomMenu = ({visible, onClose, exercise}) => {
               onPress={removeExercise}>
               <Text style={styles.option}>Delete</Text>
             </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.optionContainer}
+              onPress={handleOpenUpdateModal}>
+              <Text style={styles.option}>Update</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </TouchableWithoutFeedback>
@@ -297,6 +325,81 @@ const BottomMenu = ({visible, onClose, exercise}) => {
   );
 };
 
+const UpdateExerciseModal = ({visible, onClose, exercise}) => {
+  const [breakDuration, setBreakDuration] = useState(-1);
+  const [duration, setDuration] = useState(-1);
+  const {selectedPlan} = useSelector(exerciseSelector);
+  const {user} = useSelector(userSelector);
+  const dispatch = useDispatch<any>();
+  const handleUpdatePlanExercise = () => {
+    if (breakDuration === -1 || duration === -1) return;
+
+    const newExercise = {
+      ...exercise,
+      breakDuration,
+      duration
+    };
+    dispatch(
+      updatePlanExerciseAction({
+        userId: user.uid,
+        id: selectedPlan.id,
+        exercise: newExercise
+      })
+    );
+  };
+  const handleClose = () => {
+    onClose();
+    resetForm();
+  };
+  const resetForm = () => {
+    setBreakDuration(-1);
+    setDuration(-1);
+  };
+  return (
+    <Portal>
+      <PaperModal visible={visible} onDismiss={handleClose}>
+        <View style={styles.subModalContainer}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              width: '100%',
+              paddingRight: 12,
+              justifyContent: 'space-between'
+            }}>
+            <Text style={styles.modalHeading}>Update exericse</Text>
+            <TouchableOpacity onPress={onClose}>
+              <AntDesign name="close" size={24} color="black" />
+            </TouchableOpacity>
+          </View>
+          <View style={{width: '100%', paddingHorizontal: 12}}>
+            <InputText
+              style={{width: '100%'}}
+              keyboardType="numeric"
+              onChangeText={setDuration}
+              placeholder="Duration"
+              value={duration}></InputText>
+            <InputText
+              style={{width: '100%'}}
+              keyboardType="numeric"
+              onChangeText={setBreakDuration}
+              placeholder="Break duration"
+              value={breakDuration}></InputText>
+          </View>
+          <Button
+            style={[
+              buttonStyles.primary,
+              {alignSelf: 'flex-end', marginRight: 12}
+            ]}
+            mode="contained"
+            onPress={handleUpdatePlanExercise}>
+            Update
+          </Button>
+        </View>
+      </PaperModal>
+    </Portal>
+  );
+};
 export default DetailPlan;
 
 const styles = StyleSheet.create({
@@ -327,6 +430,18 @@ const styles = StyleSheet.create({
     marginLeft: 12,
 
     color: 'white'
+  },
+
+  subModalContainer: {
+    backgroundColor: 'white',
+    borderColor: 'gray',
+    borderWidth: 1,
+    elevation: 2,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    height: 'auto',
+    marginHorizontal: 12,
+    borderRadius: 4
   },
   modalListEx: {
     flex: 1,

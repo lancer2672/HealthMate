@@ -12,6 +12,7 @@ import auth from '@react-native-firebase/auth';
 import {setUser} from '../store/reducer/userSlice';
 import {setPlans, setWorkoutPlan} from 'src/store/reducer/exerciseSlice';
 import {getUserData} from 'src/services/firebase/firestore/user';
+import exerciseApi from 'src/api/exerciseApi';
 StatusBar.setBackgroundColor('black');
 const Navigator = () => {
   const {user} = useSelector(state => state.user);

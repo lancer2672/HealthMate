@@ -1,12 +1,16 @@
 import {StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import {Button} from 'react-native-paper';
+import {useTheme} from 'styled-components';
 
 const TabButton = ({onButtonClick}) => {
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const onClick = index => {
+    setSelectedIndex(index);
     onButtonClick(index);
   };
-  const buttons = ['Exercise', 'Group', 'Plan'];
+  const theme = useTheme();
+  const buttons = ['Exercise', 'Plan'];
   return (
     <View
       style={{
@@ -18,8 +22,12 @@ const TabButton = ({onButtonClick}) => {
         return (
           <Button
             key={`das${index}`}
-            style={styles.button}
+            style={[
+              styles.button,
+              {backgroundColor: selectedIndex == index ? theme.secondary : null}
+            ]}
             mode="contained"
+            textColor="black"
             onPress={() => onClick(index)}>
             {button}
           </Button>

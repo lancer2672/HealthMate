@@ -1,5 +1,4 @@
-export const getCurrentDateTimeStamp = () => {
-  const date = new Date();
+export const getSpecificDateTimeStamp = (date = new Date()) => {
   const today = new Date(
     date.getUTCFullYear(),
     date.getMonth(),

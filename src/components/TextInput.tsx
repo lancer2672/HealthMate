@@ -4,7 +4,7 @@ import {TextInput} from 'react-native-paper';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const InputText = forwardRef(
-  ({keyboardType, onChangeText, placeholder, value}, ref) => {
+  ({keyboardType, onChangeText, style, placeholder, value}, ref) => {
     return (
       <TextInput
         mode="outlined"
@@ -20,7 +20,7 @@ const InputText = forwardRef(
         }}
         placeholderTextColor={'black'}
         textColor={'black'}
-        style={styles.textInput}
+        style={[styles.textInput, style]}
         value={value}
         keyboardType={keyboardType ?? 'default'}
         onChangeText={onChangeText}
@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
   textInput: {
     backgroundColor: 'rgba(0,0,0,0)',
     marginTop: 8,
-    width: SCREEN_WIDTH - 32,
+    maxWidth: SCREEN_WIDTH - 32,
     fontSize: 14,
     padding: 0,
     color: 'black'

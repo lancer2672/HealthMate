@@ -1,14 +1,16 @@
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {CountdownCircleTimer} from 'react-native-countdown-circle-timer';
 import Entypo from 'react-native-vector-icons/Entypo';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {exerciseSelector} from 'src/store/selectors';
 import {withBackButtonHandler} from 'src/hoc/withBackBtnHandler';
+import {setDoExercise} from 'src/store/reducer/exerciseSlice';
 
 const ReadyExercise = () => {
   const route = useRoute<any>();
+  const dispatch = useDispatch();
   const {currentExercise, selectedPlan} = useSelector(exerciseSelector);
   const navigation = useNavigation<any>();
   const [isPlaying, setIsPlaying] = useState(true);
@@ -20,8 +22,10 @@ const ReadyExercise = () => {
     setIsPlaying(false);
   };
   const navigateToStartSession = () => {
+    dispatch(setDoExercise([]));
     navigation.replace('DoExercise');
   };
+  useEffect(() => {}, []);
   return (
     <View style={{flex: 1}}>
       <View style={{flex: 2, alignItems: 'center'}}>

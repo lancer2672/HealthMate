@@ -47,7 +47,7 @@ const BreakScreen = () => {
           if (i.exerciseId === currentExercise.id) {
             return {
               ...i,
-              breakDuration: timerValue
+              breakDuration: currentExercise.breakDuration - timerValue
             };
           }
           return i;
@@ -112,7 +112,7 @@ const BreakScreen = () => {
           }}>
           <Text style={styles.text0}>Next exercise </Text>
           <Text style={styles.text1}>
-            {`${currentExercise.index} / ${selectedPlan.exercise.length}`}
+            {`${currentExercise.index + 1} / ${selectedPlan.exercise.length}`}
           </Text>
         </View>
         <View

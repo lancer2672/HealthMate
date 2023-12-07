@@ -1,11 +1,20 @@
 import {FlatList, StyleSheet, TouchableOpacity, Text, View} from 'react-native';
-import React, {FC, useState} from 'react';
+import React, {FC, useEffect, useState} from 'react';
 import {useTheme} from 'styled-components';
+import {getSpecificDateTimeStamp} from 'src/utils/dateTimeHelper';
+import {getHistoryByDate} from 'src/services/firebase/firestore/exercise';
+import {useSelector} from 'react-redux';
+import {userSelector} from 'src/store/selectors';
 
 const week = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const WeekList = ({onItemClick}) => {
   const theme = useTheme();
   const [selectedIndex, setSelectedIndex] = useState(new Date().getDay());
+  const handleClick = index => {
+    setSelectedIndex(index);
+    onItemClick(index);
+  };
+
   return (
     <View style={styles.container}>
       {week.map((item, index) => {
@@ -13,8 +22,7 @@ const WeekList = ({onItemClick}) => {
           <WeekItem
             key={`week${index}`}
             onClick={() => {
-              setSelectedIndex(index);
-              onItemClick(index);
+              handleClick(index);
             }}
             day={item}
             index={index}
@@ -28,13 +36,43 @@ const WeekList = ({onItemClick}) => {
 
 const WeekItem: FC = ({day, index, onClick, isSelected = false}) => {
   const theme = useTheme();
+  const {user} = useSelector(userSelector);
+  const [isAchievedGoal, setIsAchieveGoal] = useState(false);
   const currentDay = new Date().getDay();
   console.log('currentDay', currentDay);
   const isPast = index < currentDay;
 
-  const backgroundColor = isSelected ? theme.secondary : 'gray';
-  const opacity = isPast ? 0.6 : 1;
+  const backgroundColor = isSelected
+    ? theme.secondary
+    : isAchievedGoal
+    ? theme.success
+    : theme.failed;
 
+  const getBackgroundColor = () => {
+    if (isSelected) return theme.secondary;
+    if (!isPast) return 'gray';
+    return isAchievedGoal ? theme.success : theme.failed;
+  };
+  useEffect(() => {
+    (async () => {
+      const now = new Date();
+      const startOfWeek = now.getDate() - now.getDay();
+      const dayOfWeek = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        startOfWeek + index
+      );
+      const timestamp = getSpecificDateTimeStamp(dayOfWeek);
+      const data = await getHistoryByDate({
+        userId: user.uid,
+        dateKey: timestamp
+      });
+
+      if (data) {
+        setIsAchieveGoal(true);
+      }
+    })();
+  }, [isSelected]);
   return (
     <View>
       <TouchableOpacity
@@ -42,8 +80,8 @@ const WeekItem: FC = ({day, index, onClick, isSelected = false}) => {
         style={[
           styles.circleNumber,
           {
-            backgroundColor,
-            opacity,
+            backgroundColor: getBackgroundColor(),
+            opacity: isSelected ? 1 : 0.5,
             borderColor: isPast ? theme.secondary : 'gray'
           }
         ]}>

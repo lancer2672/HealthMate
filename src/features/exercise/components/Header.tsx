@@ -1,6 +1,6 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
-import Entypo from 'react-native-vector-icons/Entypo';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/Feather';
 import {useNavigation} from '@react-navigation/native';
 
@@ -29,7 +29,7 @@ const Header = ({}) => {
         </TouchableOpacity>
 
         <TouchableOpacity style={{paddingHorizontal: 4}} onPress={openSideMenu}>
-          <Entypo name="menu" size={30} color="black" />
+          <Ionicons name="settings" size={30} color="black" />
         </TouchableOpacity>
       </View>
     </View>

@@ -22,10 +22,7 @@ const ExerciseHome = () => {
         style={styles.pagerView}
         initialPage={0}>
         <Personal key="0"></Personal>
-        <View key="1">
-          <Text>Second page</Text>
-        </View>
-        <Plan key="2"></Plan>
+        <Plan key="1"></Plan>
       </PagerView>
     </View>
   );

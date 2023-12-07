@@ -20,10 +20,13 @@ import {exerciseSelector, userSelector} from 'src/store/selectors';
 import {getPlanAction} from 'src/store/reducer/thunks/exerciseActions';
 import WeekList from 'src/components/WeekList';
 import WorkoutItem from '../components/plan/WorkoutPlanItem';
+import {getSpecificDateTimeStamp} from 'src/utils/dateTimeHelper';
+import {getHistoryByDate} from 'src/services/firebase/firestore/exercise';
 
 const Plan = () => {
   const [createModalShow, setCreateModalShow] = useState(false);
   const [selectedDay, setSelectedDay] = useState(new Date().getDay());
+  const [workoutItemData, setWorkoutItemData] = useState(null);
   const {user} = useSelector(userSelector);
   const {plans, workoutPlan} = useSelector(exerciseSelector);
   const navigation = useNavigation<any>();
@@ -34,7 +37,6 @@ const Plan = () => {
   console.log(
     'workoutPlan',
     selectedDay,
-    workoutPlan[1],
     workoutPlan[selectedDay],
     workoutPlan
   );
@@ -43,8 +45,24 @@ const Plan = () => {
     navigation.navigate('DetailPlan');
   };
 
-  const onDayItemClick = i => {
-    console.log('i', i);
+  const onDayItemClick = async i => {
+    const now = new Date();
+    const startOfWeek = now.getDate() - now.getDay();
+    const dayOfWeek = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      startOfWeek + i
+    );
+    const timestamp = getSpecificDateTimeStamp(dayOfWeek);
+    const data = await getHistoryByDate({userId: user.uid, dateKey: timestamp});
+
+    if (data) {
+      setWorkoutItemData(data.detailExercise);
+    } else {
+      setWorkoutItemData(null);
+    }
+    console.log('getHistoryByDate', timestamp, data);
+
     setSelectedDay(i);
   };
   return (
@@ -52,7 +70,9 @@ const Plan = () => {
       <View>
         <Text style={styles.title}>Weekly Workout Plan</Text>
         <WeekList onItemClick={onDayItemClick}></WeekList>
-        <WorkoutItem planId={workoutPlan[selectedDay]}></WorkoutItem>
+        <WorkoutItem
+          planId={workoutPlan[selectedDay]}
+          data={workoutItemData}></WorkoutItem>
       </View>
 
       <Text style={styles.title}>Your plan</Text>

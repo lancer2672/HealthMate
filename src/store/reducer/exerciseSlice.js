@@ -8,7 +8,7 @@ import {
   removePlanAction,
   saveHistoryExerciseAction,
   updateDailyWorkoutPlanAction,
-  updateExerciseAction,
+  updatePlanExerciseAction,
   updateWorkoutPlanAction
 } from './thunks/exerciseActions';
 
@@ -26,7 +26,7 @@ const actions = [addPlanAction, removePlanAction];
 const exerciseAction = [
   addExerciseAction,
   removeExerciseAction,
-  updateExerciseAction
+  updatePlanExerciseAction
 ];
 
 export const exerciseSlice = createSlice({
@@ -57,7 +57,7 @@ export const exerciseSlice = createSlice({
       state.workoutPlan = action.payload;
     });
     builder.addCase(saveHistoryExerciseAction.fulfilled, (state, action) => {
-      state.doExercise = [];
+      // state.doExercise = [];
     });
     actions.forEach(action => {
       builder
