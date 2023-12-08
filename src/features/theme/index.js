@@ -8,8 +8,8 @@ const darkTheme = {
   success: '#29c478',
   failed: '#ff6357',
   green1: '#5c8973',
-  green2: '#5c8973',
-  green3: '#5c8973'
+  green2: '#4d7561',
+  green3: '#354f42'
 };
 
 const lightTheme = {
@@ -22,8 +22,8 @@ const lightTheme = {
   failed: '#ff6357',
 
   green1: '#5c8973',
-  green2: '#5c8973',
-  green3: '#5c8973',
+  green2: '#4d7561',
+  green3: '#354f42',
   secondary: '#f27638'
 };
 

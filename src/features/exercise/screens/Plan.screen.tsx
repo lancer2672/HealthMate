@@ -7,11 +7,11 @@ import {
   View
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
-import ExerciseCardItemScreen from '../components/list/ExerciseCardItem';
+import ExerciseCardItemScreen from '../components/exercise/ExerciseCardItem';
 import {ScrollView} from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import PlanItem from '../components/PlanItem';
-import {PlanType} from 'src/types/plan.type';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+
 import {useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import {setSelectedPlan} from 'src/store/reducer/exerciseSlice';
@@ -22,9 +22,13 @@ import WeekList from 'src/components/WeekList';
 import WorkoutItem from '../components/plan/WorkoutPlanItem';
 import {getSpecificDateTimeStamp} from 'src/utils/dateTimeHelper';
 import {getHistoryByDate} from 'src/services/firebase/firestore/exercise';
+import PlanList from '../components/plan/PlanList';
+import Playlist from '../components/playlist/Playlist';
+import CreatePlaylistModal from '../components/playlist/CreatePlaylistModal';
 
 const Plan = () => {
   const [createModalShow, setCreateModalShow] = useState(false);
+  const [isPlaylistModalShow, setPlaylistModalShow] = useState(false);
   const [selectedDay, setSelectedDay] = useState(new Date().getDay());
   const [workoutItemData, setWorkoutItemData] = useState(null);
   const {user} = useSelector(userSelector);
@@ -40,11 +44,9 @@ const Plan = () => {
     workoutPlan[selectedDay],
     workoutPlan
   );
-  const viewDetailPlan = plan => {
-    dispatch(setSelectedPlan(plan));
-    navigation.navigate('DetailPlan');
+  const navigateToListSongs = () => {
+    navigation.navigate('ListSong');
   };
-
   const onDayItemClick = async i => {
     const now = new Date();
     const startOfWeek = now.getDate() - now.getDay();
@@ -65,6 +67,9 @@ const Plan = () => {
 
     setSelectedDay(i);
   };
+  const openCreatePlaylistModal = () => {
+    setPlaylistModalShow(true);
+  };
   return (
     <ScrollView style={styles.container}>
       <View>
@@ -75,7 +80,7 @@ const Plan = () => {
           data={workoutItemData}></WorkoutItem>
       </View>
 
-      <Text style={styles.title}>Your plan</Text>
+      <Text style={styles.title}>Plan</Text>
       <TouchableOpacity onPress={showModal} style={styles.createPlanWraper}>
         <View style={styles.createPlan}>
           <FontAwesome name={'plus'} color={'black'} size={28}></FontAwesome>
@@ -83,22 +88,30 @@ const Plan = () => {
         <Text style={styles.createPlanText}>Create new plan</Text>
       </TouchableOpacity>
       <View style={{maxHeight: 220, width: '100%'}}>
-        <FlatList
-          contentContainerStyle={{marginBottom: 20}}
-          removeClippedSubviews={false}
-          data={plans}
-          renderItem={({item}) => (
-            <Pressable onPress={() => viewDetailPlan(item)}>
-              <PlanItem plan={item} />
-            </Pressable>
-          )}
-        />
+        <PlanList></PlanList>
       </View>
+      <View style={{flexDirection: 'row'}}>
+        <Text style={styles.title}>Playlist</Text>
+        <TouchableOpacity
+          style={{alignSelf: 'flex-end', padding: 4}}
+          onPress={openCreatePlaylistModal}>
+          <AntDesign name="plus" size={24} color="black" />
+        </TouchableOpacity>
+      </View>
+      <View style={{maxHeight: 220, width: '100%'}}>
+        <Playlist></Playlist>
+      </View>
+
       <CreatePlanModal
         visible={createModalShow}
         onClose={() => {
           setCreateModalShow(false);
         }}></CreatePlanModal>
+      <CreatePlaylistModal
+        visible={isPlaylistModalShow}
+        onClose={() => {
+          setPlaylistModalShow(false);
+        }}></CreatePlaylistModal>
     </ScrollView>
   );
 };
@@ -114,7 +127,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 4
+    marginBottom: 4,
+    flex: 1
   },
   createPlan: {
     width: 60,

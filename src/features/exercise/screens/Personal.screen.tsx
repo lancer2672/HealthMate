@@ -8,13 +8,13 @@ import {
   View
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
-import ExerciseCardItemScreen from '../components/list/ExerciseCardItem';
+import ExerciseCardItemScreen from '../components/exercise/ExerciseCardItem';
 import {ScrollView} from 'react-native';
 import DropDownCategory from '../components/DropdownCategory';
 import axiosClient from 'src/api/axiosClient';
 import {EXERCISE_BASE_URL} from 'src/constants';
-import ListExerciseBody from '../components/list/ListExerciseBody';
-import ListTargetExercise from '../components/list/ListTargetExercise';
+import ListExerciseBody from '../components/exercise/ListExerciseBody';
+import ListTargetExercise from '../components/exercise/ListTargetExercise';
 import exerciseApi from 'src/api/exerciseApi';
 import {useNavigation} from '@react-navigation/native';
 import {useDispatch} from 'react-redux';

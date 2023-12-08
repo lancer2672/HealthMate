@@ -1,6 +1,7 @@
 import {configureStore, ThunkAction, Action} from '@reduxjs/toolkit';
 import {userSlice} from './reducer/userSlice';
 import {exerciseSlice} from './reducer/exerciseSlice';
+import {playlistSlice} from './reducer/playlistSlice';
 import {activitySlice} from './reducer/activitySlice';
 import {waterTrackingSlice} from './reducer/waterTrackingSlice';
 import {appSlice} from './reducer/appSlice';
@@ -13,7 +14,8 @@ const store = configureStore({
     user: userSlice.reducer,
     exercise: exerciseSlice.reducer,
     waterTracking: waterTrackingSlice.reducer,
-    activity: activitySlice.reducer
+    activity: activitySlice.reducer,
+    playlist: playlistSlice.reducer
   },
   devTools: true,
 
