@@ -11,7 +11,7 @@ const Calendar = ({selectedMonth, selectedYear, onDatePress}) => {
     const calendar = [];
     let dayCounter = 1;
 
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 6; i++) {
       const week = [];
 
       for (let j = 0; j < 7; j++) {

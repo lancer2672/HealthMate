@@ -18,6 +18,7 @@ const ListCommonFood = ({date, mealName, searchResults, navigation}) => {
 
   const handleNavigateLogFood = item => {
     console.log('date', date);
+    navigation.pop();
     navigation.navigate('LogFood', {
       data: {
         date: date,

@@ -6,7 +6,7 @@ import {
   TextInput,
   ScrollView
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import SearchInput from '../components/SearchInput.component';
 import ListCommonFood from '../components/ListCommonFood.component';
 import ListBrandedFood from '../components/ListBrandedFood.component';
@@ -19,22 +19,42 @@ export default function SearchFood({route, navigation}) {
   const [searchResults, setSearchResults] = useState([]);
   const [showResults, setShowResults] = useState(false);
 
-  console.log('mealName', mealName);
-  console.log('currentDate', currentDate);
+  useEffect(() => {
+    console.log('currentDate', currentDate);
+    setSearchResults([]);
+    setShowResults(false);
+  }, []);
 
   const handleSetSearchResults = data => {
     setSearchResults(data);
     setShowResults(true);
   };
 
+  const ResetData = () => {
+    setSearchResults([]);
+    setShowResults(false);
+  };
+
   const commonResults = Array.from(
     new Set(searchResults.common?.map(item => item.tag_id) ?? [])
   ).map(tagId => searchResults.common.find(item => item.tag_id === tagId));
+
+  const handleNavigateLogFood = item => {
+    navigation.pop();
+    navigation.navigate('LogFood', {
+      data: {
+        date: currentDate,
+        mealName: mealName,
+        item: item,
+        type: 'common'
+      }
+    });
+  };
+
   return (
     <>
       <SearchInput handleSetSearchResults={handleSetSearchResults} />
       {showResults ? (
-        // <NavigationContainer>
         <Tab.Navigator>
           <Tab.Screen name="All">
             {() => (
@@ -92,8 +112,7 @@ export default function SearchFood({route, navigation}) {
             )}
           </Tab.Screen>
         </Tab.Navigator>
-      ) : // </NavigationContainer>
-      null}
+      ) : null}
     </>
   );
 }

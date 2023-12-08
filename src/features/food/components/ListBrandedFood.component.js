@@ -11,14 +11,26 @@ import {
   ScrollView
 } from 'react-native';
 
-const ListBrandedFood = ({date, mealName, searchResults}) => {
-  console.log('date={currentDate}', date);
+const ListBrandedFood = ({date, mealName, searchResults, navigation}) => {
+  const handleNavigateLogFood = item => {
+    navigation.pop();
+    navigation.navigate('LogFood', {
+      data: {
+        date: date,
+        mealName: mealName,
+        item: item,
+        type: 'branded'
+      }
+    });
+  };
+
   return (
     <>
       {searchResults.branded?.map((item, index) => (
         <TouchableOpacity
           key={index}
-          style={[styles.itemContainer, styles.itemBranded]}>
+          style={[styles.itemContainer, styles.itemBranded]}
+          onPress={() => handleNavigateLogFood(item)}>
           <View
             style={{
               display: 'flex',

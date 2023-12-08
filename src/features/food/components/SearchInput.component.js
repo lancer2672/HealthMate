@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {Searchbar} from 'react-native-paper';
 import axios from 'axios';
@@ -9,8 +9,11 @@ const SearchInput = ({handleSetSearchResults}) => {
 
   // Hàm xử lý tìm kiếm
   const handleSearch = async () => {
-    if (searchText === '') return;
-    else {
+    if (searchText === '') {
+      console.log('Search text is empty');
+      handleSetSearchResults([]);
+      return;
+    } else {
       try {
         const response = await axios.get(
           'https://trackapi.nutritionix.com/v2/search/instant?query=' +

@@ -10,19 +10,36 @@ import {
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import SearchInput from '../components/SearchInput.component';
+import FoodCard from '../components/FoodCard.component';
+import {addFoodMeal} from '../../../store/reducer/thunks/foodMealActions';
+import {useAppDispatch, useAppSelector} from 'src/store/hooks';
 
 import axios from 'axios';
 import {APP_ID_NUTRITIONIX, API_KEY_NUTRITIONIX} from '@env';
-import RNPickerSelect from 'react-native-picker-select';
-import AntDesign from 'react-native-vector-icons/AntDesign';
+import {userSelector} from 'src/store/selectors';
+import {useSelector} from 'react-redux';
 
 export default function LogFood({route, navigation}) {
   const {date, mealName, item, type} = route.params.data;
+  const [food, setFood] = useState([]);
+  const {user} = useSelector(state => state.user);
+  const dispatch = useAppDispatch();
+  const {foodMeals} = useSelector(state => state.foodMeal);
 
   const [foodCommon, setFoodCommon] = useState([]);
   const [foodBranded, setFoodBranded] = useState([]);
 
+  const handleNavigateSeacrch = mealName => {
+    navigation.push('Search food', {
+      data: {
+        mealName: mealName,
+        currentDate: date
+      }
+    });
+  };
+
   useEffect(() => {
+    console.log('user', user);
     const fetchData = async () => {
       switch (type) {
         case 'common': {
@@ -42,25 +59,51 @@ export default function LogFood({route, navigation}) {
             );
             // console.log('response', response);
             const data = response.data.foods;
-            const food = {
-              photo: data[0].photo.thumb,
-              food_name: data[0].food_name,
-              serving_qty: data[0].serving_qty,
-              serving_unit: data[0].serving_unit,
-              nf_calories: data[0].nf_calories,
-              nf_protein: data[0].nf_protein,
-              nf_total_fat: data[0].nf_total_fat,
-              nf_total_carbohydrate: data[0].nf_total_carbohydrate,
-              alt_measures: data[0].alt_measures
-            };
-            setFoodCommon([food]);
+            // const food = {
+            //   photo: data[0].photo.thumb,
+            //   food_name: data[0].food_name,
+            //   serving_qty: data[0].serving_qty,
+            //   serving_unit: data[0].serving_unit,
+            //   nf_calories: data[0].nf_calories,
+            //   nf_protein: data[0].nf_protein,
+            //   nf_total_fat: data[0].nf_total_fat,
+            //   nf_total_carbohydrate: data[0].nf_total_carbohydrate,
+            //   alt_measures: data[0].alt_measures
+            // };
+            if (foodCommon.length === 0) {
+              console.log('0', data);
+              setFoodCommon([data[0]]);
+            } else {
+              setFoodCommon([...foodCommon, data[0]]);
+            }
           } catch (error) {
             console.error('Error searching for food:', error);
           }
           break;
         }
         case 'branded':
-          setFoodBranded(item);
+          {
+            try {
+              console.log('item', item.nix_item_id);
+              const response = await axios.get(
+                'https://trackapi.nutritionix.com/v2/search/item?nix_item_id=' +
+                  item.nix_item_id,
+                {
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'x-app-id': APP_ID_NUTRITIONIX,
+                    'x-app-key': API_KEY_NUTRITIONIX
+                  }
+                }
+              );
+              const data = response.data.foods;
+              const food = data[0];
+              console.log('food', food);
+              setFoodCommon([food]);
+            } catch (error) {
+              console.error('Error searching for food:', error);
+            }
+          }
           break;
         default:
           break;
@@ -121,14 +164,28 @@ export default function LogFood({route, navigation}) {
     return total;
   };
 
+  const handleLogFood = async () => {
+    const foodMeal = {
+      userId: user.uid,
+      mealName: mealName,
+      date: date,
+      food: {
+        type: 'common',
+        foodName: foodCommon[0].food_name,
+        servingQty: foodCommon[0].serving_qty,
+        servingUnit: foodCommon[0].serving_unit,
+        calories: foodCommon[0].nf_calories,
+        nix_item_id: type === 'branded' ? foodCommon[0].nix_item_id : null
+      }
+    };
+    dispatch(addFoodMeal(foodMeal));
+  };
+
   return (
     <View style={{flex: 1, backgroundColor: 'white'}}>
-      {/* <TouchableOpacity
+      <TouchableOpacity
         style={{padding: 10}}
-        onPress={() => {
-          handleNavigateSeacrch();
-        }}> */}
-      <TouchableOpacity style={{padding: 10}}>
+        onPress={() => handleNavigateSeacrch()}>
         <View
           style={{
             borderRadius: 25,
@@ -141,64 +198,7 @@ export default function LogFood({route, navigation}) {
         </View>
       </TouchableOpacity>
       <View>
-        {foodCommon.map((item, index) => (
-          <View key={index} style={styles.cardContainer}>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 8
-              }}>
-              <Image
-                source={{uri: item.photo}}
-                style={{width: 50, height: 50}}
-              />
-              <View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    maxWidth: '80%',
-                    gap: 10
-                  }}>
-                  <TextInput
-                    style={styles.textInput}
-                    keyboardType="numeric"
-                    value="1"
-                  />
-                  {/* <RNPickerSelect items={getAltMeasures(item)} /> */}
-                  <TextInput
-                    style={[
-                      styles.textInput,
-                      {
-                        width: 180
-                      }
-                    ]}
-                    value={item.serving_unit}
-                  />
-                </View>
-                <Text style={{fontSize: 16, color: 'black'}}>
-                  {item.food_name}
-                </Text>
-              </View>
-              <TouchableOpacity>
-                <AntDesign
-                  name="infocirlce"
-                  size={18}
-                  color="black"></AntDesign>
-              </TouchableOpacity>
-            </View>
-            <View
-              style={{
-                flexDirection: 'column',
-                alignItems: 'flex-end'
-              }}>
-              <Text style={{color: 'green', fontWeight: 'bold', fontSize: 16}}>
-                {item.nf_calories}
-              </Text>
-              <Text>cal</Text>
-            </View>
-          </View>
-        ))}
+        <FoodCard data={foodCommon} />
       </View>
       <View style={{backgroundColor: 'lightgrey'}}>
         <View
@@ -250,7 +250,8 @@ export default function LogFood({route, navigation}) {
             paddingRight: 30,
             backgroundColor: 'blue',
             borderRadius: 5
-          }}>
+          }}
+          onPress={() => handleLogFood()}>
           <Text
             style={{
               color: 'white',

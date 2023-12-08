@@ -117,7 +117,7 @@ export const AppNavigator = () => {
   return (
     <Stack.Navigator
       screenOptions={{headerShown: false}}
-      initialRouteName="ExerciseHome">
+      initialRouteName="MealCalendar">
       {/* <Stack.Screen name="AppTabs" component={Tabs} /> */}
       <Stack.Screen name="WaterTracking" component={WaterTracking} />
       <Stack.Screen name="ExerciseHome" component={ExerciseHome} />
@@ -128,7 +128,7 @@ export const AppNavigator = () => {
       <Stack.Screen
         name="WaterTrackingHistory"
         component={WaterTrackingHistory}
-      /> 
+      />
       <Stack.Screen name="DetailMealDate" component={DetailMealDate} />
       <Stack.Screen name="MealCalendar" component={MealCalendar} />
       <Stack.Screen
