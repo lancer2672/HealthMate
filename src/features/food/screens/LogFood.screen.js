@@ -8,8 +8,7 @@ import {
   FlatList,
   Button
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
-import SearchInput from '../components/SearchInput.component';
+import React, {useCallback, useEffect, useState} from 'react';
 import FoodCard from '../components/FoodCard.component';
 import {addFoodMeal} from '../../../store/reducer/thunks/foodMealActions';
 import {useAppDispatch, useAppSelector} from 'src/store/hooks';
@@ -21,13 +20,18 @@ import {useSelector} from 'react-redux';
 
 export default function LogFood({route, navigation}) {
   const {date, mealName, item, type} = route.params.data;
-  const [food, setFood] = useState([]);
   const {user} = useSelector(state => state.user);
   const dispatch = useAppDispatch();
   const {foodMeals} = useSelector(state => state.foodMeal);
 
   const [foodCommon, setFoodCommon] = useState([]);
   const [foodBranded, setFoodBranded] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const [totalCalories, setTotalCalories] = useState(0);
+  const [totalProtein, setTotalProtein] = useState(0);
+  const [totalFat, setTotalFat] = useState(0);
+  const [totalCarbohydrate, setTotalCarbohydrate] = useState(0);
 
   const handleNavigateSeacrch = mealName => {
     navigation.push('Search food', {
@@ -38,17 +42,49 @@ export default function LogFood({route, navigation}) {
     });
   };
 
-  useEffect(() => {
-    console.log('user', user);
-    const fetchData = async () => {
-      switch (type) {
-        case 'common': {
+  const fetchData = async () => {
+    switch (type) {
+      case 'common': {
+        try {
+          const response = await axios.post(
+            'https://trackapi.nutritionix.com/v2/natural/nutrients',
+            {
+              query: item.food_name
+            },
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                'x-app-id': APP_ID_NUTRITIONIX,
+                'x-app-key': API_KEY_NUTRITIONIX
+              }
+            }
+          );
+          const data = response.data.foods;
+          const food = {
+            type: 'common',
+            ...data[0],
+            realQty: data[0].serving_qty,
+            realUnit: data[0].serving_unit,
+            realGrams: data[0].serving_weight_grams,
+            realCalories: data[0].nf_calories,
+            realProtein: data[0].nf_protein,
+            realFat: data[0].nf_total_fat,
+            realCarbo: data[0].nf_total_carbohydrate
+          };
+          setFoodCommon([food]);
+          setIsLoading(false);
+        } catch (error) {
+          console.error('Error searching for food:', error);
+        }
+        break;
+      }
+      case 'branded':
+        {
           try {
-            const response = await axios.post(
-              'https://trackapi.nutritionix.com/v2/natural/nutrients',
-              {
-                query: item.food_name
-              },
+            console.log('item', item.nix_item_id);
+            const response = await axios.get(
+              'https://trackapi.nutritionix.com/v2/search/item?nix_item_id=' +
+                item.nix_item_id,
               {
                 headers: {
                   'Content-Type': 'application/json',
@@ -57,128 +93,108 @@ export default function LogFood({route, navigation}) {
                 }
               }
             );
-            // console.log('response', response);
             const data = response.data.foods;
-            // const food = {
-            //   photo: data[0].photo.thumb,
-            //   food_name: data[0].food_name,
-            //   serving_qty: data[0].serving_qty,
-            //   serving_unit: data[0].serving_unit,
-            //   nf_calories: data[0].nf_calories,
-            //   nf_protein: data[0].nf_protein,
-            //   nf_total_fat: data[0].nf_total_fat,
-            //   nf_total_carbohydrate: data[0].nf_total_carbohydrate,
-            //   alt_measures: data[0].alt_measures
-            // };
-            if (foodCommon.length === 0) {
-              console.log('0', data);
-              setFoodCommon([data[0]]);
-            } else {
-              setFoodCommon([...foodCommon, data[0]]);
-            }
+            const food = data[0];
+            console.log('food', food);
+            setFoodCommon([food]);
           } catch (error) {
             console.error('Error searching for food:', error);
           }
-          break;
         }
-        case 'branded':
-          {
-            try {
-              console.log('item', item.nix_item_id);
-              const response = await axios.get(
-                'https://trackapi.nutritionix.com/v2/search/item?nix_item_id=' +
-                  item.nix_item_id,
-                {
-                  headers: {
-                    'Content-Type': 'application/json',
-                    'x-app-id': APP_ID_NUTRITIONIX,
-                    'x-app-key': API_KEY_NUTRITIONIX
-                  }
-                }
-              );
-              const data = response.data.foods;
-              const food = data[0];
-              console.log('food', food);
-              setFoodCommon([food]);
-            } catch (error) {
-              console.error('Error searching for food:', error);
-            }
-          }
-          break;
-        default:
-          break;
-      }
-    };
+        break;
+      default:
+        break;
+    }
+  };
 
-    fetchData();
+  useEffect(() => {
+    async function fetch() {
+      await fetchData();
+    }
+    fetch();
   }, []);
 
-  const getAltMeasures = item => {
-    return item.alt_measures.map(item => ({
-      label: item.measure,
-      value: item.measure
-    }));
+  useEffect(() => {
+    getTotalCalories();
+    getTotalProtein();
+    getTotalFat();
+    getTotalCarbohydrate();
+  }, [foodCommon]);
+
+  const updateFoodData = updatedData => {
+    setFoodCommon(updatedData);
   };
 
   const getTotalCalories = () => {
+    console.log('foodCommon130', foodCommon);
     let total = 0;
     foodCommon.forEach(item => {
-      total += item.nf_calories;
+      total += item.realCalories;
     });
     foodBranded.forEach(item => {
-      total += item.nf_calories;
+      total += item.realCalories;
     });
-    return total;
+    console.log('total', total);
+    setTotalCalories(total);
   };
 
   const getTotalProtein = () => {
     let total = 0;
     foodCommon.forEach(item => {
-      total += item.nf_protein;
+      total += item.realProtein;
     });
     foodBranded.forEach(item => {
-      total += item.nf_protein;
+      total += item.realProtein;
     });
-    return total;
+    console.log('total2', total);
+    setTotalProtein(total);
   };
 
   const getTotalFat = () => {
     let total = 0;
     foodCommon.forEach(item => {
-      total += item.nf_total_fat;
+      total += item.realFat;
     });
     foodBranded.forEach(item => {
-      total += item.nf_total_fat;
+      total += item.realFat;
     });
-    return total;
+    setTotalFat(total);
   };
 
   const getTotalCarbohydrate = () => {
     let total = 0;
     foodCommon.forEach(item => {
-      total += item.nf_total_carbohydrate;
+      total += item.realCarbo;
     });
     foodBranded.forEach(item => {
-      total += item.nf_total_carbohydrate;
+      total += item.realCarbo;
     });
-    return total;
+    setTotalCarbohydrate(total);
   };
 
   const handleLogFood = async () => {
-    const foodMeal = {
-      userId: user.uid,
-      mealName: mealName,
-      date: date,
-      food: {
-        type: 'common',
-        foodName: foodCommon[0].food_name,
-        servingQty: foodCommon[0].serving_qty,
-        servingUnit: foodCommon[0].serving_unit,
-        calories: foodCommon[0].nf_calories,
-        nix_item_id: type === 'branded' ? foodCommon[0].nix_item_id : null
+    if (foodCommon.length !== 0 || foodBranded.length !== 0) {
+      const foodMeal = {
+        userId: user.uid,
+        mealName: mealName,
+        date: date,
+        food: {
+          type: 'common',
+          foodName: foodCommon[0].food_name,
+          realQty: foodCommon[0].realQty,
+          realUnit: foodCommon[0].realUnit,
+          realGrams: foodCommon[0].realGrams,
+          realCalories: foodCommon[0].nf_calories,
+          nix_item_id: type === 'branded' ? foodCommon[0].nix_item_id : null
+        }
+      };
+      dispatch(addFoodMeal(foodMeal));
+    }
+    navigation.navigate('DetailMealDate', {
+      data: {
+        date: date
       }
-    };
-    dispatch(addFoodMeal(foodMeal));
+    });
   };
 
   return (
@@ -197,72 +213,82 @@ export default function LogFood({route, navigation}) {
           </Text>
         </View>
       </TouchableOpacity>
-      <View>
-        <FoodCard data={foodCommon} />
-      </View>
-      <View style={{backgroundColor: 'lightgrey'}}>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            padding: 10,
-            borderBottomWidth: 1,
-            borderBottomColor: 'gray'
-          }}>
-          <Text style={{fontSize: 16, color: 'black'}}>Total calories</Text>
-          <Text style={{color: 'green', fontWeight: 'bold', fontSize: 16}}>
-            {getTotalCalories()}
-          </Text>
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-around',
-            padding: 10,
-            borderBottomWidth: 1,
-            borderBottomColor: 'gray'
-          }}>
-          <View style={{flexDirection: 'row', alignItems: 'flex-end'}}>
-            <Text style={{color: 'green', fontWeight: 'bold', fontSize: 16}}>
-              {getTotalProtein()}
-            </Text>
-            <Text>g protein</Text>
+      {isLoading ? (
+        <></>
+      ) : (
+        <>
+          <View>
+            <FoodCard data={foodCommon} onUpdate={updateFoodData} />
           </View>
-          <View style={{flexDirection: 'row', alignItems: 'flex-end'}}>
-            <Text style={{color: 'green', fontWeight: 'bold', fontSize: 16}}>
-              {getTotalFat()}
-            </Text>
-            <Text>g fat</Text>
+
+          <View style={{backgroundColor: 'lightgrey'}}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                padding: 10,
+                borderBottomWidth: 1,
+                borderBottomColor: 'gray'
+              }}>
+              <Text style={{fontSize: 16, color: 'black'}}>Total calories</Text>
+              <Text style={{color: 'green', fontWeight: 'bold', fontSize: 16}}>
+                {totalCalories}
+              </Text>
+            </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-around',
+                padding: 10,
+                borderBottomWidth: 1,
+                borderBottomColor: 'gray'
+              }}>
+              <View style={{flexDirection: 'row', alignItems: 'flex-end'}}>
+                <Text
+                  style={{color: 'green', fontWeight: 'bold', fontSize: 16}}>
+                  {totalProtein}
+                </Text>
+                <Text>g protein</Text>
+              </View>
+              <View style={{flexDirection: 'row', alignItems: 'flex-end'}}>
+                <Text
+                  style={{color: 'green', fontWeight: 'bold', fontSize: 16}}>
+                  {totalFat}
+                </Text>
+                <Text>g fat</Text>
+              </View>
+              <View style={{flexDirection: 'row', alignItems: 'flex-end'}}>
+                <Text
+                  style={{color: 'green', fontWeight: 'bold', fontSize: 16}}>
+                  {totalCarbohydrate}
+                </Text>
+                <Text>g carbs</Text>
+              </View>
+            </View>
           </View>
-          <View style={{flexDirection: 'row', alignItems: 'flex-end'}}>
-            <Text style={{color: 'green', fontWeight: 'bold', fontSize: 16}}>
-              {getTotalCarbohydrate()}
-            </Text>
-            <Text>g carbs</Text>
+          <View style={{padding: 10, alignItems: 'center'}}>
+            <TouchableOpacity
+              style={{
+                padding: 10,
+                paddingLeft: 30,
+                paddingRight: 30,
+                backgroundColor: 'blue',
+                borderRadius: 5
+              }}
+              onPress={() => handleLogFood()}>
+              <Text
+                style={{
+                  color: 'white',
+                  textAlign: 'center',
+                  fontSize: 16,
+                  fontWeight: 'bold'
+                }}>
+                Log food
+              </Text>
+            </TouchableOpacity>
           </View>
-        </View>
-      </View>
-      <View style={{padding: 10, alignItems: 'center'}}>
-        <TouchableOpacity
-          style={{
-            padding: 10,
-            paddingLeft: 30,
-            paddingRight: 30,
-            backgroundColor: 'blue',
-            borderRadius: 5
-          }}
-          onPress={() => handleLogFood()}>
-          <Text
-            style={{
-              color: 'white',
-              textAlign: 'center',
-              fontSize: 16,
-              fontWeight: 'bold'
-            }}>
-            Log food
-          </Text>
-        </TouchableOpacity>
-      </View>
+        </>
+      )}
     </View>
   );
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -12,16 +12,137 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import {SwipeListView} from 'react-native-swipe-list-view';
 import RNPickerSelect from 'react-native-picker-select';
 
-const FoodCard = ({data, onDelete}) => {
-  const getAltMeasures = item => {
-    return item.alt_measures.map(item => ({
-      label: item.measure,
-      value: item.measure
+const FoodCard = ({data, onDelete, onUpdate}) => {
+  const [listFood, setListFood] = useState([...data]);
+
+  // useEffect(() => {
+  //   console.log('listFood', listFood);
+  //   // updatedFood(listFood);
+  // }, [listFood]);
+
+  const getAltMeasures = foodItem => {
+    const data = foodItem.alt_measures.map(measureItem => ({
+      label: measureItem.measure,
+      value: measureItem.measure
     }));
+    return data;
+  };
+
+  const calculateRealValues = (type, foodItem, servingWeight, qty) => {
+    const {
+      nf_calories,
+      nf_protein,
+      nf_total_fat,
+      nf_total_carbohydrate,
+      realUnit,
+      serving_weight_grams
+    } = foodItem;
+
+    switch (type) {
+      case 'qty': {
+        const {realCalories, realProtein, realFat, realCarbo, realQty} =
+          foodItem;
+        const measure = foodItem.alt_measures.find(
+          item => item.measure === realUnit
+        ).serving_weight;
+        const serving_weight = measure.serving_weight;
+        const serv_qty = measure.qty;
+
+        const factorReal = qty / realQty;
+        const factorServing =
+          (qty * serving_weight) / (serving_weight_grams * serv_qty);
+        console.log('factorServing', factorServing);
+        let calories, protein, fat, carbo;
+        if (realCalories === 0) {
+          calories = nf_calories * factorServing;
+        } else {
+          calories = realCalories * factorReal;
+        }
+        if (realProtein === 0) {
+          protein = nf_protein * factorServing;
+        } else {
+          protein = realProtein * factorReal;
+        }
+        if (realFat === 0) {
+          fat = nf_total_fat * factorServing;
+        } else {
+          fat = realFat * factorReal;
+        }
+        if (realCarbo === 0) {
+          carbo = nf_total_carbohydrate * factorServing;
+        } else {
+          carbo = realCarbo * factorReal;
+        }
+        return {
+          realCalories: Number(calories.toFixed(1)),
+          realProtein: Number(protein.toFixed(1)),
+          realFat: Number(fat.toFixed(1)),
+          realCarbo: Number(carbo.toFixed(1))
+        };
+      }
+      case 'unit': {
+        const factor = servingWeight / foodItem.serving_weight_grams;
+
+        return {
+          realCalories: Number((nf_calories * factor).toFixed(1)),
+          realProtein: Number((nf_protein * factor).toFixed(1)),
+          realFat: Number((nf_total_fat * factor).toFixed(1)),
+          realCarbo: Number((nf_total_carbohydrate * factor).toFixed(1))
+        };
+      }
+    }
+  };
+
+  const handleQtyChange = (text, indexFood) => {
+    const qty = parseFloat(text);
+    const updateListFood = [...listFood];
+    const realValues = calculateRealValues(
+      'qty',
+      listFood[indexFood],
+      null,
+      qty
+    );
+    updateListFood[indexFood].realQty = qty;
+    updateListFood[indexFood] = {
+      ...updateListFood[indexFood],
+      ...realValues
+    };
+    console.log('updateListFood', updateListFood);
+    updatedFood(updateListFood);
+  };
+
+  const handleUnitChange = async (selectedItem, indexItem, indexFood) => {
+    const measure = selectedItem;
+    indexItem = indexItem - 1;
+    const {qty, serving_weight} = listFood[indexFood].alt_measures[indexItem];
+    const updateListFood = [...listFood];
+    updateListFood[indexFood].realQty = qty;
+    updateListFood[indexFood].realUnit = measure;
+    updateListFood[indexFood].realGrams = serving_weight;
+    const realValues = calculateRealValues(
+      'unit',
+      listFood[indexFood],
+      serving_weight
+    );
+    updateListFood[indexFood] = {...updateListFood[indexFood], ...realValues};
+    updatedFood(updateListFood);
+  };
+
+  const updatedFood = updateListFood => {
+    setListFood(updateListFood);
+    onUpdate(updateListFood);
+  };
+
+  const onDeleteFood = indexFood => {
+    const updateListFood = [...listFood];
+    updateListFood.splice(indexFood, 1);
+    updatedFood(updateListFood);
   };
 
   const renderItem = (rowData, rowMap) => {
-    const item = rowData.item;
+    const food = rowData.item;
+    const indexFood = rowData.index;
+
     return (
       <View style={styles.cardContainer}>
         <View
@@ -31,7 +152,7 @@ const FoodCard = ({data, onDelete}) => {
             gap: 8
           }}>
           <Image
-            source={{uri: item.photo.thumb}}
+            source={{uri: food.photo.thumb}}
             style={{width: 50, height: 50}}
           />
           <View>
@@ -43,14 +164,14 @@ const FoodCard = ({data, onDelete}) => {
               <TextInput
                 style={styles.textInput}
                 keyboardType="numeric"
-                value={item.serving_qty.toString()} // Đảm bảo giá trị là một chuỗi
-                onChangeText={text => {
-                  // Kiểm tra xem người dùng đã nhập một giá trị hợp lệ chưa
-                  // Nếu bạn muốn thực hiện các xử lý khác sau khi giá trị thay đổi, bạn có thể thêm vào đây
+                value={food.realQty.toString()}
+                onChangeText={text => handleQtyChange(text, indexFood)}
+                onSubmitEditing={() => {
+                  handleQtyChange(food.realQty.toString(), indexFood);
                 }}
               />
               <RNPickerSelect
-                items={getAltMeasures(item)}
+                items={getAltMeasures(food)}
                 style={{
                   inputAndroid: {
                     justifyContent: 'center',
@@ -65,13 +186,13 @@ const FoodCard = ({data, onDelete}) => {
                     color: 'black'
                   }
                 }}
-                value={item.serving_unit}
-                onValueChange={value => {
-                  // Xử lý sự kiện thay đổi với giá trị `value`
-                }}
+                value={food.realUnit}
+                onValueChange={(selectedItem, indexItem) =>
+                  handleUnitChange(selectedItem, indexItem, indexFood)
+                }
               />
             </View>
-            <Text style={{fontSize: 16, color: 'black'}}>{item.food_name}</Text>
+            <Text style={{fontSize: 16, color: 'black'}}>{food.food_name}</Text>
           </View>
           <TouchableOpacity>
             <AntDesign name="infocirlce" size={18} color="black"></AntDesign>
@@ -83,7 +204,7 @@ const FoodCard = ({data, onDelete}) => {
             alignItems: 'flex-end'
           }}>
           <Text style={{color: 'green', fontWeight: 'bold', fontSize: 16}}>
-            {item.nf_calories}
+            {Number(food.realCalories.toFixed(1))}
           </Text>
           <Text>cal</Text>
         </View>
@@ -91,21 +212,25 @@ const FoodCard = ({data, onDelete}) => {
     );
   };
 
-  const renderHiddenItem = (rowData, rowMap) => (
-    <View style={styles.rowBack}>
-      <TouchableOpacity
-        style={styles.deleteButton}
-        onPress={() => onDelete(rowData.item)}>
-        <Text style={{color: 'white'}}>
-          <MaterialCommunityIcons name="delete" color="white" size={24} />
-        </Text>
-      </TouchableOpacity>
-    </View>
-  );
+  const renderHiddenItem = (rowData, rowMap) => {
+    const food = rowData.item;
+    const indexFood = rowData.index;
+    return (
+      <View style={styles.rowBack}>
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={() => onDeleteFood(indexFood)}>
+          <Text style={{color: 'white'}}>
+            <MaterialCommunityIcons name="delete" color="white" size={24} />
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
 
   return (
     <SwipeListView
-      data={data}
+      data={listFood}
       renderItem={renderItem}
       renderHiddenItem={renderHiddenItem}
       rightOpenValue={-75}
