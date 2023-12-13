@@ -34,6 +34,7 @@ const exerciseApi = {
     return data.data;
   },
   getExerciseById: async id => {
+    return {};
     const data = await axiosClient.get(
       `${EXERCISE_BASE_URL}/exercise/${id}`,
       {}

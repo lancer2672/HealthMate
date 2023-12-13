@@ -40,8 +40,9 @@ import ReadyExercise from 'src/features/exercise/screens/ReadyExercise';
 import BreakScreen from 'src/features/exercise/screens/Break.screen';
 import DoExercise from 'src/features/exercise/screens/DoExercise';
 import FinishScreen from 'src/features/exercise/screens/FinishScreen';
-import ListSong from 'src/features/exercise/components/playlist/ListSong';
 import DetailPlaylist from 'src/features/exercise/screens/DetailPlaylist';
+import SelectMusic from 'src/features/exercise/screens/SelectMusic';
+import AddSongToPlaylist from 'src/features/exercise/screens/AddSongToPlaylist';
 const Stack = createNativeStackNavigator();
 
 export const AppNavigator = () => {
@@ -130,7 +131,8 @@ export const AppNavigator = () => {
       <Stack.Screen name="ExerciseHome" component={ExerciseHome} />
       <Stack.Screen name="ListExercise" component={ListExercise} />
       <Stack.Screen name="StepCounter" component={StepCounter} />
-      <Stack.Screen name="ListSong" component={ListSong} />
+      <Stack.Screen name="SelectMusic" component={SelectMusic} />
+      <Stack.Screen name="AddSongToPlaylist" component={AddSongToPlaylist} />
       <Stack.Screen name="ReadyExercise" component={ReadyExercise} />
       <Stack.Screen name="FinishScreen" component={FinishScreen} />
       <Stack.Screen name="BreakScreen" component={BreakScreen} />

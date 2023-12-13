@@ -75,10 +75,10 @@ const DetailPlan = () => {
     setListExercise(newList);
   };
   console.log('selectedPlan', selectedPlan);
-  const navigateToReadyScreen = () => {
+  const navigateToSelectMusicScreen = () => {
     if (selectedPlan.exercise.length > 0) {
       dispatch(setCurrentExercise({...selectedPlan.exercise[0], index: 0}));
-      navigation.navigate('ReadyExercise');
+      navigation.navigate('SelectMusic');
     }
   };
   useEffect(() => {
@@ -132,22 +132,24 @@ const DetailPlan = () => {
                 ? 'No exericse yet'
                 : `${selectedPlan.exercise.length} exercise`}
             </Text>
-            <DraggableFlatList
-              data={listExercise}
-              onDragEnd={handleOnDragEnd}
-              renderItem={({item, getIndex, drag, isActive}) => (
-                <View style={{width: '100%', paddingTop: 8}}>
-                  <DetailPlanItem
-                    move={drag}
-                    isSelected={selectedIndex === getIndex()}
-                    onSelect={onSelect}
-                    index={getIndex()}
-                    exercise={item}></DetailPlanItem>
-                  <View style={styles.itemSeparator}></View>
-                </View>
-              )}
-              keyExtractor={item => `${item.name}plan-tiem`}
-            />
+            <View style={{flex: 1}}>
+              <DraggableFlatList
+                data={listExercise}
+                onDragEnd={handleOnDragEnd}
+                renderItem={({item, getIndex, drag, isActive}) => (
+                  <View style={{width: '100%', paddingTop: 8}}>
+                    <DetailPlanItem
+                      move={drag}
+                      isSelected={selectedIndex === getIndex()}
+                      onSelect={onSelect}
+                      index={getIndex()}
+                      exercise={item}></DetailPlanItem>
+                    <View style={styles.itemSeparator}></View>
+                  </View>
+                )}
+                keyExtractor={item => `${item.name}plan-tiem`}
+              />
+            </View>
 
             <Button
               style={[
@@ -158,7 +160,7 @@ const DetailPlan = () => {
                 }
               ]}
               mode="contained"
-              onPress={navigateToReadyScreen}>
+              onPress={navigateToSelectMusicScreen}>
               Start
             </Button>
           </View>

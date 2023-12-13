@@ -22,15 +22,11 @@ const initialState = {
   error: null
 };
 // createPlanAction
-const actions = [addPlanAction, removePlanAction];
-const exerciseAction = [
-  addExerciseAction,
-  removeExerciseAction,
-  updatePlanExerciseAction
-];
+const actions = [addPlanAction, addExerciseAction, removePlanAction];
+const exerciseAction = [removeExerciseAction, updatePlanExerciseAction];
 
 export const exerciseSlice = createSlice({
-  name: 'exercise',
+  name: 'exercise', 
   initialState: initialState,
   reducers: {
     setSelectedPlan: (state, action) => {
@@ -66,6 +62,7 @@ export const exerciseSlice = createSlice({
         })
         .addCase(action.fulfilled, (state, action) => {
           state.isLoading = false;
+          console.log('action.payload', action.payload);
           state.plans = action.payload;
         })
         .addCase(action.rejected, (state, action) => {

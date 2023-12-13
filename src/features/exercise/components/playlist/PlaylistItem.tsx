@@ -14,7 +14,7 @@ import {useDispatch} from 'react-redux';
 import {removePlaylistAction} from 'src/store/reducer/thunks/playlistAction';
 import {useTheme} from 'styled-components';
 
-const PlaylistItem = ({playlist}) => {
+const PlaylistItem = ({playlist, isSelected = false, iconVisible = true}) => {
   const [isShow, setIsShow] = useState(false);
   const [playListName, setPlaylistName] = useState('');
   const theme = useTheme();
@@ -30,11 +30,18 @@ const PlaylistItem = ({playlist}) => {
     dispatch(removePlaylistAction(playlist.name));
   };
   return (
-    <View style={[styles.container, {backgroundColor: theme.secondary}]}>
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: isSelected ? theme.secondary : null,
+          borderColor: theme.secondary
+        }
+      ]}>
       <View
         style={{
           flex: 1,
-          marginLeft: 12,
+          // marginLeft: 12,
           justifyContent: 'space-between',
           flexDirection: 'row'
         }}>
@@ -42,7 +49,8 @@ const PlaylistItem = ({playlist}) => {
           <Text
             style={{
               fontSize: 16,
-              color: 'white',
+              color: isSelected ? 'white' : 'gray',
+
               fontWeight: '500',
               marginLeft: 10
             }}>
@@ -51,7 +59,7 @@ const PlaylistItem = ({playlist}) => {
           <Text
             style={{
               fontSize: 14,
-              color: 'white',
+              color: isSelected ? 'white' : 'gray',
               fontWeight: '500',
               marginLeft: 10
             }}>
@@ -59,9 +67,11 @@ const PlaylistItem = ({playlist}) => {
           </Text>
         </View>
       </View>
-      <TouchableOpacity onPress={handleDeletePlaylist}>
-        <Icon name="delete" size={22} color="white" />
-      </TouchableOpacity>
+      {iconVisible && (
+        <TouchableOpacity onPress={handleDeletePlaylist}>
+          <Icon name="delete" size={22} color={isSelected ? 'white' : 'gray'} />
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
@@ -80,21 +90,22 @@ const {width} = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
     height: 90,
-    backgroundColor: '#101010',
+    backgroundColor: 'white',
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: 20,
     padding: 12,
-    elevation: 2,
-    margin: 12
+    borderWidth: 2,
+    marginHorizontal: 12
+    // elevation: 2
   },
   boxWithShadow: {
-    shadowColor: '#000',
-    borderWidth: 1,
-    overflow: 'hidden',
-    shadowRadius: 10,
-    shadowOpacity: 1,
-    elevation: 10
+    // shadowColor: '#000',
+    // borderWidth: 1,
+    // overflow: 'hidden',
+    // shadowRadius: 10,
+    // shadowOpacity: 1,
+    // elevation: 10
   },
   modalContainer: {
     flex: 1,

@@ -27,6 +27,7 @@ import {
 } from 'src/store/reducer/exerciseSlice';
 import {withBackButtonHandler} from 'src/hoc/withBackBtnHandler';
 import {saveHistoryExerciseAction} from 'src/store/reducer/thunks/exerciseActions';
+import audioServiceIns from 'src/services/audio/audioIns';
 
 const DoExercise = () => {
   const {currentExercise, doExercise, selectedPlan} =
@@ -37,7 +38,7 @@ const DoExercise = () => {
   const route = useRoute<any>();
   const {user} = useSelector(userSelector);
   const dispatch = useDispatch<any>();
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const theme = useTheme();
   const navigateBack = () => {
     navigation.goBack();
@@ -62,12 +63,15 @@ const DoExercise = () => {
   const resumeTimer = () => {
     // setIsShowPlanList(true);
     setIsPlaying(() => true);
+    audioServiceIns.play();
   };
   const pauseTimer = () => {
     setIsPlaying(() => false);
+    audioServiceIns.pause();
   };
-  console.log('currentExercise', selectedPlan, currentExercise);
+  // console.log('currentExercise', doExercise, selectedPlan, currentExercise);
   const navigateToBreakScreen = () => {
+    console.log('Do Exercise screen , currentex', currentExercise);
     dispatch(
       setDoExercise([
         ...doExercise,
@@ -86,9 +90,9 @@ const DoExercise = () => {
           doExercise
         })
       );
-      navigation.navigate('FinishScreen');
+      navigation.replace('FinishScreen');
     } else {
-      navigation.navigate('BreakScreen', {
+      navigation.replace('BreakScreen', {
         breakDuration: currentExercise.breakDuration || 15
       });
     }
@@ -96,7 +100,9 @@ const DoExercise = () => {
   const handleSkip = () => {
     navigateToBreakScreen();
   };
-  useEffect(() => {}, []);
+  useEffect(() => {
+    audioServiceIns.play();
+  }, []);
   return (
     <>
       <View style={{paddingBottom: 2}}>

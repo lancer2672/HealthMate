@@ -17,21 +17,29 @@ import buttonStyles from 'src/features/theme/styles/button';
 import {useDispatch, useSelector} from 'react-redux';
 import {playlistSelector} from 'src/store/selectors';
 import {addSongAction} from 'src/store/reducer/thunks/playlistAction';
-
-const ListSong = () => {
-  const route = useRoute<any>();
-  const navigation = useNavigation();
+import Animated, {
+  useSharedValue,
+  withSpring,
+  withTiming
+} from 'react-native-reanimated';
+const ListSong = ({selectedSongs, onItemClick, searchBarVisible = true}) => {
   const [searchKeyword, setSearchKeyword] = useState<string>('');
   const [deviceSongs, setDeviceSongs] = useState([]);
-  const [selectedSongs, setSelectedSongs] = useState([]);
+  // const [selectedSongs, setSelectedSongs] = useState([]);
+  // const [searchBarVisible, setSearchBarVisible] = useState(isSearchBarVisible);
   const [songs, setSongs] = useState([]);
   const searchTimeout = useRef<any>();
   const [snackbarVisible, setSnackbarVisible] = useState(false);
-  const {selectedPlaylist} = useSelector(playlistSelector);
-  const dispatch = useDispatch<any>();
+  const scaleAnim = useSharedValue(0);
+
+  useEffect(() => {
+    const animValue = searchBarVisible ? 1 : 0;
+    scaleAnim.value = withSpring(animValue, {
+      duration: 200
+    });
+  }, [searchBarVisible]);
   const getDeviceSongs = async () => {
     try {
-      console.log('getDeviceSongs');
       await requestStoragePermission();
       const songsOrError = await getAll({
         limit: 20,
@@ -60,31 +68,7 @@ const ListSong = () => {
     );
     setSongs(searchResult);
   };
-  const navigateBack = () => {
-    navigation.goBack();
-  };
-  const toggleSongSelection = index => {
-    if (selectedSongs.includes(index)) {
-      setSelectedSongs(selectedSongs.filter(i => i !== index));
-    } else {
-      setSelectedSongs([...selectedSongs, index]);
-    }
-  };
-  const addSongsToPlaylist = () => {
-    if (selectedPlaylist) {
-      const selectedSongItem = songs.filter((s, i) =>
-        selectedSongs.includes(i)
-      );
-      console.log('selectedSongItem', selectedSongItem);
-      dispatch(
-        addSongAction({
-          playlistName: selectedPlaylist.name,
-          songs: selectedSongItem
-        })
-      );
-      navigation.goBack();
-    }
-  };
+
   console.log('selectedItems', selectedSongs);
   useEffect(() => {
     if (searchKeyword.trim() == '') {
@@ -101,23 +85,30 @@ const ListSong = () => {
   }, [searchKeyword]);
   return (
     <View style={styles.container}>
-      <View style={{paddingBottom: 5, marginBottom: 12}}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={navigateBack}>
-            <Ionicons name="arrow-back" size={28} color="black" />
-          </TouchableOpacity>
-          <Text style={styles.title}>List device song</Text>
-        </View>
-      </View>
-      <Searchbar
-        autoFocus={false}
-        icon={'account-search'}
-        placeholder="Search"
-        value={searchKeyword}
-        onIconPress={() => console.log('press')}
-        onChangeText={setSearchKeyword}
-        iconColor={'#bdafaf'}
-      />
+      {searchBarVisible && (
+        <Animated.View
+          style={{
+            transform: [
+              {
+                translateY: -50
+              },
+              {scaleY: scaleAnim},
+              {
+                translateY: 50
+              }
+            ]
+          }}>
+          <Searchbar
+            autoFocus={false}
+            icon={'account-search'}
+            placeholder="Search"
+            value={searchKeyword}
+            onIconPress={() => console.log('press')}
+            onChangeText={setSearchKeyword}
+            iconColor={'#bdafaf'}
+          />
+        </Animated.View>
+      )}
       <Snackbar
         visible={snackbarVisible}
         duration={1000}
@@ -136,28 +127,19 @@ const ListSong = () => {
       </Snackbar>
       <FlatList
         style={{padding: 8}}
-        contentContainerStyle={{marginTop: 20}}
+        contentContainerStyle={{marginBottom: 20}}
         removeClippedSubviews={false}
         data={songs}
         keyExtractor={(item, index) => `x233${index}`}
         renderItem={({item, index}) => (
-          <Pressable onPress={() => toggleSongSelection(index)}>
-            <SongItem isSelected={selectedSongs.includes(index)} song={item} />
+          <Pressable onPress={() => onItemClick(item)}>
+            <SongItem
+              isSelected={selectedSongs.find(s => s.title == item.title)}
+              song={item}
+            />
           </Pressable>
         )}
       />
-      <Button
-        style={[
-          buttonStyles.primary,
-          {
-            width: 200,
-            alignSelf: 'center'
-          }
-        ]}
-        mode="contained"
-        onPress={addSongsToPlaylist}>
-        Add
-      </Button>
     </View>
   );
 };

@@ -36,7 +36,7 @@ const AddPlanModal = ({visible, onClose, exercise}) => {
         duration,
         breakDuration
       };
-      console.log('selectedPlans', selectedItems);
+      console.log('selectedPlans', selectedItems, newEx);
       for (let [planName, value] of Object.entries(selectedItems)) {
         //item selected
         if (value == true) {
@@ -56,7 +56,7 @@ const AddPlanModal = ({visible, onClose, exercise}) => {
         type: 'success',
         animationType: 'zoom-in'
       });
-      setDuration(0);
+      resetForm();
     } else {
       toast.show('You need to set duration', {
         duration: 1000,
@@ -66,6 +66,11 @@ const AddPlanModal = ({visible, onClose, exercise}) => {
     }
   };
 
+  const resetForm = () => {
+    setDuration(0);
+    setBreakDuration(0);
+    setSelectedItems({});
+  };
   const toggleSelectedItem = planName => {
     setSelectedItems(prev => {
       const newValue = !!prev[planName];
@@ -117,12 +122,14 @@ const AddPlanModal = ({visible, onClose, exercise}) => {
             />
             <View style={{flexDirection: 'row'}}>
               <InputText
+                style={{flex: 1}}
                 keyboardType="numeric"
                 onChangeText={setDuration}
                 placeholder="Duration"
                 value={duration}></InputText>
 
               <InputText
+                style={{flex: 1}}
                 keyboardType="numeric"
                 onChangeText={setBreakDuration}
                 placeholder="Break time"

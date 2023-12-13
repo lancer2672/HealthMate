@@ -1,5 +1,5 @@
 import {FlatList, StyleSheet, TouchableOpacity, Text, View} from 'react-native';
-import React, {FC, useEffect, useState} from 'react';
+import React, {FC, useEffect, useMemo, useState} from 'react';
 import {useTheme} from 'styled-components';
 import {getSpecificDateTimeStamp} from 'src/utils/dateTimeHelper';
 import {getHistoryByDate} from 'src/services/firebase/firestore/exercise';
@@ -40,19 +40,18 @@ const WeekItem: FC = ({day, index, onClick, isSelected = false}) => {
   const [isAchievedGoal, setIsAchieveGoal] = useState(false);
   const currentDay = new Date().getDay();
   console.log('currentDay', currentDay);
-  const isPast = index < currentDay;
-
-  const backgroundColor = isSelected
-    ? theme.secondary
-    : isAchievedGoal
-    ? theme.success
-    : theme.failed;
+  const isPast = index <= currentDay;
 
   const getBackgroundColor = () => {
-    if (isSelected) return theme.secondary;
+    console.log('isAchievedGoal', isPast, isAchievedGoal);
     if (!isPast) return 'gray';
     return isAchievedGoal ? theme.success : theme.failed;
   };
+  const backgroundColor = useMemo(getBackgroundColor, [
+    isSelected,
+    isPast,
+    isAchievedGoal
+  ]);
   useEffect(() => {
     (async () => {
       const now = new Date();
@@ -80,7 +79,7 @@ const WeekItem: FC = ({day, index, onClick, isSelected = false}) => {
         style={[
           styles.circleNumber,
           {
-            backgroundColor: getBackgroundColor(),
+            backgroundColor: backgroundColor,
             opacity: isSelected ? 1 : 0.5,
             borderColor: isPast ? theme.secondary : 'gray'
           }

@@ -59,15 +59,16 @@ export async function addExercise({userId, planName, exercise}) {
   try {
     const user = await usersRef.doc(userId).get();
     const plans = user.data().plans;
+    console.log('ddExercise', planName, exercise, plans);
     const updatedPlans = plans.map(plan => {
       if (plan.planName === planName) {
-        const exerciseIndex = plan.exercises.findIndex(
+        const exerciseIndex = plan.exercise.findIndex(
           ex => ex.id === exercise.id
         );
         if (exerciseIndex > -1) {
-          plan.exercises[exerciseIndex] = exercise; // replace the existing exercise
+          plan.exercise[exerciseIndex] = exercise; // replace the existing exercise
         } else {
-          plan.exercises.push(exercise); // add the new exercise
+          plan.exercise.push(exercise); // add the new exercise
         }
       }
       return plan;
@@ -76,8 +77,7 @@ export async function addExercise({userId, planName, exercise}) {
     await usersRef.doc(userId).update({
       plans: updatedPlans
     });
-    const updatedPlan = updatedPlans.find(plan => plan.planName === planName);
-    return updatedPlan;
+    return updatedPlans;
   } catch (error) {
     console.log('Add exercise error', error.message);
     throw error;

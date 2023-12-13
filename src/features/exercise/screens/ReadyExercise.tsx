@@ -7,6 +7,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {exerciseSelector} from 'src/store/selectors';
 import {withBackButtonHandler} from 'src/hoc/withBackBtnHandler';
 import {setDoExercise} from 'src/store/reducer/exerciseSlice';
+import audioServiceIns from 'src/services/audio/audioIns';
 
 const ReadyExercise = () => {
   const route = useRoute<any>();
@@ -25,7 +26,9 @@ const ReadyExercise = () => {
     dispatch(setDoExercise([]));
     navigation.replace('DoExercise');
   };
-  useEffect(() => {}, []);
+  useEffect(() => {
+    audioServiceIns.play();
+  }, []);
   return (
     <View style={{flex: 1}}>
       <View style={{flex: 2, alignItems: 'center'}}>

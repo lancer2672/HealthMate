@@ -1,5 +1,5 @@
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {CountdownCircleTimer} from 'react-native-countdown-circle-timer';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -16,6 +16,7 @@ import {
   setDoExercise
 } from 'src/store/reducer/exerciseSlice';
 import {withBackButtonHandler} from 'src/hoc/withBackBtnHandler';
+import audioServiceIns from 'src/services/audio/audioIns';
 
 const BreakScreen = () => {
   const [isPlaying, setIsPlaying] = useState(true);
@@ -35,35 +36,38 @@ const BreakScreen = () => {
   const stopSession = () => {
     setIsPlaying(false);
   };
-  const navigateToStartSession = () => {
-    // navigation.replace('StartPlan');
-  };
 
   const handleNavigateToNextExercise = () => {
     // save break duration to history
+
     dispatch(
       setDoExercise(
-        doExercise.map(i => {
-          if (i.exerciseId === currentExercise.id) {
+        doExercise.map(ex => {
+          if (ex.exerciseId === currentExercise.id) {
             return {
-              ...i,
+              ...ex,
               breakDuration: currentExercise.breakDuration - timerValue
             };
           }
-          return i;
+          return ex;
         })
       )
     );
+
     const nextExercise = selectedPlan.exercise[currentExercise.index + 1];
+    console.log(
+      'handleNavigateToNextExercise',
+      selectedPlan.exercise,
+      currentExercise,
+      nextExercise
+    );
     if (nextExercise) {
+      console.log('Break screen, next ex', currentExercise, nextExercise);
       dispatch(
-        setCurrentExercise({
-          ...nextExercise,
-          index: currentExercise.index + 1
-        })
+        setCurrentExercise({...nextExercise, index: currentExercise.index + 1})
       );
-      navigation.navigate('DoExercise');
-      resetTimer();
+      navigation.replace('DoExercise');
+      // resetTimer();
     }
   };
   const navigateToDetailExercise = () => {
@@ -74,8 +78,12 @@ const BreakScreen = () => {
     setTimerValue(() => timerValue + time);
   };
   const resetTimer = () => {
-    setTimerValue(10);
+    setIsPlaying(() => false);
+    setTimerValue(() => 0);
   };
+  useEffect(() => {
+    audioServiceIns.play();
+  }, []);
   return (
     <View style={{flex: 1, backgroundColor: 'white'}}>
       <View

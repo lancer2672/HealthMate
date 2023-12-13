@@ -26,7 +26,7 @@ const DetailPlaylist = ({}) => {
   const dispatch = useDispatch<any>();
   console.log('selectedPlaylist', selectedPlaylist);
   const navigateToListSong = () => {
-    navigation.navigate('ListSong');
+    navigation.navigate('AddSongToPlaylist');
   };
   const handleDeleteSong = song => {
     dispatch(removeSongAction({playlistName: selectedPlaylist.name, song}));
