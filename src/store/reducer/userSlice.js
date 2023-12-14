@@ -3,26 +3,17 @@ import {createSlice} from '@reduxjs/toolkit';
 import {login, logoutUser, register, saveFCMToken} from './thunks/userActions';
 const initialState = {
   user: null,
-
   isLoading: false,
-  error: null,
+  error: null
 };
 const actions = [logoutUser, register, login, saveFCMToken];
 export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    //set credentials
     setUser: (state, action) => {
       state.user = action.payload.user;
-      // state.token = action.payload.token;
-    },
-    setToken: (state, action) => {
-      state.token = action.payload.token;
-    },
-    updateUserState: (state, action) => {
-      state.user = action.payload;
-    },
+    }
   },
   extraReducers: builder => {
     actions.forEach(action => {
@@ -46,7 +37,7 @@ export const userSlice = createSlice({
       console.log(payload);
       state.user = payload;
     });
-  },
+  }
 });
 
-export const {updateUserState, setToken, setUser} = userSlice.actions;
+export const {setUser} = userSlice.actions;

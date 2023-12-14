@@ -2,6 +2,7 @@ import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useState} from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/Feather';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {useNavigation} from '@react-navigation/native';
 
 import {useSelector} from 'react-redux';
@@ -11,7 +12,11 @@ import SideMenu from './SideMenu';
 
 const Header = ({}) => {
   const [visible, setVisible] = useState(false);
+  const navigation = useNavigation<any>();
   const navigateToHistoryScreen = () => {};
+  const navigationToExericseGroup = () => {
+    navigation.navigate('ExerciseGroup');
+  };
   const openSideMenu = () => {
     setVisible(true);
   };
@@ -21,6 +26,12 @@ const Header = ({}) => {
         <Text style={styles.date}>Healthmate</Text>
       </View>
       <View style={{flexDirection: 'row'}}>
+        <TouchableOpacity
+          style={{paddingHorizontal: 4, marginHorizontal: 12}}
+          onPress={navigationToExericseGroup}>
+          <MaterialIcons name="group" size={24} color="black" />
+        </TouchableOpacity>
+
         <TouchableOpacity
           style={{paddingHorizontal: 4, marginHorizontal: 12}}
           onPress={navigateToHistoryScreen}>

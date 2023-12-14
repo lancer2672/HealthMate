@@ -16,7 +16,6 @@ import {exerciseSelector, playlistSelector} from 'src/store/selectors';
 import {addSongAction} from 'src/store/reducer/thunks/playlistAction';
 import ListSong from '../../components/playlist/ListSong';
 import ScreenHeader from 'src/components/ScreenHeader';
-import {getSpecificDateTimeStamp} from 'src/utils/dateTimeHelper';
 
 const AddSongToPlaylist = ({}) => {
   const route = useRoute<any>();

@@ -50,6 +50,7 @@ export async function loginUser({email, password}) {
     return {
       uid: user.uid,
       email: user.email,
+      groupId: null,
       displayName: user.displayName,
       photoURL: user.photoURL
     };

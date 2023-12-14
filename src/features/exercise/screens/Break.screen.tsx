@@ -1,8 +1,6 @@
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {useNavigation, useRoute} from '@react-navigation/native';
-import {CountdownCircleTimer} from 'react-native-countdown-circle-timer';
-import Entypo from 'react-native-vector-icons/Entypo';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {useTheme} from 'styled-components';
 import {useDispatch, useSelector} from 'react-redux';

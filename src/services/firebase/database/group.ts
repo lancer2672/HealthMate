@@ -1,0 +1,101 @@
+import firebaseDatabase from './index';
+import firestore from '@react-native-firebase/firestore';
+
+const usersRef = firestore().collection('user');
+
+const groupRef = firebaseDatabase.ref('groups');
+
+export async function joinGroup({userId, groupId}) {
+  try {
+    console.log('userid,groupid', userId, groupId);
+    const userFirestoreRef = usersRef.doc(userId);
+    await userFirestoreRef.update({groupId});
+
+    const groupRealtimeRef = groupRef.child(groupId);
+    await groupRealtimeRef
+      .child('members')
+      .child(userId)
+      .set({totalPoint: 0, weekPoint: 0});
+  } catch (er) {
+    console.log('join group error', er);
+  }
+}
+
+export async function quitGroup({groupId, userId, nextCreatorId = null}) {
+  try {
+    console.log('userid,quitGroup', userId, groupId);
+
+    const userFirestoreRef = usersRef.doc(userId);
+    await userFirestoreRef.update({groupId: null});
+
+    const groupRealtimeRef = groupRef.child(groupId);
+    await groupRealtimeRef.child('members').child(userId).remove();
+
+    const groupSnapshot = await groupRealtimeRef.once('value');
+    if (groupSnapshot.exists()) {
+      const groupData = groupSnapshot.val();
+      if (groupData.creatorId === userId) {
+        if (nextCreatorId) {
+          await groupRealtimeRef.update({creatorId: nextCreatorId});
+        } else {
+          // Nếu không có nextCreatorId, xóa nhóm
+          await groupRealtimeRef.remove();
+        }
+      }
+    } else {
+      console.log('Group does not exist');
+    }
+  } catch (er) {
+    console.log('er', er);
+  }
+}
+
+export async function getGroupPlan({userId}) {
+  const userFirestoreRef = usersRef.doc(userId);
+  const userDoc = await userFirestoreRef.get();
+  const userData = userDoc.data();
+
+  const groupRealtimeRef = groupRef.child(userData.groupId);
+  const groupSnapshot = await groupRealtimeRef.once('value');
+  const groupData = groupSnapshot.val();
+
+  return groupData.plan;
+}
+
+export async function setMinExerciseTime({groupId, minExerciseTime}) {
+  const groupRef = firebaseDatabase.ref('groups/' + groupId);
+  await groupRef.update({minExerciseTime});
+}
+export async function setGroupPlan({groupId, plan}) {
+  const groupRef = firebaseDatabase.ref('groups/' + groupId);
+  await groupRef.update({plan});
+}
+
+export async function createGroup({creatorId, name}) {
+  const newGroup = {
+    creatorId,
+    name,
+    plan: [],
+    createdAt: Date.now(),
+    minExerciseTime: 0,
+    members: {}
+  };
+  const groupRef = await firebaseDatabase.ref('groups').push();
+  await groupRef.set(newGroup);
+  return {id: groupRef.key, ...newGroup};
+}
+export async function addPoint({groupId, userId, point}) {
+  const groupRealtimeRef = groupRef.child(groupId);
+  const memberRef = groupRealtimeRef.child('members').child(userId);
+
+  const memberSnapshot = await memberRef.once('value');
+  if (memberSnapshot.exists()) {
+    const memberData = memberSnapshot.val();
+    await memberRef.update({
+      totalPoint: memberData.totalPoint + point,
+      weekPoint: memberData.weekPoint + point
+    });
+  } else {
+    throw new Error('Member does not exist in the group');
+  }
+}

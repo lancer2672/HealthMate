@@ -9,7 +9,6 @@ import {useTheme} from 'styled-components';
 const SongItem = ({isSelected = false, song = {}}) => {
   const theme = useTheme();
   const {user} = useSelector(userSelector);
-  const addSongToPlaylist = () => {};
   return (
     <View
       style={[

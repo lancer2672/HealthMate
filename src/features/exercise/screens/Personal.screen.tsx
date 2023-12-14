@@ -62,9 +62,6 @@ const Personal = () => {
   }, []);
   return (
     <ScrollView style={styles.container}>
-      <ListExerciseBody></ListExerciseBody>
-      <ListTargetExercise></ListTargetExercise>
-
       <Text style={styles.title}>Recommended for you</Text>
       <TouchableOpacity
         onPress={navigateToDetailPlan}
@@ -82,6 +79,8 @@ const Personal = () => {
           style={styles.imgBg}
           source={require('../../../assets/imgs/man_exercise.png')}></ImageBackground>
       </TouchableOpacity>
+      <ListTargetExercise></ListTargetExercise>
+      <ListExerciseBody></ListExerciseBody>
     </ScrollView>
   );
 };
