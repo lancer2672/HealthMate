@@ -36,24 +36,24 @@ const SettingItemWithButton = ({name, onClick, defaultSwitchValue = false}) => {
 const styles = StyleSheet.create({
   setting: {
     fontSize: 32,
-    fontWeight: 'bold',
+    fontWeight: 'bold'
   },
   //setting item
   settingItemWrapper: {
     flexDirection: 'row',
     marginTop: 12,
-    justifyContent: 'space-between',
+    justifyContent: 'space-between'
   },
   settingName: {
-    fontSize: 16,
+    fontSize: 16
   },
   settingValue: theme => ({
     fontSize: 16,
     fontWeight: 'bold',
-    color: theme.accent,
+    color: theme.accent
   }),
   btn: {
-    padding: 4,
-  },
+    padding: 4
+  }
 });
 export {SettingItemWithButton, SettingItem};

@@ -12,10 +12,11 @@ import {Button, Searchbar, Snackbar} from 'react-native-paper';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import buttonStyles from 'src/features/theme/styles/button';
 import {useDispatch, useSelector} from 'react-redux';
-import {playlistSelector} from 'src/store/selectors';
+import {exerciseSelector, playlistSelector} from 'src/store/selectors';
 import {addSongAction} from 'src/store/reducer/thunks/playlistAction';
-import ListSong from '../components/playlist/ListSong';
+import ListSong from '../../components/playlist/ListSong';
 import ScreenHeader from 'src/components/ScreenHeader';
+import {getSpecificDateTimeStamp} from 'src/utils/dateTimeHelper';
 
 const AddSongToPlaylist = ({}) => {
   const route = useRoute<any>();
@@ -23,7 +24,7 @@ const AddSongToPlaylist = ({}) => {
   const [selectedSongs, setSelectedSongs] = useState([]);
   const {selectedPlaylist} = useSelector(playlistSelector);
   const dispatch = useDispatch<any>();
-
+  const {doExercise} = useSelector(exerciseSelector);
   const navigateBack = () => {
     navigation.goBack();
   };

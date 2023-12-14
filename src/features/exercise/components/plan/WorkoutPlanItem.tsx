@@ -16,6 +16,7 @@ import {exerciseSelector} from 'src/store/selectors';
 import {useNavigation} from '@react-navigation/native';
 import {setSelectedPlan} from 'src/store/reducer/exerciseSlice';
 import {useTheme} from 'styled-components';
+import {convertSecondsToMinutesAndSeconds} from 'src/utils/dateTimeHelper';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 type WorkoutItemProps = {
@@ -94,7 +95,7 @@ const WorkoutItem = ({planId, data}: WorkoutItemProps) => {
                 {plan.planName} - {data.length} exericse
               </Text>
               <Text style={[styles.planSubText]}>
-                {getTotalDuration()} seconds
+                {convertSecondsToMinutesAndSeconds(getTotalDuration())}
               </Text>
             </>
           ) : (

@@ -34,6 +34,8 @@ import {convertSecondsToMinutesAndSeconds} from 'src/utils/dateTimeHelper';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {setCurrentExercise} from 'src/store/reducer/exerciseSlice';
 import InputText from 'src/components/TextInput';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {DISABLE_MUSIC} from 'src/constants';
 const DetailPlan = () => {
   const [selectedIndex, setSelectedIndex] = useState();
 
@@ -55,7 +57,7 @@ const DetailPlan = () => {
     navigation.navigate('ListExercise', {});
   };
   const getPlanImage = () => {
-    return require('../../../assets/imgs/bicep.jpg');
+    return require('../../../../assets/imgs/bicep.jpg');
     if (selectedPlan.exercise.length == 0) {
     } else {
       // return {uri: selectedPlan.exercise[0].gifUrl};
@@ -75,10 +77,16 @@ const DetailPlan = () => {
     setListExercise(newList);
   };
   console.log('selectedPlan', selectedPlan);
-  const navigateToSelectMusicScreen = () => {
+  const navigateToSelectMusicScreen = async () => {
     if (selectedPlan.exercise.length > 0) {
+      const isHideScreen = await AsyncStorage.getItem(DISABLE_MUSIC);
+
       dispatch(setCurrentExercise({...selectedPlan.exercise[0], index: 0}));
-      navigation.navigate('SelectMusic');
+      if (isHideScreen) {
+        navigation.navigate('ReadyExercise');
+      } else {
+        navigation.navigate('SelectMusic');
+      }
     }
   };
   useEffect(() => {

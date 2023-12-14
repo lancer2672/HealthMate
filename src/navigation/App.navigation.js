@@ -33,16 +33,16 @@ import {activitySelector, waterTrackingSelector} from 'src/store/selectors';
 import {Tabs} from './tabs';
 import ExerciseHome from 'src/features/exercise/screens/ExerciseHome.screen';
 import ListExercise from 'src/features/exercise/components/exercise/ListExercise';
-import DetailPlan from 'src/features/exercise/screens/DetailPlan';
+import DetailPlan from 'src/features/exercise/screens/plan/DetailPlan';
 import DetailExercise from 'src/features/exercise/screens/DetailExercise';
 import StartPlan from 'src/features/exercise/screens/DoExercise';
 import ReadyExercise from 'src/features/exercise/screens/ReadyExercise';
 import BreakScreen from 'src/features/exercise/screens/Break.screen';
 import DoExercise from 'src/features/exercise/screens/DoExercise';
 import FinishScreen from 'src/features/exercise/screens/FinishScreen';
-import DetailPlaylist from 'src/features/exercise/screens/DetailPlaylist';
-import SelectMusic from 'src/features/exercise/screens/SelectMusic';
-import AddSongToPlaylist from 'src/features/exercise/screens/AddSongToPlaylist';
+import DetailPlaylist from 'src/features/exercise/screens/music/DetailPlaylist';
+import SelectMusic from 'src/features/exercise/screens/music/SelectMusic';
+import AddSongToPlaylist from 'src/features/exercise/screens/music/AddSongToPlaylist';
 const Stack = createNativeStackNavigator();
 
 export const AppNavigator = () => {

@@ -16,7 +16,7 @@ import {ImageBackground} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {exerciseSelector, playlistSelector} from 'src/store/selectors';
 import {useTheme} from 'styled-components';
-import SongItem from '../components/playlist/SongItem';
+import SongItem from '../../components/playlist/SongItem';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {removeSongAction} from 'src/store/reducer/thunks/playlistAction';
 const DetailPlaylist = ({}) => {
@@ -77,7 +77,7 @@ const DetailPlaylist = ({}) => {
           ]}>
           <Image
             style={{width: 160, height: 160, borderRadius: 24}}
-            source={require('../../../assets/imgs/girl_listening_to_music.png')}></Image>
+            source={require('../../../../assets/imgs/girl_listening_to_music.png')}></Image>
         </View>
       </View>
 

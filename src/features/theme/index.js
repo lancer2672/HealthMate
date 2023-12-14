@@ -41,7 +41,6 @@ export default function ThemeProviderComponent({children}) {
   useEffect(() => {
     (async () => {
       const isUseDarkTheme = await AsyncStorage.getItem('AppTheme');
-
       if (isUseDarkTheme == 'dark') {
         setIsDarkTheme(true);
       }

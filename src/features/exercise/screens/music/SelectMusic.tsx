@@ -14,13 +14,13 @@ import {useDispatch, useSelector} from 'react-redux';
 import {exerciseSelector, playlistSelector} from 'src/store/selectors';
 import {Button} from 'react-native-paper';
 import buttonStyles from 'src/features/theme/styles/button';
-import ListSong from '../components/playlist/ListSong';
+import ListSong from '../../components/playlist/ListSong';
 import ScreenHeader from 'src/components/ScreenHeader';
 import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import {FlatList} from 'react-native';
-import PlaylistItem from '../components/playlist/PlaylistItem';
+import PlaylistItem from '../../components/playlist/PlaylistItem';
 import audioServiceIns from 'src/services/audio/audioIns';
 
 const SelectMusic = () => {

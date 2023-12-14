@@ -32,12 +32,21 @@ const ListExerciseBody = () => {
 
   return (
     <View>
-      <DropDownCategory
-        exercise={searchExercise}
-        setExercise={setSearchExercise}></DropDownCategory>
-      <TouchableOpacity onPress={viewAll} style={{alignSelf: 'flex-end'}}>
-        <Text style={styles.viewAll}>View all</Text>
-      </TouchableOpacity>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between'
+        }}>
+        <View style={{flex: 1}}>
+          <DropDownCategory
+            exercise={searchExercise}
+            setExercise={setSearchExercise}></DropDownCategory>
+        </View>
+        <TouchableOpacity onPress={viewAll} style={{}}>
+          <Text style={styles.viewAll}>View all</Text>
+        </TouchableOpacity>
+      </View>
       <FlatList
         contentContainerStyle={{marginBottom: 20, marginTop: 4}}
         horizontal

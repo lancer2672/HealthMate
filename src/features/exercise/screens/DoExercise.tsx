@@ -28,6 +28,7 @@ import {
 import {withBackButtonHandler} from 'src/hoc/withBackBtnHandler';
 import {saveHistoryExerciseAction} from 'src/store/reducer/thunks/exerciseActions';
 import audioServiceIns from 'src/services/audio/audioIns';
+import notifyUser from 'src/utils/notifyUser';
 
 const DoExercise = () => {
   const {currentExercise, doExercise, selectedPlan} =
@@ -41,7 +42,6 @@ const DoExercise = () => {
   const navigation = useNavigation<any>();
   const theme = useTheme();
   const navigateBack = () => {
-    navigation.goBack();
     Alert.alert(
       'Are you sure to quit?',
       '',
@@ -70,26 +70,12 @@ const DoExercise = () => {
     audioServiceIns.pause();
   };
   // console.log('currentExercise', doExercise, selectedPlan, currentExercise);
-  const navigateToBreakScreen = () => {
-    console.log('Do Exercise screen , currentex', currentExercise);
-    dispatch(
-      setDoExercise([
-        ...doExercise,
-        {
-          exerciseId: currentExercise.id,
-          duration: currentExercise.duration - exerciseTime,
-          breakDuration: 0
-        }
-      ])
-    );
+  const navigateToBreakScreen = (isSkip = false) => {
+    notifyUser();
+    if (!isSkip) {
+      saveHistory();
+    }
     if (currentExercise.index === selectedPlan.exercise.length - 1) {
-      dispatch(
-        saveHistoryExerciseAction({
-          userId: user.uid,
-          planId: selectedPlan.id,
-          doExercise
-        })
-      );
       navigation.replace('FinishScreen');
     } else {
       navigation.replace('BreakScreen', {
@@ -97,8 +83,29 @@ const DoExercise = () => {
       });
     }
   };
+  const saveHistory = () => {
+    console.log('Do Exercise screen , currentex', currentExercise);
+    const newDoExerciseHistory = [
+      ...doExercise,
+      {
+        exerciseId: currentExercise.id,
+        duration: currentExercise.duration - exerciseTime,
+        breakDuration: 0
+      }
+    ];
+    dispatch(setDoExercise(newDoExerciseHistory));
+    if (currentExercise.index === selectedPlan.exercise.length - 1) {
+      dispatch(
+        saveHistoryExerciseAction({
+          userId: user.uid,
+          planId: selectedPlan.id,
+          doExercise: newDoExerciseHistory
+        })
+      );
+    }
+  };
   const handleSkip = () => {
-    navigateToBreakScreen();
+    navigateToBreakScreen(true);
   };
   useEffect(() => {
     audioServiceIns.play();

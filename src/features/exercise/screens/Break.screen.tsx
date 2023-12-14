@@ -17,6 +17,7 @@ import {
 } from 'src/store/reducer/exerciseSlice';
 import {withBackButtonHandler} from 'src/hoc/withBackBtnHandler';
 import audioServiceIns from 'src/services/audio/audioIns';
+import notifyUser from 'src/utils/notifyUser';
 
 const BreakScreen = () => {
   const [isPlaying, setIsPlaying] = useState(true);
@@ -37,22 +38,12 @@ const BreakScreen = () => {
     setIsPlaying(false);
   };
 
-  const handleNavigateToNextExercise = () => {
+  const handleNavigateToNextExercise = (isSkip = false) => {
     // save break duration to history
-
-    dispatch(
-      setDoExercise(
-        doExercise.map(ex => {
-          if (ex.exerciseId === currentExercise.id) {
-            return {
-              ...ex,
-              breakDuration: currentExercise.breakDuration - timerValue
-            };
-          }
-          return ex;
-        })
-      )
-    );
+    notifyUser();
+    if (!isSkip) {
+      saveBreakHistory();
+    }
 
     const nextExercise = selectedPlan.exercise[currentExercise.index + 1];
     console.log(
@@ -70,6 +61,21 @@ const BreakScreen = () => {
       // resetTimer();
     }
   };
+  const saveBreakHistory = () => {
+    dispatch(
+      setDoExercise(
+        doExercise.map(ex => {
+          if (ex.exerciseId === currentExercise.id) {
+            return {
+              ...ex,
+              breakDuration: currentExercise.breakDuration - timerValue
+            };
+          }
+          return ex;
+        })
+      )
+    );
+  };
   const navigateToDetailExercise = () => {
     setIsPlaying(false);
     navigation.navigate('DetailExercise', {exercise: currentExercise});
@@ -80,6 +86,9 @@ const BreakScreen = () => {
   const resetTimer = () => {
     setIsPlaying(() => false);
     setTimerValue(() => 0);
+  };
+  const handleSkip = () => {
+    handleNavigateToNextExercise(true);
   };
   useEffect(() => {
     audioServiceIns.play();
@@ -172,7 +181,7 @@ const BreakScreen = () => {
           icon="arrow-right"
           mode="contained"
           // onPress={isPlaying ? stopSession : startSession}
-          onPress={handleNavigateToNextExercise}>
+          onPress={handleSkip}>
           SKIP
         </Button>
       </View>

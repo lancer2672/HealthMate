@@ -4,7 +4,7 @@ import Header from '../components/Header';
 import PagerView from 'react-native-pager-view';
 import Personal from './Personal.screen';
 import TabButton from '../components/TabButton';
-import Plan from './Plan.screen';
+import Plan from './plan/Plan.screen';
 
 const ExerciseHome = () => {
   const pageViewRef = useRef<PagerView>();

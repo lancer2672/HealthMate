@@ -8,6 +8,7 @@ import {exerciseSelector} from 'src/store/selectors';
 import {withBackButtonHandler} from 'src/hoc/withBackBtnHandler';
 import {setDoExercise} from 'src/store/reducer/exerciseSlice';
 import audioServiceIns from 'src/services/audio/audioIns';
+import notifyUser from 'src/utils/notifyUser';
 
 const ReadyExercise = () => {
   const route = useRoute<any>();
@@ -24,6 +25,7 @@ const ReadyExercise = () => {
   };
   const navigateToStartSession = () => {
     dispatch(setDoExercise([]));
+    notifyUser();
     navigation.replace('DoExercise');
   };
   useEffect(() => {
