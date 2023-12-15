@@ -178,7 +178,13 @@ const DetailPlan = () => {
   );
 };
 
-const DetailPlanItem = ({isSelected, move, exercise, index, onSelect}) => {
+export const DetailPlanItem = ({
+  isSelected,
+  move,
+  exercise,
+  index,
+  onSelect
+}) => {
   const [isShowMenu, setIsShowMenu] = useState(false);
   const [updateModalVisible, setUpdateModalVisible] = useState(false);
   const {selectedPlan} = useSelector(exerciseSelector);

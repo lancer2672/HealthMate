@@ -7,7 +7,6 @@ const groupRef = firebaseDatabase.ref('groups');
 
 export async function joinGroup({userId, groupId}) {
   try {
-    console.log('userid,groupid', userId, groupId);
     const userFirestoreRef = usersRef.doc(userId);
     await userFirestoreRef.update({groupId});
 
@@ -39,7 +38,7 @@ export async function quitGroup({groupId, userId, nextCreatorId = null}) {
           await groupRealtimeRef.update({creatorId: nextCreatorId});
         } else {
           // Nếu không có nextCreatorId, xóa nhóm
-          await groupRealtimeRef.remove();
+          //   await groupRealtimeRef.remove();
         }
       }
     } else {
@@ -48,18 +47,6 @@ export async function quitGroup({groupId, userId, nextCreatorId = null}) {
   } catch (er) {
     console.log('er', er);
   }
-}
-
-export async function getGroupPlan({userId}) {
-  const userFirestoreRef = usersRef.doc(userId);
-  const userDoc = await userFirestoreRef.get();
-  const userData = userDoc.data();
-
-  const groupRealtimeRef = groupRef.child(userData.groupId);
-  const groupSnapshot = await groupRealtimeRef.once('value');
-  const groupData = groupSnapshot.val();
-
-  return groupData.plan;
 }
 
 export async function setMinExerciseTime({groupId, minExerciseTime}) {
@@ -72,18 +59,20 @@ export async function setGroupPlan({groupId, plan}) {
 }
 
 export async function createGroup({creatorId, name}) {
+  const groupRef = await firebaseDatabase.ref('groups').push();
   const newGroup = {
     creatorId,
     name,
     plan: [],
     createdAt: Date.now(),
     minExerciseTime: 0,
-    members: {}
+    members: {},
+    groupSearchId: groupRef.key.slice(-6)
   };
-  const groupRef = await firebaseDatabase.ref('groups').push();
   await groupRef.set(newGroup);
   return {id: groupRef.key, ...newGroup};
 }
+
 export async function addPoint({groupId, userId, point}) {
   const groupRealtimeRef = groupRef.child(groupId);
   const memberRef = groupRealtimeRef.child('members').child(userId);

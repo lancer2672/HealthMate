@@ -3,7 +3,6 @@ import axiosClient from './axiosClient';
 
 const exerciseApi = {
   getAll: async limit => {
-    return [];
     try {
       const data = await axiosClient.get(`${EXERCISE_BASE_URL}`, {
         params: {limit}
@@ -14,7 +13,6 @@ const exerciseApi = {
     }
   },
   getListBodyPart: async () => {
-    return [];
     try {
       console.log('GetListBodyPart');
       const data = await axiosClient.get(
@@ -29,12 +27,10 @@ const exerciseApi = {
     }
   },
   getTargetList: async () => {
-    return [];
     const data = await axiosClient.get(`${EXERCISE_BASE_URL}/targetList`, {});
     return data.data;
   },
   getExerciseById: async id => {
-    return {};
     const data = await axiosClient.get(
       `${EXERCISE_BASE_URL}/exercise/${id}`,
       {}
@@ -42,7 +38,6 @@ const exerciseApi = {
     return data.data;
   },
   getTargetExercise: async (target, limit) => {
-    return [];
     const data = await axiosClient.get(
       `${EXERCISE_BASE_URL}/target/${target}`,
       {
@@ -54,7 +49,6 @@ const exerciseApi = {
     return data.data;
   },
   getExerciseByBodyPart: async ({bodyPart, limit}) => {
-    return [];
     const data = await axiosClient.get(
       `${EXERCISE_BASE_URL}/bodyPart/${bodyPart}`,
       {

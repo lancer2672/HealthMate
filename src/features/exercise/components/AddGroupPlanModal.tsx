@@ -10,86 +10,34 @@ import React, {useState} from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
 import {TouchableWithoutFeedback, FlatList, Modal} from 'react-native';
-import PlanItem from '../PlanItem';
+import PlanItem from './PlanItem';
 import {Button} from 'react-native-paper';
 import {useToast} from 'react-native-toast-notifications';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {useDispatch, useSelector} from 'react-redux';
 import {exerciseSelector, userSelector} from 'src/store/selectors';
 import {addExerciseAction} from 'src/store/reducer/thunks/exerciseActions';
-import InputText from 'src/components/TextInput';
+import {setGroupPlan} from 'src/services/firebase/database/group';
 
-const AddPlanModal = ({visible, onClose, exercise}) => {
-  const [selectedItems, setSelectedItems] = useState({});
-  const [duration, setDuration] = useState(0);
-  const [breakDuration, setBreakDuration] = useState(0);
+const AddGroupPlanModal = ({visible, onClose}) => {
   const {plans} = useSelector(exerciseSelector);
-
+  const [selectedPlan, setSelectedPlan] = useState(null);
   const toast = useToast();
   const {user} = useSelector(userSelector);
   const dispatch = useDispatch<any>();
 
-  const handleAddExercise = () => {
-    if (duration > 0) {
-      let newEx = {
-        ...exercise,
-        duration,
-        breakDuration
-      };
-      console.log('selectedPlans', selectedItems, newEx);
-      for (let [planName, value] of Object.entries(selectedItems)) {
-        //item selected
-        if (value == true) {
-          dispatch(
-            addExerciseAction({
-              userId: user.uid,
-              planName,
-              exercise: newEx
-            })
-          );
-        }
-      }
-
+  const handleAddGroupPlan = async () => {
+    if (selectedPlan) {
+      await setGroupPlan({groupId: user.groupId, plan: selectedPlan});
+      // onAddPlan(selectedPlan);
       onClose();
-      toast.show('Success', {
-        duration: 1000,
-        type: 'success',
-        animationType: 'zoom-in'
-      });
-      resetForm();
-    } else {
-      toast.show('You need to set duration', {
-        duration: 1000,
-        type: 'danger',
-        animationType: 'zoom-in'
-      });
     }
   };
 
-  const resetForm = () => {
-    setDuration(0);
-    setBreakDuration(0);
-    setSelectedItems({});
-  };
-  const toggleSelectedItem = planName => {
-    setSelectedItems(prev => {
-      const newValue = !!prev[planName];
-      return {
-        ...prev,
-        [planName]: !newValue
-      };
-    });
-  };
-  const handleClose = () => {
-    onClose();
-    setBreakDuration(0);
-    setDuration(0);
-  };
   return (
     <Modal
       animationType="fade"
       transparent={true}
-      onRequestClose={handleClose}
+      onRequestClose={onClose}
       visible={visible}>
       <TouchableWithoutFeedback onPress={null}>
         <View style={{flex: 1}}>
@@ -98,7 +46,7 @@ const AddPlanModal = ({visible, onClose, exercise}) => {
           <View style={styles.subModalContainer}>
             <View style={styles.header}>
               <Text style={styles.modalHeading}>Your plan</Text>
-              <TouchableOpacity onPress={handleClose}>
+              <TouchableOpacity onPress={onClose}>
                 <AntDesign name="close" size={24} color="black" />
               </TouchableOpacity>
             </View>
@@ -107,34 +55,21 @@ const AddPlanModal = ({visible, onClose, exercise}) => {
               renderItem={({item, index}) => (
                 <TouchableOpacity
                   style={{
-                    backgroundColor: selectedItems[item.planName]
-                      ? 'gray'
-                      : 'white'
+                    backgroundColor:
+                      selectedPlan?.planName === item.planName
+                        ? 'gray'
+                        : 'white'
                   }}
-                  onPress={() => toggleSelectedItem(item.planName)}>
+                  onPress={() => setSelectedPlan(item)}>
                   <PlanItem
-                    isSelected={selectedItems[item.planName]}
+                    isSelected={selectedPlan?.planName === item.planName}
                     plan={item}
                   />
                 </TouchableOpacity>
               )}
               keyExtractor={item => `${item.name}plan`}
             />
-            <View style={{flexDirection: 'row'}}>
-              <InputText
-                style={{flex: 1}}
-                keyboardType="numeric"
-                onChangeText={setDuration}
-                placeholder="Duration"
-                value={duration}></InputText>
 
-              <InputText
-                style={{flex: 1}}
-                keyboardType="numeric"
-                onChangeText={setBreakDuration}
-                placeholder="Break time"
-                value={breakDuration}></InputText>
-            </View>
             <View
               style={{
                 flexDirection: 'row',
@@ -145,8 +80,8 @@ const AddPlanModal = ({visible, onClose, exercise}) => {
               <Button
                 style={styles.button}
                 mode="contained"
-                onPress={handleAddExercise}>
-                Add
+                onPress={handleAddGroupPlan}>
+                Update
               </Button>
             </View>
           </View>
@@ -232,4 +167,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default AddPlanModal;
+export default AddGroupPlanModal;

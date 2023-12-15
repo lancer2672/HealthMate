@@ -13,6 +13,7 @@ import React, {useEffect, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/Feather';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {useDispatch, useSelector} from 'react-redux';
 import {useTheme} from 'styled-components';
@@ -27,10 +28,12 @@ import firebaseDatabase from 'src/services/firebase/database';
 import {
   createGroup,
   joinGroup,
-  quitGroup
+  quitGroup,
+  setGroupPlan
 } from 'src/services/firebase/database/group';
 import {setUser} from 'src/store/reducer/userSlice';
 import InputText from 'src/components/TextInput';
+import AddGroupPlanModal from '../../components/AddGroupPlanModal';
 
 const data = [
   {
@@ -45,6 +48,8 @@ const groupRef = firebaseDatabase.ref('groups');
 const ExerciseGroup = () => {
   const [group, setGroup] = useState();
   const [visible, setVisible] = useState(false);
+  const [detailVisible, setDetailVisible] = useState(false);
+  const [planlistVisible, setPlanlistVisible] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState<string>('');
   const theme = useTheme();
   const {user} = useSelector(userSelector);
@@ -55,15 +60,25 @@ const ExerciseGroup = () => {
     navigation.goBack();
   };
   const handleQuitGroup = async () => {
-    if (user.groupId) {
+    if (user.groupId && group) {
       await quitGroup({
         groupId: user.groupId,
         userId: user.uid
       });
-      dispatch(setUser({user: {...user, groupId: null}}));
+      const currentUserIndex = group.members.findIndex(
+        member => member.userId === user.uid
+      );
+      const nextCreator =
+        currentUserIndex < group.members.length - 1
+          ? group.members[currentUserIndex + 1]
+          : group.members[0];
+      dispatch(
+        setUser({
+          user: {...user, groupId: null, nextCreator: nextCreator.userId}
+        })
+      );
     }
   };
-  console.log('user', user);
   const displayAlert = () => {
     Alert.alert(
       'Are you sure to quit?',
@@ -85,14 +100,13 @@ const ExerciseGroup = () => {
     groupRealtimeRef.on('value', snapshot => {
       const groupData = snapshot.val();
       //sort group by week point
+      console.log('groupdata trackgroup', groupData);
       if (groupData) {
-        const sortedMembers = Object.entries(groupData.members)
+        const sortedMembers = Object.entries(groupData.members || {})
           .map(([userId, memberData]) => ({userId, ...memberData}))
           .sort((a, b) => b.weekPoint - a.weekPoint);
         setGroup({...groupData, members: sortedMembers});
       }
-
-      console.log('new group data', groupData);
     });
   };
 
@@ -107,38 +121,59 @@ const ExerciseGroup = () => {
     return '';
   };
 
+  const openDetailPlanModal = () => {
+    // await setGroupPlan({groupId:user.groupId, plan})
+    setDetailVisible(true);
+  };
+  const handleJoinGroup = async groupId => {
+    await joinGroup({userId: user.uid, groupId});
+    dispatch(setUser({user: {...user, groupId}}));
+  };
+  const handleSearch = async () => {
+    const groupsRef = firebaseDatabase.ref('groups');
+    const snapshot = await groupsRef.once('value');
+    const groups = snapshot.val();
+
+    const foundGroup = Object.entries(groups).find(
+      ([groupId, groupData]) =>
+        groupData.groupSearchId?.toString().toLowerCase() ===
+        searchKeyword.toLowerCase()
+    );
+
+    if (foundGroup) {
+      const [groupId, groupData] = foundGroup;
+      console.log(`Found group with ID: ${groupId}`, groupData);
+      // Xử lý tiếp theo nếu tìm thấy group
+      handleJoinGroup(groupId);
+    } else {
+      Alert.alert(
+        'Search result',
+        'Group not found!',
+        [{text: 'Ok', style: 'cancel'}],
+        {
+          cancelable: false
+        }
+      );
+    }
+  };
+
   useEffect(() => {
     if (user.groupId) {
       trackGroup();
     }
   }, [user.groupId]);
-  useEffect(() => {
-    const handleSearch = () => {
-      if (searchKeyword.trim() === '') {
-        console.log('failed');
-      } else {
-        console.log('success');
-      }
-    };
 
-    const searchTimeout = setTimeout(() => {
-      handleSearch();
-    }, 400);
-
-    return () => {
-      clearTimeout(searchTimeout);
-    };
-  }, [searchKeyword]);
   return (
     <GestureHandlerRootView style={{flex: 1}}>
       <View style={{flex: 1, backgroundColor: 'white'}}>
+        {/* header */}
         <View style={{paddingBottom: 2}}>
           <View style={[styles.header, {backgroundColor: theme.green1}]}>
             <TouchableOpacity onPress={navigateBack}>
               <Ionicons name="arrow-back" size={28} color="white" />
             </TouchableOpacity>
 
-            <Text style={styles.title}>Exercise group</Text>
+            <Text style={[styles.title]}>Exercise group</Text>
           </View>
         </View>
 
@@ -146,15 +181,37 @@ const ExerciseGroup = () => {
           <View
             style={[styles.searchContainer, {backgroundColor: theme.green2}]}>
             <View style={{flex: 1}}>
-              <Searchbar
-                autoFocus={false}
-                icon={'account-search'}
-                placeholder="Search"
-                value={searchKeyword}
-                onIconPress={() => console.log('press')}
-                onChangeText={setSearchKeyword}
-                iconColor={'#bdafaf'}
-              />
+              {user.groupId ? (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    // justifyContent: 'flex-end',
+                    alignItems: 'center',
+                    marginLeft: 12
+                  }}>
+                  <TouchableOpacity
+                    onPress={openDetailPlanModal}
+                    style={styles.icon}>
+                    <FontAwesome name="list-alt" size={32} color="white" />
+                  </TouchableOpacity>
+                  <View style={{marginRight: 'auto'}}>
+                    <Text style={[styles.title]}>{group?.name}</Text>
+                    <Text style={[styles.title, {fontSize: 16, opacity: 0.8}]}>
+                      #{group?.groupSearchId}
+                    </Text>
+                  </View>
+                </View>
+              ) : (
+                <Searchbar
+                  autoFocus={false}
+                  icon={'account-search'}
+                  placeholder="Search group id"
+                  value={searchKeyword}
+                  onIconPress={handleSearch}
+                  onChangeText={setSearchKeyword}
+                  iconColor={'#bdafaf'}
+                />
+              )}
             </View>
             <TouchableOpacity
               style={[
@@ -224,7 +281,7 @@ const ExerciseGroup = () => {
 
                 backgroundColor: theme.green1
               }}>
-              <Text>You not in any group</Text>
+              {/* <Text>You not in any group</Text> */}
             </View>
           )}
 
@@ -233,6 +290,20 @@ const ExerciseGroup = () => {
             onClose={() => {
               setVisible(false);
             }}></CreateGroupModal>
+          <DetailGroupPlanModal
+            group={group}
+            openCreateModal={() => {
+              setPlanlistVisible(true);
+            }}
+            visible={detailVisible}
+            onClose={() => {
+              setDetailVisible(false);
+            }}></DetailGroupPlanModal>
+          <AddGroupPlanModal
+            visible={planlistVisible}
+            onClose={() => {
+              setPlanlistVisible(false);
+            }}></AddGroupPlanModal>
         </View>
       </View>
     </GestureHandlerRootView>
@@ -308,14 +379,193 @@ const CreateGroupModal = ({visible, onClose}) => {
   );
 };
 
+const DetailGroupPlanModal = ({visible, onClose, group, openCreateModal}) => {
+  const [groupName, setGroupName] = useState('');
+  const toast = useToast();
+  const dispatch = useDispatch<any>();
+  const {user} = useSelector(userSelector);
+
+  const handleOpenCreateModal = async () => {
+    openCreateModal();
+    onClose();
+  };
+
+  return (
+    <Modal
+      animationType="fade"
+      transparent={true}
+      onRequestClose={onClose}
+      visible={visible}>
+      <View
+        style={{
+          flex: 1,
+          borderRightColor: 'tomato',
+          justifyContent: 'flex-end',
+          backgroundColor: 'rgba(0, 0, 0, 0.5)'
+        }}>
+        <TouchableWithoutFeedback onPress={onClose}>
+          <View style={{flex: 1}}></View>
+        </TouchableWithoutFeedback>
+        <View style={[styles.modalContainer, {minHeight: 500}]}>
+          <View style={styles.header}>
+            <Text style={styles.modalHeading}>Group plan</Text>
+            <TouchableOpacity onPress={onClose}>
+              <AntDesign name="close" size={24} color="black" />
+            </TouchableOpacity>
+          </View>
+          <View
+            style={{
+              flex: 1,
+              alignItems: 'center',
+
+              width: '100%'
+            }}>
+            {group?.plan?.exercise ? (
+              <FlatList
+                style={{width: '100%'}}
+                showsVerticalScrollIndicator={false}
+                data={group?.plan?.exercise || []}
+                renderItem={({item, index}) => (
+                  <View style={{paddingTop: 8}}>
+                    <DetailPlanItem
+                      index={index}
+                      exercise={item}></DetailPlanItem>
+                    <View style={styles.itemSeparator}></View>
+                  </View>
+                )}
+                keyExtractor={item => `${item.name}plan-tiem`}
+              />
+            ) : (
+              <Text style={[styles.title, {color: 'gray'}]}>
+                Group not set any plan yet
+              </Text>
+            )}
+          </View>
+          {user.uid === group?.creatorId && (
+            <Button
+              style={styles.button}
+              mode="contained"
+              onPress={handleOpenCreateModal}>
+              Update
+            </Button>
+          )}
+        </View>
+      </View>
+    </Modal>
+  );
+};
+
+const DetailPlanItem = ({exercise, index}) => {
+  const theme = useTheme();
+  const navigation = useNavigation<any>();
+  const navigateToDetailExercise = () => {
+    navigation.navigate('DetailExercise', {
+      exercise
+    });
+  };
+  return (
+    <>
+      <TouchableOpacity
+        style={[
+          {
+            backgroundColor: 'white'
+          },
+          itemStyles.item
+        ]}>
+        <View style={[itemStyles.circleNumber, {backgroundColor: 'gray'}]}>
+          <Text style={[itemStyles.number]}>{index + 1}</Text>
+        </View>
+        <View
+          style={{
+            overflow: 'hidden',
+            marginRight: 12,
+            borderRadius: 12
+          }}>
+          <Image
+            source={{uri: exercise.gifUrl}}
+            resizeMode="cover"
+            style={{
+              width: 80,
+              height: 80
+            }}></Image>
+        </View>
+
+        <View style={itemStyles.itemInfo}>
+          <Text
+            style={[
+              itemStyles.itemName,
+              {
+                color: 'gray'
+              }
+            ]}>
+            {exercise.name}
+          </Text>
+          <Text
+            style={[
+              itemStyles.itemTime,
+              {
+                color: 'gray'
+              }
+            ]}>
+            {convertSecondsToMinutesAndSeconds(exercise.duration)}
+          </Text>
+        </View>
+        <TouchableOpacity
+          onPress={navigateToDetailExercise}
+          style={itemStyles.itemIcon}>
+          <AntDesign name="questioncircleo" size={24} color={'gray'} />
+        </TouchableOpacity>
+      </TouchableOpacity>
+    </>
+  );
+};
+
+const itemStyles = StyleSheet.create({
+  itemInfo: {flex: 1},
+  itemName: {
+    fontSize: 18,
+    fontWeight: 'bold'
+  },
+  circleNumber: {
+    width: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 100,
+    height: 28,
+    marginRight: 12
+  },
+  number: {
+    color: 'white'
+  },
+  itemTime: {},
+  itemIcon: {
+    marginLeft: 8,
+    padding: 4
+  },
+  item: {
+    padding: 8,
+    paddingVertical: 16,
+    // borderRadius: 4,
+    flexDirection: 'row',
+    // marginHorizontal: 12,
+    marginHorizontal: 4,
+    marginTop: 4,
+    marginBottom: 12,
+    alignItems: 'center'
+  }
+});
 const styles = StyleSheet.create({
   container: {
     flex: 1
     // alignItems: 'center'
   },
+  itemSeparator: {
+    width: '100%',
+    borderWidth: 1
+  },
   img: {borderRadius: 50, width: 60, height: 60, resizeMode: 'cover'},
   title: {
-    fontSize: 32,
+    fontSize: 26,
     fontWeight: '500',
     marginLeft: 12,
 
@@ -329,8 +579,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white'
   },
   name: {
-    fontSize: 26,
-    fontWeight: '500',
+    fontSize: 24,
     marginLeft: 12,
     color: 'white'
   },
@@ -339,7 +588,9 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     alignItems: 'center'
   },
-
+  icon: {
+    padding: 4
+  },
   header: {
     elevation: 2,
     flexDirection: 'row',
@@ -388,9 +639,8 @@ const styles = StyleSheet.create({
     marginTop: 'auto',
     borderWidth: 1,
     elevation: 2,
-    justifyContent: 'center',
-    paddingTop: 12,
-    alignItems: 'center',
-    borderRadius: 12
+    justifyContent: 'flex-start',
+
+    alignItems: 'center'
   }
 });

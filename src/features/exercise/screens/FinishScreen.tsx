@@ -1,31 +1,23 @@
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {CountdownCircleTimer} from 'react-native-countdown-circle-timer';
 import Entypo from 'react-native-vector-icons/Entypo';
 import {useSelector} from 'react-redux';
-import {exerciseSelector} from 'src/store/selectors';
+import {exerciseSelector, userSelector} from 'src/store/selectors';
 import {useTheme} from 'styled-components';
 import {Button} from 'react-native-paper';
 import buttonStyles from 'src/features/theme/styles/button';
+import {addPoint} from 'src/services/firebase/database/group';
 
 const FinishScreen = () => {
   const route = useRoute<any>();
-  const {currentExercise, selectedPlan} = useSelector(exerciseSelector);
+  const {user} = useSelector(userSelector);
   const navigation = useNavigation<any>();
   const theme = useTheme();
   const [isPlaying, setIsPlaying] = useState(true);
   const {doExercise} = useSelector(exerciseSelector);
-  const startSession = () => {
-    // setIsShowPlanList(true);
-    setIsPlaying(true);
-  };
-  const stopSession = () => {
-    setIsPlaying(false);
-  };
-  const navigateToStartSession = () => {
-    navigation.replace('DoExercise');
-  };
+
   console.log('doExercise', doExercise);
   const getTotalDuration = () => {
     const res = doExercise.reduce((acc, item) => {
@@ -42,6 +34,12 @@ const FinishScreen = () => {
   const navigationToHome = () => {
     navigation.navigate('ExerciseHome');
   };
+  useEffect(() => {
+    if (user.groupId) {
+      const point = getTotalDuration();
+      addPoint({userId: user.uid, groupId: user.groupId, point});
+    }
+  }, [user.groupId]);
   return (
     <View style={{flex: 1}}>
       <View style={{flex: 1, alignItems: 'center'}}>
