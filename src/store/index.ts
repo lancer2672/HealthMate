@@ -3,6 +3,7 @@ import {userSlice} from './reducer/userSlice';
 import {activitySlice} from './reducer/activitySlice';
 import {waterTrackingSlice} from './reducer/waterTrackingSlice';
 import foodMealSlice from './reducer/foodMealSlice';
+import todolistSlice from './reducer/todolistSlice';
 import {appSlice} from './reducer/appSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {DEFAULT_STEP_GOAL} from 'src/constants';
@@ -14,6 +15,7 @@ const store = configureStore({
     waterTracking: waterTrackingSlice.reducer,
     activity: activitySlice.reducer,
     foodMeal: foodMealSlice.reducer,
+    todolist: todolistSlice.reducer
   },
   devTools: true,
 
