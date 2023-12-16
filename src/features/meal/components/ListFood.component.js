@@ -1,8 +1,23 @@
 import {View, Text, TouchableOpacity, StyleSheet, FlatList} from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import FoodCard from './FoodCard.component';
 
-const ListFood = ({mealName, foodMeal, handleNavigateSeacrch}) => {
+const ListFood = ({mealName, foodMeal, handleNavigateSeacrch, navigation}) => {
+  const [totalCalories, setTotalCalories] = useState(0);
+
+  const getTotalCalories = () => {
+    let total = 0;
+    foodMeal.forEach(item => {
+      total += item.realCalories;
+    });
+    setTotalCalories(total);
+  };
+
+  useEffect(() => {
+    getTotalCalories();
+  });
+
   return (
     <View style={styles.mealContainer}>
       <View
@@ -28,17 +43,35 @@ const ListFood = ({mealName, foodMeal, handleNavigateSeacrch}) => {
           </TouchableOpacity>
         </View>
         <View>
-          <Text style={styles.mealName}>0</Text>
+          <Text style={styles.mealName}>{totalCalories}</Text>
         </View>
       </View>
-      <TouchableOpacity
+      <View
         style={{
           padding: 5,
           paddingLeft: 10,
           paddingRight: 10
         }}>
-        {foodMeal.length > 0 ? <></> : <Text>No foods logged yet</Text>}
-      </TouchableOpacity>
+        {foodMeal.length > 0 ? (
+          <View>
+            {/* <FlatList
+              data={foodMeal}
+              renderItem={({item}) => <FoodCard foodMeal={item} />}
+              keyExtractor={item => item.id}
+            /> */}
+            {foodMeal.map(item => (
+              <FoodCard
+                key={item.id}
+                mealName={mealName}
+                foodMeal={item}
+                navigation={navigation}
+              />
+            ))}
+          </View>
+        ) : (
+          <Text>No foods logged yet</Text>
+        )}
+      </View>
     </View>
   );
 };

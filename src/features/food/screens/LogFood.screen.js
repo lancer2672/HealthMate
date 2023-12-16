@@ -9,20 +9,19 @@ import {
   Button
 } from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
-import FoodCard from '../components/FoodCard.component';
-import {addFoodMeal} from '../../../store/reducer/thunks/foodMealActions';
-import {useAppDispatch, useAppSelector} from 'src/store/hooks';
+import ListFoodCard from '../components/ListFoodCard.component';
 
 import axios from 'axios';
 import {APP_ID_NUTRITIONIX, API_KEY_NUTRITIONIX} from '@env';
+import {useAppDispatch, useAppSelector} from 'src/store/hooks';
 import {userSelector} from 'src/store/selectors';
-import {useSelector} from 'react-redux';
+import {addFoodMeal} from '../../../store/reducer/thunks/foodMealActions';
 
 export default function LogFood({route, navigation}) {
   const {date, mealName, item, type} = route.params.data;
-  const {user} = useSelector(state => state.user);
+  const {user} = useAppSelector(userSelector);
   const dispatch = useAppDispatch();
-  const {foodMeals} = useSelector(state => state.foodMeal);
+  // const {foodMeals} = useSelector(state => state.foodMeal);
 
   const [foodCommon, setFoodCommon] = useState([]);
   const [foodBranded, setFoodBranded] = useState([]);
@@ -181,11 +180,15 @@ export default function LogFood({route, navigation}) {
         food: {
           type: 'common',
           foodName: foodCommon[0].food_name,
+          photo: foodCommon[0].photo,
           realQty: foodCommon[0].realQty,
           realUnit: foodCommon[0].realUnit,
           realGrams: foodCommon[0].realGrams,
           realCalories: foodCommon[0].nf_calories,
-          nix_item_id: type === 'branded' ? foodCommon[0].nix_item_id : null
+          nix_item_id: type === 'branded' ? foodCommon[0].nix_item_id : null,
+          realProtein: foodCommon[0].nf_protein,
+          realFat: foodCommon[0].nf_total_fat,
+          realCarbo: foodCommon[0].nf_total_carbohydrate
         }
       };
       dispatch(addFoodMeal(foodMeal));
@@ -218,7 +221,11 @@ export default function LogFood({route, navigation}) {
       ) : (
         <>
           <View>
-            <FoodCard data={foodCommon} onUpdate={updateFoodData} />
+            <ListFoodCard
+              data={foodCommon}
+              onUpdate={updateFoodData}
+              navigation={navigation}
+            />
           </View>
 
           <View style={{backgroundColor: 'lightgrey'}}>

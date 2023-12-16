@@ -12,13 +12,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import {SwipeListView} from 'react-native-swipe-list-view';
 import RNPickerSelect from 'react-native-picker-select';
 
-const FoodCard = ({data, onDelete, onUpdate}) => {
+const ListFoodCard = ({data, onDelete, onUpdate, navigation}) => {
   const [listFood, setListFood] = useState([...data]);
-
-  // useEffect(() => {
-  //   console.log('listFood', listFood);
-  //   // updatedFood(listFood);
-  // }, [listFood]);
 
   const getAltMeasures = foodItem => {
     const data = foodItem.alt_measures.map(measureItem => ({
@@ -139,6 +134,15 @@ const FoodCard = ({data, onDelete, onUpdate}) => {
     updatedFood(updateListFood);
   };
 
+  const handleNavigateDetailFood = food => {
+    console.log('food', food);
+    navigation.navigate('DetailNutriFood', {
+      data: {
+        food: food
+      }
+    });
+  };
+
   const renderItem = (rowData, rowMap) => {
     const food = rowData.item;
     const indexFood = rowData.index;
@@ -194,7 +198,7 @@ const FoodCard = ({data, onDelete, onUpdate}) => {
             </View>
             <Text style={{fontSize: 16, color: 'black'}}>{food.food_name}</Text>
           </View>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => handleNavigateDetailFood(food)}>
             <AntDesign name="infocirlce" size={18} color="black"></AntDesign>
           </TouchableOpacity>
         </View>
@@ -276,4 +280,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default FoodCard;
+export default ListFoodCard;

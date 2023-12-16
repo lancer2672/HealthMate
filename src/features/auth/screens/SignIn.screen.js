@@ -5,14 +5,14 @@ import {
   Pressable,
   TouchableOpacity,
   Image,
-  StyleSheet,
+  StyleSheet
 } from 'react-native';
 import React, {useState, useEffect, useRef} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 
 import {
   GoogleSignin,
-  statusCodes,
+  statusCodes
 } from '@react-native-google-signin/google-signin';
 import InputText from '../components/InputText.component';
 import {accountSchema, handleValidateField} from '../../../utils/validation';
@@ -24,7 +24,7 @@ import {WEB_API_KEY} from '@env';
 
 GoogleSignin.configure({
   webClientId: WEB_API_KEY,
-  offlineAccess: true,
+  offlineAccess: true
 });
 
 const Login = ({navigation}) => {
@@ -62,16 +62,14 @@ const Login = ({navigation}) => {
     refInputName.current.blur();
     refInputPassword.current.blur();
     // console.log(Object.keys(validationErrors).length);
-    if (Object.keys(validationErrors).length == 0) {
-      const data = login({email, password});
-      console.log('data', data);
-    }
-    // console.log('email1', email);
-    // if (email !== '' || password !== '') {
-    //   console.log('email', email);
-    //   dispatch(login({email, password}));
-    //   console.log();
+    // if (Object.keys(validationErrors).length == 0) {
+    //   const data = login({email, password});
+    //   console.log('data', data);
     // }
+    console.log('email1', email);
+    if (email !== '' || password !== '') {
+      dispatch(login({email, password}));
+    }
   };
 
   const handleSendEmailResetPassword = () => {
@@ -109,7 +107,7 @@ const Login = ({navigation}) => {
             fontSize: 20,
             fontWeight: 'bold',
             marginBottom: 10,
-            color: 'black',
+            color: 'black'
           }}>
           Chào mừng!
         </Text>
@@ -127,7 +125,7 @@ const Login = ({navigation}) => {
               'email',
               email,
               validationErrors,
-              setValidationErrors,
+              setValidationErrors
             )
           }></InputText>
         {validationErrors.email && (
@@ -146,7 +144,7 @@ const Login = ({navigation}) => {
               'password',
               password,
               validationErrors,
-              setValidationErrors,
+              setValidationErrors
             )
           }
           placeholder={'Mật khẩu'}></InputText>
@@ -160,7 +158,7 @@ const Login = ({navigation}) => {
           marginTop: 10,
           width: '65%',
           flexDirection: 'row',
-          justifyContent: 'flex-end',
+          justifyContent: 'flex-end'
         }}>
         <TouchableOpacity onPress={handleSendEmailResetPassword}>
           <Text style={{fontSize: 16, color: '#01819E'}}>Quên mật khẩu?</Text>
@@ -178,7 +176,7 @@ const Login = ({navigation}) => {
             textAlign: 'center',
             fontSize: 16,
             fontWeight: 'bold',
-            color: 'white',
+            color: 'white'
           }}>
           Đăng nhập
         </Text>
@@ -189,7 +187,7 @@ const Login = ({navigation}) => {
           marginTop: 12,
           flexDirection: 'row',
           alignItems: 'center',
-          justifyContent: 'center',
+          justifyContent: 'center'
         }}>
         <Text style={{fontSize: 16, color: 'black'}}>
           Bạn chưa có tài khoản?
@@ -200,7 +198,7 @@ const Login = ({navigation}) => {
               marginLeft: 2,
               fontWeight: '500',
               fontSize: 16,
-              color: '#01819E',
+              color: '#01819E'
             }}>
             Đăng ký
           </Text>
@@ -212,14 +210,14 @@ const Login = ({navigation}) => {
           marginTop: 12,
           flexDirection: 'row',
           justifyContent: 'center',
-          alignItems: 'center',
+          alignItems: 'center'
         }}>
         <Pressable
           style={{
             flexDirection: 'row',
             justifyContent: 'center',
             alignItems: 'center',
-            backgroundColor: 'white',
+            backgroundColor: 'white'
           }}
           onPress={handleSignInGoogle}>
           <Image
@@ -231,7 +229,7 @@ const Login = ({navigation}) => {
             style={{
               color: 'black',
               fontSize: 16,
-              marginLeft: 3,
+              marginLeft: 3
             }}>
             Đăng nhập với Google
           </Text>
@@ -245,27 +243,27 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'white',
+    backgroundColor: 'white'
   },
   error: {
-    color: 'red',
+    color: 'red'
   },
   logo: {
     width: 32,
-    height: 32,
+    height: 32
     // marginLeft: 8,
   },
   google: {
     width: '60%',
     height: 42,
-    borderRadius: 25,
+    borderRadius: 25
     // elevation: 2,
   },
   fb: {
     width: 50,
     height: 50,
     borderRadius: 25,
-    elevation: 2,
+    elevation: 2
   },
   btnLogin: {
     width: '30%',
@@ -273,7 +271,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     padding: 12,
     borderRadius: 25,
-    backgroundColor: '#01819E',
-  },
+    backgroundColor: '#01819E'
+  }
 });
 export default Login;

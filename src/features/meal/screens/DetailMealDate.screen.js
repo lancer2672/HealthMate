@@ -7,22 +7,35 @@ import {
   TextInput,
   FlatList
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState, useReducer} from 'react';
 // import SearchInput from '../components/SearchInput.component';
 import Entypo from 'react-native-vector-icons/Entypo';
 import ListFood from '../components/ListFood.component';
+import {useAppDispatch, useAppSelector} from 'src/store/hooks';
+import {userSelector, foodMealSelector} from 'src/store/selectors';
+import {getFoodMealByDate} from 'src/store/reducer/thunks/foodMealActions';
+import {useSelector} from 'react-redux';
+import {getTotalCalories} from 'src/services/firebase/firestore/foodMeal';
 
 export default function DetailMealDate({route, navigation}) {
   const {day, month, year} = route.params.data;
-  console.log('day', day);
   const [currentDate, setCurrentDate] = useState(new Date(year, month, day));
-  console.log('Date', currentDate.getDate());
-  const [foodMeal, setFoodMeal] = useState([]);
-  // const [date, setDate] = useState(new Date());
+  // const [foodMeals, setFoodMeals] = useState([]); // [breakfast, lunch, dinner, snacks
+  const [foodBreakfast, setFoodBreakfast] = useState([]);
+  const [foodLunch, setFoodLunch] = useState([]);
+  const [foodDinner, setFoodDinner] = useState([]);
+  const [foodSnacks, setFoodSnacks] = useState([]);
+  const [totalCalories, setTotalCalories] = useState(1110);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleShowResults = () => {
-    setShowResults(true);
-  };
+  const dispatch = useAppDispatch();
+  const {user} = useSelector(userSelector);
+  const {foodMeals} = useSelector(foodMealSelector);
+  // const totalCalories = useSelector(state => state.foodMeals.totalCalories);
+
+  // const handleShowResults = () => {
+  //   setShowResults(true);
+  // };
 
   const isToday = () => {
     const today = new Date();
@@ -51,10 +64,17 @@ export default function DetailMealDate({route, navigation}) {
     const newDate = new Date(currentDate);
     newDate.setDate(currentDate.getDate() + amount);
     setCurrentDate(newDate);
+    setIsLoading(true);
+    dispatch(
+      getFoodMealByDate({
+        userId: user.uid,
+        date: newDate.toISOString(),
+        mealName: 'breakfast'
+      })
+    );
   };
 
   const handleNavigateSeacrch = mealName => {
-    console.log('currentDate', currentDate);
     const serializableDate = currentDate.toISOString();
     navigation.navigate('Search food', {
       data: {
@@ -63,6 +83,42 @@ export default function DetailMealDate({route, navigation}) {
       }
     });
   };
+
+  const getCalories = async () => {
+    try {
+      const totalCalories = await getTotalCalories(
+        user.uid,
+        currentDate.toISOString()
+      );
+      return totalCalories;
+      // You can set the totalCalories to state or use it as needed in your component
+    } catch (error) {
+      console.error('Error fetching total calories:', error);
+    }
+  };
+
+  useEffect(() => {
+    console.log('user', user);
+    if (user) {
+      dispatch(
+        getFoodMealByDate({
+          userId: user.uid,
+          date: currentDate.toISOString(),
+          mealName: 'breakfast'
+        })
+      );
+    }
+  }, []);
+
+  useEffect(() => {
+    setFoodBreakfast(foodMeals[0].food);
+    setFoodLunch(foodMeals[1].food);
+    setFoodDinner(foodMeals[2].food);
+    setFoodSnacks(foodMeals[3].food);
+    setTotalCalories(foodMeals.totalCalories);
+    console.log('foodMeals119', foodMeals);
+    setIsLoading(false);
+  }, [foodMeals]);
 
   return (
     <View style={{flex: 1, backgroundColor: 'white'}}>
@@ -114,38 +170,48 @@ export default function DetailMealDate({route, navigation}) {
         </TouchableOpacity>
       </View>
       <View style={styles.calContainer}>
-        <Text>0 cal intacke</Text>
+        <Text>{totalCalories} cal intacke</Text>
         <Text>0 cal burned</Text>
         <Text>remaining 2000</Text>
       </View>
-      <ListFood
-        mealName="Breakfast"
-        foodMeal={foodMeal}
-        handleNavigateSeacrch={() => {
-          handleNavigateSeacrch('breakfast');
-        }}
-      />
-      <ListFood
-        mealName="Lunch"
-        foodMeal={foodMeal}
-        handleNavigateSeacrch={() => {
-          handleNavigateSeacrch('lunch');
-        }}
-      />
-      <ListFood
-        mealName="Dinner"
-        foodMeal={foodMeal}
-        handleNavigateSeacrch={() => {
-          handleNavigateSeacrch('dinner');
-        }}
-      />
-      <ListFood
-        mealName="Snacks"
-        foodMeal={foodMeal}
-        handleNavigateSeacrch={() => {
-          handleNavigateSeacrch('snacks');
-        }}
-      />
+      {isLoading ? (
+        <></>
+      ) : (
+        <View>
+          <ListFood
+            mealName="Breakfast"
+            foodMeal={foodBreakfast}
+            handleNavigateSeacrch={() => {
+              handleNavigateSeacrch('breakfast');
+            }}
+            navigation={navigation}
+          />
+          <ListFood
+            mealName="Lunch"
+            foodMeal={foodLunch}
+            handleNavigateSeacrch={() => {
+              handleNavigateSeacrch('lunch');
+            }}
+            navigation={navigation}
+          />
+          <ListFood
+            mealName="Dinner"
+            foodMeal={foodDinner}
+            handleNavigateSeacrch={() => {
+              handleNavigateSeacrch('dinner');
+            }}
+            navigation={navigation}
+          />
+          <ListFood
+            mealName="Snacks"
+            foodMeal={foodSnacks}
+            handleNavigateSeacrch={() => {
+              handleNavigateSeacrch('snacks');
+            }}
+            navigation={navigation}
+          />
+        </View>
+      )}
     </View>
   );
 }
