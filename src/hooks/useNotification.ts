@@ -1,25 +1,38 @@
 import messaging from '@react-native-firebase/messaging';
-import {requestNotificationPermission} from 'src/permissions';
-import {useEffect} from 'react';
+import {useCallback, useEffect} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
+import {requestNotificationPermission} from 'src/permissions';
 
 import {useNavigation} from '@react-navigation/native';
-import {userSelector} from 'src/store/selectors';
-import notifee, {AndroidStyle} from '@notifee/react-native';
+import {userSelector, waterTrackingSelector} from 'src/store/selectors';
 
-import {
-  createNotifeeChannel,
-  enableForegroundNotification
-} from 'src/services/notifee/notification';
 import {getMessagingToken, setUpMessagingListener} from 'src/services/firebase';
-import {saveFCMToken} from 'src/store/reducer/thunks/userActions';
 import {exerciseNotificationIns} from 'src/services/notifee/ExerciseNotification';
+import {trackingNotificationIns} from 'src/services/notifee/TrackingNotification';
+import {
+  checkForInitialNotification,
+  createNotifeeChannel,
+  enableForegroundNotification,
+  registerForegroundService
+} from 'src/services/notifee/notification';
+import {saveFCMToken} from 'src/store/reducer/thunks/userActions';
+import {addSession} from 'src/store/reducer/thunks/waterTrackingActions';
 
 const useNotification = () => {
-  const {user} = useSelector(userSelector);
   const dispatch = useDispatch();
   const navigation = useNavigation();
+  const {user} = useSelector(userSelector);
+  const {todayProgress} = useSelector(waterTrackingSelector);
 
+  const addWaterAmount = useCallback(
+    amount => {
+      console.log('called', todayProgress);
+      if (todayProgress && todayProgress.id) {
+        dispatch(addSession({drinkProgressId: todayProgress.id, amount}));
+      }
+    },
+    [todayProgress]
+  );
   const setupFCMMessaging = async () => {
     const FCMToken = await getMessagingToken();
     dispatch(saveFCMToken({FCMToken, userId: user.uid}));
@@ -31,7 +44,16 @@ const useNotification = () => {
     await exerciseNotificationIns.displayNotification({body, title});
   };
   useEffect(() => {
+    (async () => {
+      await trackingNotificationIns.checkingBatterySavingEnabled();
+      await trackingNotificationIns.displayActivityTrackingNotification();
+      await trackingNotificationIns.updateNotification({
+        water: todayProgress.totalAmount
+      });
+    })();
     requestNotificationPermission();
+    checkForInitialNotification();
+    registerForegroundService(addWaterAmount);
     setupFCMMessaging();
     setUpMessagingListener();
     createNotifeeChannel();

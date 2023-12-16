@@ -12,6 +12,8 @@ import WaterTracking from 'src/features/tracking-water-prog/screens/WaterTrackin
 import StepCounter from 'src/features/counting-steps/screens/StepCounter.screen';
 import ExerciseHome from 'src/features/exercise/screens/ExerciseHome.screen';
 import {opacity} from 'react-native-reanimated/lib/typescript/reanimated2/Colors';
+import Todolist from 'src/features/todolist/screens/TodoList.screen';
+import MealCalendar from 'src/features/meal/screens/MealCalendar.screen';
 const ExerciseHomeButton = ({children, onPress}) => {
   const theme = useTheme();
   return (
@@ -76,8 +78,8 @@ export const Tabs = () => {
           tabBarInactiveTintColor: 'gray'
         };
       }}>
-      <Tab.Screen name={TAB_ROUTES.NOTE} component={ExerciseHome} />
-      <Tab.Screen name={TAB_ROUTES.FOOD} component={WaterTracking} />
+      <Tab.Screen name={TAB_ROUTES.NOTE} component={Todolist} />
+      <Tab.Screen name={TAB_ROUTES.FOOD} component={MealCalendar} />
       <Tab.Screen
         name={TAB_ROUTES.HOME}
         component={ExerciseHome}

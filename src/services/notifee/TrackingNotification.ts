@@ -49,6 +49,7 @@ class TrackingNotification {
     }
   }
   async displayActivityTrackingNotification() {
+    console.log('displayActivityTrackingNotification', this.show);
     if (!this.show) return;
     await this.displayNotification();
   }

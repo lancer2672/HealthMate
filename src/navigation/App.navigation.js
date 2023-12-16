@@ -1,53 +1,43 @@
-import React, {useEffect, useCallback} from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import messaging from '@react-native-firebase/messaging';
+import {useCallback, useEffect} from 'react';
 import {AppState} from 'react-native';
 
-import {getMessagingToken, setUpMessagingListener} from '../services/firebase';
-import {saveFCMToken} from 'src/store/reducer/thunks/userActions';
-import Login from '../features/auth/screens/SignIn.screen';
-import DetailMealDate from '../features/meal/screens/DetailMealDate.screen';
-import MealCalendar from '../features/meal/screens/MealCalendar.screen';
-import EditFood from '../features/meal/screens/EditFood.screen';
-import SearchFood from '../features/food/screens/SearchFood.screen';
-import LogFood from '../features/food/screens/LogFood.screen';
-import DetailNutriFood from '../features/food/screens/DetailNutriFood.screen';
-import TodoList from '../features/todolist/screens/TodoList.screen';
 import {useDispatch, useSelector} from 'react-redux';
 import {
   addSession,
   getDateProgress
 } from 'src/store/reducer/thunks/waterTrackingActions';
+import DetailNutriFood from '../features/food/screens/DetailNutriFood.screen';
+import LogFood from '../features/food/screens/LogFood.screen';
+import SearchFood from '../features/food/screens/SearchFood.screen';
+import DetailMealDate from '../features/meal/screens/DetailMealDate.screen';
+import EditFood from '../features/meal/screens/EditFood.screen';
 import {
   checkForInitialNotification,
-  createNotifeeChannel,
-  enableForegroundNotification,
-  registerForegroundService,
-  trackingNotificationIns
+  registerForegroundService
 } from '../services/notifee/notification';
 
-import enableTrackingUserActivities from '../config/trackingActivities';
-import WaterTracking from 'src/features/tracking-water-prog/screens/WaterTracking.screen';
-import WaterTrackingHistory from 'src/features/tracking-water-prog/screens/History.screen';
-import StepCounter from 'src/features/counting-steps/screens/StepCounter.screen';
-import {useActivity} from 'src/hooks/useActivity';
 import googleFit from 'react-native-google-fit';
-import {activitySelector, waterTrackingSelector} from 'src/store/selectors';
-import {Tabs} from './tabs';
-import ExerciseHome from 'src/features/exercise/screens/ExerciseHome.screen';
+import StepCounter from 'src/features/counting-steps/screens/StepCounter.screen';
 import ListExercise from 'src/features/exercise/components/exercise/ListExercise';
-import DetailPlan from 'src/features/exercise/screens/plan/DetailPlan';
-import DetailExercise from 'src/features/exercise/screens/DetailExercise';
-import StartPlan from 'src/features/exercise/screens/DoExercise';
-import ReadyExercise from 'src/features/exercise/screens/ReadyExercise';
 import BreakScreen from 'src/features/exercise/screens/Break.screen';
+import DetailExercise from 'src/features/exercise/screens/DetailExercise';
 import DoExercise from 'src/features/exercise/screens/DoExercise';
 import FinishScreen from 'src/features/exercise/screens/FinishScreen';
+import ReadyExercise from 'src/features/exercise/screens/ReadyExercise';
+import ExerciseGroup from 'src/features/exercise/screens/group/ExerciseGroup';
+import AddSongToPlaylist from 'src/features/exercise/screens/music/AddSongToPlaylist';
 import DetailPlaylist from 'src/features/exercise/screens/music/DetailPlaylist';
 import SelectMusic from 'src/features/exercise/screens/music/SelectMusic';
-import AddSongToPlaylist from 'src/features/exercise/screens/music/AddSongToPlaylist';
-import ExerciseGroup from 'src/features/exercise/screens/group/ExerciseGroup';
+import DetailPlan from 'src/features/exercise/screens/plan/DetailPlan';
+import WaterTrackingHistory from 'src/features/tracking-water-prog/screens/History.screen';
+import WaterTracking from 'src/features/tracking-water-prog/screens/WaterTracking.screen';
+import {useActivity} from 'src/hooks/useActivity';
 import useNotification from 'src/hooks/useNotification';
+import {trackingNotificationIns} from 'src/services/notifee/TrackingNotification';
+import {waterTrackingSelector} from 'src/store/selectors';
+import enableTrackingUserActivities from '../config/trackingActivities';
+import {Tabs} from './tabs';
 const Stack = createNativeStackNavigator();
 
 export const AppNavigator = () => {
@@ -58,28 +48,12 @@ export const AppNavigator = () => {
   const {} = useNotification();
   console.log('todayProgresstodayProgress', todayProgress);
 
-  const addWaterAmount = useCallback(
-    amount => {
-      console.log('called', todayProgress);
-      if (todayProgress && todayProgress.id) {
-        dispatch(addSession({drinkProgressId: todayProgress.id, amount}));
-      }
-    },
-    [todayProgress]
-  );
   useEffect(() => {
     const now = new Date();
     const userId = user.uid;
     const dateOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     //get daily water drink prog
     dispatch(getDateProgress({userId, date: dateOnly}));
-
-    (async () => {
-      await checkForInitialNotification();
-      await registerForegroundService(addWaterAmount);
-      await trackingNotificationIns.checkingBatterySavingEnabled();
-      await trackingNotificationIns.displayActivityTrackingNotification();
-    })();
     // tracking user's activties
     const trackUserActivities = async () => {
       let isAllowed = await enableTrackingUserActivities();
@@ -115,9 +89,7 @@ export const AppNavigator = () => {
       screenOptions={{headerShown: false}}
       initialRouteName="AppTabs">
       <Stack.Screen name="AppTabs" component={Tabs} />
-
       <Stack.Screen name="WaterTracking" component={WaterTracking} />
-
       <Stack.Screen name="ListExercise" component={ListExercise} />
       <Stack.Screen name="StepCounter" component={StepCounter} />
       <Stack.Screen name="SelectMusic" component={SelectMusic} />
@@ -135,7 +107,6 @@ export const AppNavigator = () => {
         component={WaterTrackingHistory}
       />
       <Stack.Screen name="DetailMealDate" component={DetailMealDate} />
-      <Stack.Screen name="MealCalendar" component={MealCalendar} />
       <Stack.Screen
         name="EditFood"
         component={EditFood}
@@ -155,7 +126,6 @@ export const AppNavigator = () => {
       />
       <Stack.Screen name="LogFood" component={LogFood} />
       <Stack.Screen name="DetailNutriFood" component={DetailNutriFood} />
-      <Stack.Screen name="TodoList" component={TodoList} />
     </Stack.Navigator>
   );
 };

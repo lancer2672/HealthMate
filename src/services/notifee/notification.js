@@ -1,12 +1,11 @@
-import {AppState, Alert} from 'react-native';
 import notifee, {
-  TriggerType,
-  TimeUnit,
-  EventType,
   AndroidImportance,
+  EventType,
   RepeatFrequency,
-  AndroidStyle
+  TimeUnit,
+  TriggerType
 } from '@notifee/react-native';
+import {trackingNotificationIns} from './TrackingNotification';
 
 export async function checkForInitialNotification() {
   const initialNotification = await notifee.getInitialNotification();

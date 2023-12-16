@@ -1,12 +1,5 @@
-import {
-  FlatList,
-  Pressable,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
-} from 'react-native';
-import React, {useState, useEffect, useMemo} from 'react';
+import {useEffect, useMemo, useState} from 'react';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
@@ -14,22 +7,20 @@ import {ScrollView} from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import {useNavigation} from '@react-navigation/native';
+import moment from 'moment';
 import {useDispatch, useSelector} from 'react-redux';
-import {setSelectedPlan} from 'src/store/reducer/exerciseSlice';
-import CreatePlanModal from '../../components/plan/CreatePlanModal';
-import {exerciseSelector, userSelector} from 'src/store/selectors';
-import {getPlanAction} from 'src/store/reducer/thunks/exerciseActions';
 import WeekList from 'src/components/WeekList';
-import WorkoutItem from '../../components/plan/WorkoutPlanItem';
+import {getHistoryByDate} from 'src/services/firebase/firestore/exercise';
+import {exerciseSelector, userSelector} from 'src/store/selectors';
 import {
   convertSecondsToMinutesAndSeconds,
   getSpecificDateTimeStamp
 } from 'src/utils/dateTimeHelper';
-import {getHistoryByDate} from 'src/services/firebase/firestore/exercise';
+import CreatePlanModal from '../../components/plan/CreatePlanModal';
 import PlanList from '../../components/plan/PlanList';
-import Playlist from '../../components/playlist/Playlist';
+import WorkoutItem from '../../components/plan/WorkoutPlanItem';
 import CreatePlaylistModal from '../../components/playlist/CreatePlaylistModal';
-import moment from 'moment';
+import Playlist from '../../components/playlist/Playlist';
 
 const Plan = () => {
   const [createModalShow, setCreateModalShow] = useState(false);
@@ -44,12 +35,7 @@ const Plan = () => {
   const showModal = async () => {
     setCreateModalShow(true);
   };
-  console.log(
-    'workoutPlan',
-    selectedDay,
-    workoutPlan[selectedDay],
-    workoutPlan
-  );
+
   const navigateToListSongs = () => {
     navigation.navigate('ListSong');
   };
@@ -80,7 +66,6 @@ const Plan = () => {
     const timestamp = getSpecificDateTimeStamp(dayOfWeek);
     const data = await getHistoryByDate({userId: user.uid, dateKey: timestamp});
 
-    console.log('getHistoryByDate', timestamp, data);
     return data;
   };
   const fetchWorkoutDataForMonth = async (year, month) => {
@@ -89,7 +74,7 @@ const Plan = () => {
       Array.from({length: daysInMonth}, async (_, i) => {
         const date = new Date(year, month, i + 1);
         const timestamp = getSpecificDateTimeStamp(date);
-        console.log('timestamp', timestamp);
+
         return await getHistoryByDate({userId: user.uid, dateKey: timestamp});
       })
     );

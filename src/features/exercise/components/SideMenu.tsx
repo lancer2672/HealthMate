@@ -82,7 +82,7 @@ const SideMenu = ({isVisible, onClose}) => {
         </View>
 
         <Text style={styles.category}>Music</Text>
-        {notificationSettings1.map(item => {
+        {notificationSettings1.map((item, index) => {
           return (
             <SettingItemWithButton
               key={item.name}
