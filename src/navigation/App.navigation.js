@@ -35,9 +35,18 @@ import googleFit from 'react-native-google-fit';
 import {activitySelector, waterTrackingSelector} from 'src/store/selectors';
 import {Tabs} from './tabs';
 import ExerciseHome from 'src/features/exercise/screens/ExerciseHome.screen';
-import ListExercise from 'src/features/exercise/components/list/ListExercise';
-import DetailPlan from 'src/features/exercise/components/plan/DetailPlan';
+import ListExercise from 'src/features/exercise/components/exercise/ListExercise';
+import DetailPlan from 'src/features/exercise/screens/plan/DetailPlan';
 import DetailExercise from 'src/features/exercise/screens/DetailExercise';
+import StartPlan from 'src/features/exercise/screens/DoExercise';
+import ReadyExercise from 'src/features/exercise/screens/ReadyExercise';
+import BreakScreen from 'src/features/exercise/screens/Break.screen';
+import DoExercise from 'src/features/exercise/screens/DoExercise';
+import FinishScreen from 'src/features/exercise/screens/FinishScreen';
+import DetailPlaylist from 'src/features/exercise/screens/music/DetailPlaylist';
+import SelectMusic from 'src/features/exercise/screens/music/SelectMusic';
+import AddSongToPlaylist from 'src/features/exercise/screens/music/AddSongToPlaylist';
+import ExerciseGroup from 'src/features/exercise/screens/group/ExerciseGroup';
 const Stack = createNativeStackNavigator();
 
 export const AppNavigator = () => {
@@ -126,8 +135,16 @@ export const AppNavigator = () => {
       <Stack.Screen name="ExerciseHome" component={ExerciseHome} />
       <Stack.Screen name="ListExercise" component={ListExercise} />
       <Stack.Screen name="StepCounter" component={StepCounter} />
+      <Stack.Screen name="SelectMusic" component={SelectMusic} />
+      <Stack.Screen name="ExerciseGroup" component={ExerciseGroup} />
+      <Stack.Screen name="AddSongToPlaylist" component={AddSongToPlaylist} />
+      <Stack.Screen name="ReadyExercise" component={ReadyExercise} />
+      <Stack.Screen name="FinishScreen" component={FinishScreen} />
+      <Stack.Screen name="BreakScreen" component={BreakScreen} />
+      <Stack.Screen name="DoExercise" component={DoExercise} />
       <Stack.Screen name="DetailPlan" component={DetailPlan} />
       <Stack.Screen name="DetailExercise" component={DetailExercise} />
+      <Stack.Screen name="DetailPlaylist" component={DetailPlaylist} />
       <Stack.Screen
         name="WaterTrackingHistory"
         component={WaterTrackingHistory}

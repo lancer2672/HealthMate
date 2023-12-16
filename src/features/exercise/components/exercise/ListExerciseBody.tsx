@@ -24,6 +24,7 @@ const ListExerciseBody = () => {
       exercises: searchExercise
     });
   };
+
   const handleLoadMore = async () => {
     const list = await exerciseApi.getAll(searchExercise.length + 10);
     setSearchExercise(list);
@@ -31,12 +32,21 @@ const ListExerciseBody = () => {
 
   return (
     <View>
-      <DropDownCategory
-        exercise={searchExercise}
-        setExercise={setSearchExercise}></DropDownCategory>
-      <TouchableOpacity onPress={viewAll} style={{alignSelf: 'flex-end'}}>
-        <Text style={styles.viewAll}>View all</Text>
-      </TouchableOpacity>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between'
+        }}>
+        <View style={{flex: 1}}>
+          <DropDownCategory
+            exercise={searchExercise}
+            setExercise={setSearchExercise}></DropDownCategory>
+        </View>
+        <TouchableOpacity onPress={viewAll} style={{}}>
+          <Text style={styles.viewAll}>View all</Text>
+        </TouchableOpacity>
+      </View>
       <FlatList
         contentContainerStyle={{marginBottom: 20, marginTop: 4}}
         horizontal
@@ -44,6 +54,7 @@ const ListExerciseBody = () => {
         showsHorizontalScrollIndicator={false}
         onEndReachedThreshold={0.5}
         onEndReached={handleLoadMore}
+        keyExtractor={(item, index) => `x3${index}`}
         data={searchExercise}
         renderItem={({item}) => <ExerciseCardItem exercise={item} />}
       />

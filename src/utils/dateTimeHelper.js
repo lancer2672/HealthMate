@@ -1,5 +1,4 @@
-export const getCurrentDateTimeStamp = () => {
-  const date = new Date();
+export const getSpecificDateTimeStamp = (date = new Date()) => {
   const today = new Date(
     date.getUTCFullYear(),
     date.getMonth(),
@@ -40,3 +39,14 @@ export const createTimeSetter = (hours, minutes, seconds) => () => {
   date.setSeconds(seconds);
   return date;
 };
+
+export function convertSecondsToMinutesAndSeconds(totalSeconds) {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  if (minutes === 0) {
+    return `${seconds} second`;
+  } else {
+    return `${minutes} minute ${seconds} second`;
+  }
+}

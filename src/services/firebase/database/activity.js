@@ -1,5 +1,5 @@
+import {getSpecificDateTimeStamp} from 'src/utils/dateTimeHelper';
 import firebaseDatabase from './index';
-import {getCurrentDateTimeStamp} from 'src/utils/dateTimeHelper';
 
 const DB_NAME = 'activity';
 export const activityField = {
@@ -9,7 +9,7 @@ export const activityField = {
 };
 export async function updateUserActivity({userId, field, value}) {
   try {
-    const currentTimeStamp = getCurrentDateTimeStamp();
+    const currentTimeStamp = getSpecificDateTimeStamp();
     const userActivityRef = firebaseDatabase.ref(
       `${userId}/${DB_NAME}/${currentTimeStamp}`
     );
@@ -23,7 +23,7 @@ export async function updateUserActivity({userId, field, value}) {
 
 export async function updateUserActivityRecord({userId, activity}) {
   try {
-    const currentTimeStamp = getCurrentDateTimeStamp();
+    const currentTimeStamp = getSpecificDateTimeStamp();
     const userActivityRef = firebaseDatabase.ref(
       `${userId}/${DB_NAME}/${currentTimeStamp}`
     );
@@ -86,7 +86,7 @@ export async function getStepsByMonth({userId, date}) {
 
 export async function getTodayStepsGoal({userId}) {
   try {
-    const currentTimeStamp = getCurrentDateTimeStamp();
+    const currentTimeStamp = getSpecificDateTimeStamp();
     const userActivityRef = firebaseDatabase.ref(
       `${userId}/${DB_NAME}/${currentTimeStamp}`
     );

@@ -11,7 +11,10 @@ import {
   IS_REMINDING_NOTIFICATION_ALLOWED
 } from '../../../constants';
 import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
-import {SettingItem, SettingItemWithButton} from './SettingItem';
+import {
+  SettingItem,
+  SettingItemWithButton
+} from '../../../components/SettingItem';
 import {onCreateTriggerNotification} from '../../../services/notifee/notification';
 import Dialog from '../../../components/Dialog';
 import {createTimeSetter} from 'src/utils/dateTimeHelper';

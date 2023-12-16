@@ -13,11 +13,28 @@ const exerciseApi = {
     }
   },
   getListBodyPart: async () => {
-    const data = await axiosClient.get(`${EXERCISE_BASE_URL}/bodyPartList`, {});
-    return data.data;
+    try {
+      console.log('GetListBodyPart');
+      const data = await axiosClient.get(
+        `${EXERCISE_BASE_URL}/bodyPartList`,
+        {}
+      );
+      console.log('GetListBodyPart data', data);
+
+      return data.data;
+    } catch (er) {
+      console.error('GetListBodyPart', er);
+    }
   },
   getTargetList: async () => {
     const data = await axiosClient.get(`${EXERCISE_BASE_URL}/targetList`, {});
+    return data.data;
+  },
+  getExerciseById: async id => {
+    const data = await axiosClient.get(
+      `${EXERCISE_BASE_URL}/exercise/${id}`,
+      {}
+    );
     return data.data;
   },
   getTargetExercise: async (target, limit) => {

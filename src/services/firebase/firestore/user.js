@@ -15,7 +15,7 @@ export async function logout({userId}) {
 export async function registerUser({email, password, ...rest}) {
   const userCredential = await auth().createUserWithEmailAndPassword(
     email,
-    password,
+    password
   );
   const user = userCredential.user;
   console.log('user', user);
@@ -26,7 +26,9 @@ export async function registerUser({email, password, ...rest}) {
     const userData = {
       uid: user.uid,
       email: user.email,
-      ...rest,
+      weeklyPlan: {},
+      plans: [],
+      ...rest
     };
     await usersRef.doc(user.uid).set(userData);
 
@@ -37,7 +39,7 @@ export async function registerUser({email, password, ...rest}) {
 export async function loginUser({email, password}) {
   const userCredential = await auth().signInWithEmailAndPassword(
     email,
-    password,
+    password
   );
   const user = userCredential.user;
   if (user) {
@@ -48,8 +50,9 @@ export async function loginUser({email, password}) {
     return {
       uid: user.uid,
       email: user.email,
+      groupId: null,
       displayName: user.displayName,
-      photoURL: user.photoURL,
+      photoURL: user.photoURL
     };
   }
 }
@@ -59,10 +62,19 @@ export async function saveToken({FCMToken, userId}) {
     // Lưu trữ FCM token vào cơ sở dữ liệu
     console.log('SAVE FCM', userId);
     await usersRef.doc(userId).update({
-      FCMToken,
+      FCMToken
     });
   } catch (error) {
     console.log('Save FCMToken error', error.message);
     throw error;
+  }
+}
+
+export async function getUserData(userId) {
+  try {
+    const user = await usersRef.doc(userId).get();
+    return user.data();
+  } catch (error) {
+    console.log('Get user error', error.message);
   }
 }

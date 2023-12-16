@@ -4,6 +4,12 @@ const darkTheme = {
   surface: '#131A26',
   background: '#17354a',
   text: '#FFFFFF',
+  secondary: '#f27638',
+  success: '#29c478',
+  failed: '#ff6357',
+  green1: '#5c8973',
+  green2: '#4d7561',
+  green3: '#354f42'
 };
 
 const lightTheme = {
@@ -12,6 +18,13 @@ const lightTheme = {
   surface: '#131A26',
   background: '#17354a',
   text: '#000000',
+  success: '#29c478',
+  failed: '#ff6357',
+
+  green1: '#5c8973',
+  green2: '#4d7561',
+  green3: '#354f42',
+  secondary: '#f27638'
 };
 
 export {darkTheme, lightTheme};
@@ -28,7 +41,6 @@ export default function ThemeProviderComponent({children}) {
   useEffect(() => {
     (async () => {
       const isUseDarkTheme = await AsyncStorage.getItem('AppTheme');
-
       if (isUseDarkTheme == 'dark') {
         setIsDarkTheme(true);
       }

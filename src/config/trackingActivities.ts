@@ -48,7 +48,7 @@ export const getPeriodSteps = async (startDate: string, endDate: string) => {
   };
   return GoogleFit.getDailyStepCountSamples(opt)
     .then(res => {
-      return res[2]?.rawSteps[0]?.steps;
+      return res[2]?.rawSteps[0]?.steps || 0;
     })
     .catch(err => {
       console.warn(err);

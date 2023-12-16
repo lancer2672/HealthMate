@@ -10,6 +10,9 @@ import {setIsLoading} from '../store/reducer/appSlice';
 import {AppNavigator} from './App.navigation';
 import auth from '@react-native-firebase/auth';
 import {setUser} from '../store/reducer/userSlice';
+import {setPlans, setWorkoutPlan} from 'src/store/reducer/exerciseSlice';
+import {getUserData} from 'src/services/firebase/firestore/user';
+import exerciseApi from 'src/api/exerciseApi';
 StatusBar.setBackgroundColor('black');
 const Navigator = () => {
   const {user} = useSelector(state => state.user);
@@ -17,52 +20,21 @@ const Navigator = () => {
   const dispatch = useDispatch();
   const [userCredentials, setCredentials] = useState({});
   useEffect(() => {
-    const user = auth().currentUser;
-    dispatch(setUser({user}));
-  });
-  //   useEffect(() => {
-  //     if (isSuccess && data) {
-  //       dispatch(
-  //         setUser({
-  //           user: data.user,
-  //           token: userCredentials.token,
-  //           refreshToken: userCredentials.refreshToken,
-  //         }),
-  //       );
-  //       console.log('user', data.user);
-  //     }
-  //     dispatch(setIsLoading(isFetching));
-  //   }, [isFetching, data]);
-
-  //   useEffect(() => {
-  //     const getUser = async () => {
-  //       try {
-  //         const keys = ['userId', 'token', 'refreshToken'];
-  //         const [userId, token, refreshToken] = await Promise.all(
-  //           keys.map(key => AsyncStorage.getItem(key)),
-  //         );
-  //         console.log('userId', userId);
-  //         console.log('token', token);
-  //         dispatch(
-  //           setToken({
-  //             token: JSON.parse(token),
-  //             refreshToken: JSON.parse(refreshToken),
-  //           }),
-  //         );
-  //         if (userId) {
-  //           setCredentials({
-  //             userId: JSON.parse(userId),
-  //             token: JSON.parse(token),
-  //             refreshToken: JSON.parse(refreshToken),
-  //           });
-  //         }
-  //       } catch (er) {
-  //         console.log('er', er);
-  //       }
-  //     };
-  //     getUser();
-  //   }, []);
-
+    (async () => {
+      const user = auth().currentUser;
+      let data = await getUserData(user.uid);
+      if (!data) data = {};
+      console.log('user data', data);
+      dispatch(setUser({user: {...user, ...data}}));
+    })();
+  }, []);
+  console.log('user state', user);
+  useEffect(() => {
+    if (user) {
+      dispatch(setPlans(user.plans || []));
+      dispatch(setWorkoutPlan(user.workoutPlan || []));
+    }
+  }, [user]);
   return (
     <NavigationContainer>
       {user ? (

@@ -44,3 +44,24 @@ export async function requestActivityRecognitionPermission() {
   }
   return false;
 }
+export async function requestStoragePermission() {
+  try {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+      {
+        title: 'Storage Permission',
+        message: 'This app needs access to your storage.',
+        buttonNeutral: 'Ask Me Later',
+        buttonNegative: 'Cancel',
+        buttonPositive: 'OK'
+      }
+    );
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      console.log('You can use the storage');
+    } else {
+      console.log('Storage permission denied');
+    }
+  } catch (err) {
+    console.warn(err);
+  }
+}

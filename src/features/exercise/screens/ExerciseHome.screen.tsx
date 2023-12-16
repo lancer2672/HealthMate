@@ -4,7 +4,7 @@ import Header from '../components/Header';
 import PagerView from 'react-native-pager-view';
 import Personal from './Personal.screen';
 import TabButton from '../components/TabButton';
-import Plan from './Plan.screen';
+import Plan from './plan/Plan.screen';
 
 const ExerciseHome = () => {
   const pageViewRef = useRef<PagerView>();
@@ -22,10 +22,7 @@ const ExerciseHome = () => {
         style={styles.pagerView}
         initialPage={0}>
         <Personal key="0"></Personal>
-        <View key="1">
-          <Text>Second page</Text>
-        </View>
-        <Plan key="2"></Plan>
+        <Plan key="1"></Plan>
       </PagerView>
     </View>
   );

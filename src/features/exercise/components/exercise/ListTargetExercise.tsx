@@ -45,6 +45,7 @@ const ListTargetExercise = () => {
         horizontal
         showsHorizontalScrollIndicator={false}
         data={targetList}
+        keyExtractor={(item, index) => `x1${index}`}
         renderItem={({item}) => <TargetExerciseItem target={item} />}
       />
     </View>

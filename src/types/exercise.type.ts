@@ -5,5 +5,6 @@ export type ExerciseType = {
   id: string,
   name: string,
   secondaryMuscles: string[],
-  instructions: string[]
+  instructions: string[],
+  duration: number
 };
