@@ -18,7 +18,7 @@ const store = configureStore({
     waterTracking: waterTrackingSlice.reducer,
     activity: activitySlice.reducer,
     foodMeal: foodMealSlice.reducer,
-    todolist: todolistSlice.reducer
+    todolist: todolistSlice.reducer,
     playlist: playlistSlice.reducer
   },
   devTools: true,
