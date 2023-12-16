@@ -25,8 +25,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {useTheme} from 'styled-components';
 import Dialog from 'src/components/Dialog';
 import BubbleEffect from '../components/BubbleEffect';
-import {trackingNotificationIns} from 'src/services/notifee/notification';
-
+import {trackingNotificationIns} from 'src/services/notifee/TrackingNotification';
 const dimension = Dimensions.get('window');
 
 const WAVE_PHASE_HEIGHT = 32;

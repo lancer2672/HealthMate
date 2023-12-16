@@ -32,12 +32,12 @@ const Header = ({}) => {
           <MaterialIcons name="group" size={24} color="black" />
         </TouchableOpacity>
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={{paddingHorizontal: 4, marginHorizontal: 12}}
           onPress={navigateToHistoryScreen}>
           <Feather name="bell" size={28} color="black" />
           <View style={styles.dot}></View>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <TouchableOpacity style={{paddingHorizontal: 4}} onPress={openSideMenu}>
           <Ionicons name="settings" size={30} color="black" />

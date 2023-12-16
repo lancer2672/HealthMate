@@ -1,29 +1,60 @@
 import React, {useEffect} from 'react';
 import {Image, Pressable, View, StyleSheet} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {useTheme} from 'styled-components';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import {useTheme} from 'styled-components/native';
+import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Feather from 'react-native-vector-icons/Feather';
+import Entypo from 'react-native-vector-icons/Entypo';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import WaterTracking from 'src/features/tracking-water-prog/screens/WaterTracking.screen';
 import StepCounter from 'src/features/counting-steps/screens/StepCounter.screen';
-const CreatePostButton = ({children, onPress}) => {
+import ExerciseHome from 'src/features/exercise/screens/ExerciseHome.screen';
+import {opacity} from 'react-native-reanimated/lib/typescript/reanimated2/Colors';
+const ExerciseHomeButton = ({children, onPress}) => {
   const theme = useTheme();
   return (
     <Pressable
-      style={[styles.createButton, {backgroundColor: 'green'}]}
+      style={[styles.createButton, {backgroundColor: theme.green1}]}
       onPress={onPress}>
       <View style={{width: 48, height: 48}}>{children}</View>
     </Pressable>
   );
 };
 
+export const TAB_ROUTES = {
+  NOTE: 'Note',
+  FOOD: 'Food',
+  HOME: 'Home',
+  WATER_TRACKING: 'WaterTracking',
+  STEP_COUNTER: 'StepCounter'
+};
+
 const Tab = createBottomTabNavigator();
 export const Tabs = () => {
+  const getIcon = (routeName, color, size) => {
+    switch (routeName) {
+      case TAB_ROUTES.FOOD:
+        return <MaterialCommunityIcons name="food" size={size} color={color} />;
+      case TAB_ROUTES.NOTE:
+        return <SimpleLineIcons name="note" size={size} color={color} />;
+      case TAB_ROUTES.HOME:
+        return <Feather name="home" size={size} color={color} />;
+      case TAB_ROUTES.WATER_TRACKING:
+        return (
+          <MaterialCommunityIcons name="cup-water" size={size} color={color} />
+        );
+      case TAB_ROUTES.STEP_COUNTER:
+        return <FontAwesome5 name="running" size={size} color={color} />;
+      default:
+        return null;
+    }
+  };
   const theme = useTheme();
   return (
     <Tab.Navigator
-      initialRouteName="WaterTracking"
+      initialRouteName={TAB_ROUTES.HOME}
       screenOptions={({route}) => {
         return {
           tabBarShowLabel: false,
@@ -31,72 +62,45 @@ export const Tabs = () => {
           tabBarStyle: {
             height: 50,
             borderTopWidth: 0,
-            backgroundColor: 'gray'
+            backgroundColor: theme.green3
           },
           tabBarItemStyle: {
-            marginLeft: route.name === 'Chat' ? 24 : 0,
-            marginRight: route.name === 'Map' ? 24 : 0
+            marginLeft: route.name === TAB_ROUTES.WATER_TRACKING ? 24 : 0,
+            marginRight: route.name === TAB_ROUTES.FOOD ? 24 : 0
           },
-          tabBarIcon: ({focused, color, size}) => {
-            let iconName;
-            if (route.name === 'Home') {
-              iconName = 'home';
-            } else if (route.name === 'User') {
-              iconName = 'user';
-            } else if (route.name === 'Map') {
-              iconName = 'map-pin';
-            } else if (route.name === 'Chat') {
-              return (
-                <Ionicons
-                  name="ios-chatbubble-ellipses-outline"
-                  size={24}
-                  color={focused ? 'black' : 'green'}
-                />
-              );
-            }
-            return (
-              <Feather
-                name={iconName}
-                size={size}
-                color={focused ? 'white' : 'black'}
-              />
-            );
+          tabBarIcon: ({focused, _, size}) => {
+            const color = focused ? 'white' : 'black';
+            return getIcon(route.name, color, size);
           },
           tabBarActiveTintColor: 'blue',
           tabBarInactiveTintColor: 'gray'
         };
       }}>
-      <Tab.Screen name="Home" component={WaterTracking} />
-      <Tab.Screen name="Map" component={WaterTracking} />
+      <Tab.Screen name={TAB_ROUTES.NOTE} component={ExerciseHome} />
+      <Tab.Screen name={TAB_ROUTES.FOOD} component={WaterTracking} />
       <Tab.Screen
-        name="CreatePost"
-        component={WaterTracking}
+        name={TAB_ROUTES.HOME}
+        component={ExerciseHome}
         options={{
           tabBarIcon: ({focused}) => {
-            return (
-              <Image
-                resizeMode="contain"
-                style={{
-                  width: 30,
-                  height: 30
-                }}></Image>
-            );
+            const color = focused ? 'white' : 'black';
+
+            return <Entypo name="home" size={24} color={color} />;
           },
           tabBarButton: props => {
             return (
               <>
                 <View style={{zIndex: 1}}>
-                  <CreatePostButton {...props}></CreatePostButton>
+                  <ExerciseHomeButton {...props}></ExerciseHomeButton>
                 </View>
-                <View
-                  style={[styles.pseudo, {backgroundColor: 'tomato'}]}></View>
+                <View style={[styles.pseudo]}></View>
               </>
             );
           }
         }}
       />
-      <Tab.Screen name="WaterTracking" component={WaterTracking} />
-      <Tab.Screen name="StepCounter" component={StepCounter} />
+      <Tab.Screen name={TAB_ROUTES.WATER_TRACKING} component={WaterTracking} />
+      <Tab.Screen name={TAB_ROUTES.STEP_COUNTER} component={StepCounter} />
     </Tab.Navigator>
   );
 };

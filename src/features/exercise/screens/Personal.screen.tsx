@@ -1,4 +1,5 @@
 import {
+  Dimensions,
   FlatList,
   Image,
   ImageBackground,
@@ -10,15 +11,17 @@ import {
 import React, {useState, useEffect} from 'react';
 import ExerciseCardItemScreen from '../components/exercise/ExerciseCardItem';
 import {ScrollView} from 'react-native';
-import DropDownCategory from '../components/DropdownCategory';
-import axiosClient from 'src/api/axiosClient';
-import {EXERCISE_BASE_URL} from 'src/constants';
+import Carousel from 'react-native-reanimated-carousel';
+import usePlans from 'src/hooks/usePlan';
+import {EXERCISE_BASE_URL, PLAN_TYPES} from 'src/constants';
 import ListExerciseBody from '../components/exercise/ListExerciseBody';
 import ListTargetExercise from '../components/exercise/ListTargetExercise';
 import exerciseApi from 'src/api/exerciseApi';
 import {useNavigation} from '@react-navigation/native';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {setSelectedPlan} from 'src/store/reducer/exerciseSlice';
+
+const SCREEN_WIDTH = Dimensions.get('window').width;
 
 const Personal = () => {
   const navigation = useNavigation();
@@ -79,6 +82,9 @@ const Personal = () => {
           style={styles.imgBg}
           source={require('../../../assets/imgs/man_exercise.png')}></ImageBackground>
       </TouchableOpacity>
+      <Text style={styles.title}>Start a plan</Text>
+      <GroupAndUserPlan navigation={navigation}></GroupAndUserPlan>
+      <Text style={styles.title}>Target exercise</Text>
       <ListTargetExercise></ListTargetExercise>
       <ListExerciseBody></ListExerciseBody>
     </ScrollView>
@@ -86,6 +92,61 @@ const Personal = () => {
 };
 
 export default Personal;
+
+function GroupAndUserPlan({navigation}) {
+  const {todayPlan, groupPlan} = usePlans();
+  const dispatch = useDispatch();
+
+  const handleNavigateToDetailPlan = item => {
+    dispatch(setSelectedPlan(item));
+    navigation.navigate('DetailPlan');
+  };
+
+  console.log('[todayPlan, groupPlan]', [todayPlan, groupPlan]);
+
+  return (
+    <View style={{flex: 1}}>
+      <Carousel
+        loop
+        width={SCREEN_WIDTH - 20}
+        height={SCREEN_WIDTH / 2}
+        autoPlay={true}
+        pagingEnabled
+        autoPlayInterval={2500}
+        data={[todayPlan, groupPlan].filter(a => a)}
+        scrollAnimationDuration={1000}
+        onSnapToItem={index => console.log('current index:', index)}
+        renderItem={({item}) => (
+          <TouchableOpacity
+            onPress={() => handleNavigateToDetailPlan(item)}
+            style={styles.rcmWrapper}>
+            <View style={{flex: 1, paddingVertical: 12, paddingLeft: 12}}>
+              <Text style={styles.cardTitle}>
+                {item.type === PLAN_TYPES.GROUP
+                  ? 'Group plan'
+                  : 'Your daily plan'}
+                {' - '}
+                {item.planName}
+              </Text>
+
+              <Text style={styles.cardSubTitle}>
+                {item.exercise?.length} exercise
+              </Text>
+            </View>
+            <ImageBackground
+              resizeMode="contain"
+              style={styles.imgBg}
+              source={
+                item.type === PLAN_TYPES.GROUP
+                  ? require('../../../assets/imgs/group_exericse.jpg')
+                  : require('../../../assets/imgs/personal_plan.png')
+              }></ImageBackground>
+          </TouchableOpacity>
+        )}
+      />
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -95,7 +156,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    marginBottom: 4,
+    marginVertical: 8,
     fontWeight: 'bold'
   },
   imgBg: {
@@ -104,8 +165,9 @@ const styles = StyleSheet.create({
   },
   rcmWrapper: {
     flexDirection: 'row',
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: 'gray',
+
     marginHorizontal: 14,
     borderRadius: 12
   },

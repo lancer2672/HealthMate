@@ -47,6 +47,7 @@ import DetailPlaylist from 'src/features/exercise/screens/music/DetailPlaylist';
 import SelectMusic from 'src/features/exercise/screens/music/SelectMusic';
 import AddSongToPlaylist from 'src/features/exercise/screens/music/AddSongToPlaylist';
 import ExerciseGroup from 'src/features/exercise/screens/group/ExerciseGroup';
+import useNotification from 'src/hooks/useNotification';
 const Stack = createNativeStackNavigator();
 
 export const AppNavigator = () => {
@@ -54,7 +55,7 @@ export const AppNavigator = () => {
   const {user} = useSelector(state => state.user);
   const {enableActivityTracking} = useActivity();
   const {todayProgress} = useSelector(waterTrackingSelector);
-
+  const {} = useNotification();
   console.log('todayProgresstodayProgress', todayProgress);
 
   const addWaterAmount = useCallback(
@@ -72,8 +73,7 @@ export const AppNavigator = () => {
     const dateOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     //get daily water drink prog
     dispatch(getDateProgress({userId, date: dateOnly}));
-    //notifee
-    const unsubcribeLocalMessaging = enableForegroundNotification();
+
     (async () => {
       await checkForInitialNotification();
       await registerForegroundService(addWaterAmount);
@@ -87,34 +87,18 @@ export const AppNavigator = () => {
         enableActivityTracking();
       }
     };
-    //FCM messaging
-    const setupFCMMessaging = async () => {
-      const FCMToken = await getMessagingToken();
-      dispatch(saveFCMToken({FCMToken, userId}));
-      await createNotifeeChannel();
-    };
 
     trackUserActivities();
-    setupFCMMessaging();
-    setUpMessagingListener();
-
-    const unsubscribeRemoteMessaging = messaging().onMessage(remoteMessage => {
-      console.log('A new FCM message arrived!', remoteMessage);
-    });
 
     return () => {
-      messaging().onTokenRefresh(FCMToken => {
-        dispatch(saveFCMToken({FCMToken, userId}));
-      });
       googleFit.unsubscribeListeners();
-      unsubscribeRemoteMessaging();
-      unsubcribeLocalMessaging();
     };
   }, []);
 
   useEffect(() => {
     AppState.addEventListener('change', handleAppStateChange);
   }, []);
+
   const handleAppStateChange = async nextAppState => {
     console.log('StateChanged', nextAppState);
     if (nextAppState === 'active') {
@@ -129,10 +113,11 @@ export const AppNavigator = () => {
   return (
     <Stack.Navigator
       screenOptions={{headerShown: false}}
-      initialRouteName="MealCalendar">
-      {/* <Stack.Screen name="AppTabs" component={Tabs} /> */}
+      initialRouteName="AppTabs">
+      <Stack.Screen name="AppTabs" component={Tabs} />
+
       <Stack.Screen name="WaterTracking" component={WaterTracking} />
-      <Stack.Screen name="ExerciseHome" component={ExerciseHome} />
+
       <Stack.Screen name="ListExercise" component={ListExercise} />
       <Stack.Screen name="StepCounter" component={StepCounter} />
       <Stack.Screen name="SelectMusic" component={SelectMusic} />

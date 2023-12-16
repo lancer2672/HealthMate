@@ -65,3 +65,7 @@ export async function requestStoragePermission() {
     console.warn(err);
   }
 }
+
+export const requestNotificationPermission = () => {
+  PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+};

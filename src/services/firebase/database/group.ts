@@ -88,3 +88,19 @@ export async function addPoint({groupId, userId, point}) {
     throw new Error('Member does not exist in the group');
   }
 }
+
+export async function getGroupPlan({groupId}) {
+  const groupRef = firebaseDatabase.ref('groups/' + groupId);
+  let groupPlan;
+
+  await groupRef.once('value', snapshot => {
+    if (snapshot.exists()) {
+      const groupData = snapshot.val();
+      groupPlan = groupData.plan;
+    } else {
+      throw new Error('Group does not exist');
+    }
+  });
+
+  return groupPlan;
+}

@@ -4,3 +4,9 @@ export const IS_REMINDING_NOTIFICATION_ALLOWED = 'water_notfication';
 export const EXERCISE_BASE_URL = 'https://exercisedb.p.rapidapi.com/exercises';
 export const NO_EXERCISE = 'No exercise yet';
 export const DISABLE_MUSIC = 'disable_music';
+export const EXERCISE_NOTIFICATION = 'exercise_notification';
+
+export const PLAN_TYPES = {
+  TODAY: 'todayPlan',
+  GROUP: 'groupPlan'
+};

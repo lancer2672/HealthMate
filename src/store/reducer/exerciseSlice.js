@@ -26,7 +26,7 @@ const actions = [addPlanAction, addExerciseAction, removePlanAction];
 const exerciseAction = [removeExerciseAction, updatePlanExerciseAction];
 
 export const exerciseSlice = createSlice({
-  name: 'exercise', 
+  name: 'exercise',
   initialState: initialState,
   reducers: {
     setSelectedPlan: (state, action) => {

@@ -4,10 +4,12 @@ import Modal from 'react-native-modal';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {SettingItem, SettingItemWithButton} from 'src/components/SettingItem';
-import {DISABLE_MUSIC} from 'src/constants';
+import {DISABLE_MUSIC, EXERCISE_NOTIFICATION} from 'src/constants';
+import {exerciseNotificationIns} from 'src/services/notifee/ExerciseNotification';
 
 const SideMenu = ({isVisible, onClose}) => {
   const [isHideScreen, setHideMusicScreen] = useState(false);
+  const [disableNotification, setDisableNotification] = useState(false);
   const notificationSettings1 = [
     {
       name: 'Skip music selection screen',
@@ -23,16 +25,38 @@ const SideMenu = ({isVisible, onClose}) => {
       }
     }
   ];
+  const notificationSettings2 = [
+    {
+      name: 'Disable group notification',
+      defaultSwitchValue: disableNotification,
+      onClick: async isAllowed => {
+        if (isAllowed) {
+          await AsyncStorage.setItem(EXERCISE_NOTIFICATION, 'allow');
+          setDisableNotification(true);
+          exerciseNotificationIns.show = true;
+        } else {
+          await AsyncStorage.removeItem(EXERCISE_NOTIFICATION);
+          setDisableNotification(false);
+          exerciseNotificationIns.show = false;
+        }
+      }
+    }
+  ];
 
   useEffect(() => {
     (async () => {
       const hideMusic = await AsyncStorage.getItem(DISABLE_MUSIC);
+      const disableNotification = await AsyncStorage.getItem(
+        EXERCISE_NOTIFICATION
+      );
       if (hideMusic) {
         setHideMusicScreen(true);
       }
+      if (disableNotification) {
+        setDisableNotification(true);
+      }
     })();
   }, []);
-
   return (
     <Modal
       isVisible={isVisible}
@@ -47,7 +71,9 @@ const SideMenu = ({isVisible, onClose}) => {
           style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
-            alignItems: 'center'
+            alignItems: 'center',
+            borderBottomColor: 'gray',
+            borderBottomWidth: 1
           }}>
           <Text style={styles.setting}>Settings</Text>
           <TouchableOpacity onPress={onClose}>
@@ -57,6 +83,14 @@ const SideMenu = ({isVisible, onClose}) => {
 
         <Text style={styles.category}>Music</Text>
         {notificationSettings1.map(item => {
+          return (
+            <SettingItemWithButton
+              key={item.name}
+              {...item}></SettingItemWithButton>
+          );
+        })}
+        <Text style={styles.category}>Notification</Text>
+        {notificationSettings2.map(item => {
           return (
             <SettingItemWithButton
               key={item.name}
@@ -85,8 +119,7 @@ const styles = StyleSheet.create({
   },
   category: {
     fontSize: 24,
-    borderTopColor: 'gray',
-    borderTopWidth: 1,
+
     marginTop: 8,
     fontWeight: 'bold',
     color: 'gray'

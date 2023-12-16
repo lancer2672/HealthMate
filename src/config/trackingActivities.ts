@@ -1,7 +1,7 @@
 import GoogleFit, {BucketUnit, Scopes} from 'react-native-google-fit';
 import {requestActivityRecognitionPermission} from '../permissions';
 import {getEndDayISO, getStartDayISO} from 'src/utils/dateTimeHelper';
-import { trackingNotificationIns } from 'src/services/notifee/notification';
+import { trackingNotificationIns } from 'src/services/notifee/TrackingNotification';
 
 const SAVE_RECORD_TIME_INTERVAL = 6000;
 

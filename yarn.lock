@@ -8102,6 +8102,11 @@ normalize-svg-path@^1.0.1:
   dependencies:
     svg-arc-to-cubic-bezier "^3.0.0"
 
+notifee@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.npmjs.org/notifee/-/notifee-0.0.1.tgz"
+  integrity sha512-R5DEyfQnhBR717u66Zut+Jx5MAOS4iLNSVEdsbiVcSzPH9S1gjxHEUJNnLnUmRTbvz8L8sUzhgkNMrtgm55UHg==
+
 npm-audit-report@^5.0.0:
   version "5.0.0"
 
@@ -9215,7 +9220,12 @@ react-native-ratings@8.0.4:
   dependencies:
     lodash "^4.17.15"
 
-react-native-reanimated@^3.5.4, react-native-reanimated@>=2.0.0, react-native-reanimated@>=2.2.0, react-native-reanimated@>=2.8.0:
+react-native-reanimated-carousel@^3.5.1:
+  version "3.5.1"
+  resolved "https://registry.npmjs.org/react-native-reanimated-carousel/-/react-native-reanimated-carousel-3.5.1.tgz"
+  integrity sha512-9BBQV6JAYSQm2lV7MFtT4mzapXmW4IZO6s38gfiJL84Jg23ivGB1UykcNQauKgtHyhtW2NuZJzItb1s42lM+hA==
+
+react-native-reanimated@^3.5.4, react-native-reanimated@>=2.0.0, react-native-reanimated@>=2.2.0, react-native-reanimated@>=2.8.0, react-native-reanimated@>=3.0.0:
   version "3.5.4"
   resolved "https://registry.npmjs.org/react-native-reanimated/-/react-native-reanimated-3.5.4.tgz"
   integrity sha512-8we9LLDO1o4Oj9/DICeEJ2K1tjfqkJagqQUglxeUAkol/HcEJ6PGxIrpBcNryLqCDYEcu6FZWld/FzizBIw6bg==
@@ -9318,7 +9328,7 @@ react-native-video@^5.2.1:
     prop-types "^15.7.2"
     shaka-player "^2.5.9"
 
-react-native@*, "react-native@^0.0.0-0 || 0.60 - 0.72 || 1000.0.0", react-native@^0.72.6, "react-native@>= 0.30.0", "react-native@>= 0.50.0", "react-native@>= 0.60.0", "react-native@>= 0.64.3", react-native@>=0.42.0, react-native@>=0.50.0, react-native@>=0.57, react-native@>=0.59, react-native@>=0.59.0, react-native@>=0.60.0, react-native@>=0.60.0-rc.2, react-native@>=0.64, react-native@>=0.64.0, react-native@>=0.65.0, react-native@>=0.8.0:
+react-native@*, "react-native@^0.0.0-0 || 0.60 - 0.72 || 1000.0.0", react-native@^0.72.6, "react-native@>= 0.30.0", "react-native@>= 0.50.0", "react-native@>= 0.60.0", "react-native@>= 0.64.3", react-native@>=0.42.0, react-native@>=0.50.0, react-native@>=0.57, react-native@>=0.59, react-native@>=0.59.0, react-native@>=0.6.0, react-native@>=0.60.0, react-native@>=0.60.0-rc.2, react-native@>=0.64, react-native@>=0.64.0, react-native@>=0.65.0, react-native@>=0.8.0:
   version "0.72.6"
   resolved "https://registry.npmjs.org/react-native/-/react-native-0.72.6.tgz"
   integrity sha512-RafPY2gM7mcrFySS8TL8x+TIO3q7oAlHpzEmC7Im6pmXni6n1AuufGaVh0Narbr1daxstw7yW7T9BKW5dpVc2A==

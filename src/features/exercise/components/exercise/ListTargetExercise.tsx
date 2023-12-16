@@ -39,7 +39,6 @@ const ListTargetExercise = () => {
 
   return (
     <View>
-      <Text style={styles.target}>Target exercise</Text>
       <FlatList
         contentContainerStyle={{marginBottom: 20, marginTop: 4}}
         horizontal

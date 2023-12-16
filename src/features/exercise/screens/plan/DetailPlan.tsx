@@ -67,13 +67,15 @@ const DetailPlan = () => {
     console.log('on drag end data', from, to);
     const newList = [...listExercise];
     [newList[from], newList[to]] = [newList[to], newList[from]];
-    dispatch(
-      updateExerciseAction({
-        userId: user.uid,
-        id: selectedPlan.id,
-        newExerciseList: newList
-      })
-    );
+    if (!selectedPlan.isRecommendedPlan) {
+      dispatch(
+        updateExerciseAction({
+          userId: user.uid,
+          id: selectedPlan.id,
+          newExerciseList: newList
+        })
+      );
+    }
     setListExercise(newList);
   };
   console.log('selectedPlan', selectedPlan);
