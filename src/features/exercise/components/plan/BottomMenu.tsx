@@ -1,17 +1,20 @@
-import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
-import React, {useState} from 'react';
-import {Modal} from 'react-native';
-import {TouchableWithoutFeedback} from 'react-native';
+import {useState} from 'react';
+import {
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View
+} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
+import WeekDateDropDown from 'src/components/WeekDateDropDown';
 import {
   removePlanAction,
   updateDailyWorkoutPlanAction,
   updateWorkoutPlanAction
 } from 'src/store/reducer/thunks/exerciseActions';
 import {userSelector} from 'src/store/selectors';
-import InputText from 'src/components/TextInput';
-import WeekDateDropDown from 'src/components/WeekDateDropDown';
-import {updateWorkoutPlan} from 'src/services/firebase/firestore/exercise';
 const BottomMenu = ({visible, onClose, plan}) => {
   const [selectedDate, setSelectedDate] = useState(null);
 
@@ -38,15 +41,15 @@ const BottomMenu = ({visible, onClose, plan}) => {
     onClose();
   };
   const handleAddToWorkoutPlan = () => {
-    console.log('selectedDate', selectedDate);
-    if (!selectedDate) return;
-    dispatch(
-      updateWorkoutPlanAction({
-        userId: user.uid,
-        planId: plan.id,
-        id: selectedDate
-      })
-    );
+    if (selectedDate != null) {
+      dispatch(
+        updateWorkoutPlanAction({
+          userId: user.uid,
+          planId: plan.id,
+          id: selectedDate
+        })
+      );
+    }
     onClose();
   };
   return (

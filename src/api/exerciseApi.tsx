@@ -13,6 +13,7 @@ const exerciseApi = {
     }
   },
   getListBodyPart: async () => {
+    return [];
     try {
       console.log('GetListBodyPart');
       const data = await axiosClient.get(
@@ -27,10 +28,12 @@ const exerciseApi = {
     }
   },
   getTargetList: async () => {
+    return [];
     const data = await axiosClient.get(`${EXERCISE_BASE_URL}/targetList`, {});
     return data.data;
   },
   getExerciseById: async id => {
+    return [];
     const data = await axiosClient.get(
       `${EXERCISE_BASE_URL}/exercise/${id}`,
       {}
@@ -38,6 +41,7 @@ const exerciseApi = {
     return data.data;
   },
   getTargetExercise: async (target, limit) => {
+    return [];
     const data = await axiosClient.get(
       `${EXERCISE_BASE_URL}/target/${target}`,
       {
@@ -49,8 +53,21 @@ const exerciseApi = {
     return data.data;
   },
   getExerciseByBodyPart: async ({bodyPart, limit}) => {
+    return [];
     const data = await axiosClient.get(
       `${EXERCISE_BASE_URL}/bodyPart/${bodyPart}`,
+      {
+        params: {
+          limit
+        }
+      }
+    );
+    return data.data;
+  },
+  shareResult: async ({userIds}) => {
+    return [];
+    const data = await axiosClient.get(
+      `${SERVER_URL}/send-notification/${bodyPart}`,
       {
         params: {
           limit

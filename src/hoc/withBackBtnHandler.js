@@ -1,7 +1,8 @@
 import {useNavigation} from '@react-navigation/native';
-import React, {useEffect} from 'react';
-import {BackHandler, Alert} from 'react-native';
+import {useEffect} from 'react';
+import {Alert, BackHandler} from 'react-native';
 import {useDispatch} from 'react-redux';
+import audioServiceIns from 'src/services/audio/audioIns';
 import {
   setCurrentExercise,
   setDoExercise
@@ -12,7 +13,8 @@ export const withBackButtonHandler = WrappedComponent => {
     const dispatch = useDispatch();
     const navigation = useNavigation();
     const handleNavigateBack = () => {
-      navigation.navigate('ExerciseHome');
+      navigation.navigate('Home');
+      audioServiceIns.stop();
       dispatch(setCurrentExercise(null));
       dispatch(setDoExercise([]));
     };

@@ -1,38 +1,29 @@
-import {
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Text,
-  View
-} from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
+import {useEffect, useState} from 'react';
+import {StyleSheet, Text, View} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import CircularProgress from 'react-native-circular-progress-indicator';
 import {useTheme} from 'styled-components';
-import {LineChart} from 'react-native-chart-kit';
 
-import Dialog from 'src/components/Dialog';
-import {AnimatedCircularProgress} from 'react-native-circular-progress';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {DEFAULT_STEP_GOAL} from 'src/constants';
-import {useDispatch, useSelector} from 'react-redux';
-import {activitySelector, userSelector} from 'src/store/selectors';
-import {updateUserActivityAction} from 'src/store/reducer/thunks/activityActions';
-import {useAppDispatch, useAppSelector} from 'src/store/hooks';
-import {getStepsByMonth} from 'src/services/firebase/database/activity';
-import StepChart from '../components/StepChart.component';
-import Header from '../components/Header.component';
-import moment from 'moment';
+import {AnimatedCircularProgress} from 'react-native-circular-progress';
+import DatePicker from 'react-native-date-picker';
+import {useSelector} from 'react-redux';
+import Dialog from 'src/components/Dialog';
 import enableTrackingUserActivities, {
   getPeriodCalories,
   getPeriodDistance,
   getPeriodMoveMins,
   getPeriodSteps
 } from 'src/config/trackingActivities';
+import {DEFAULT_STEP_GOAL} from 'src/constants';
+import {getStepsByMonth} from 'src/services/firebase/database/activity';
+import {setGoal} from 'src/services/firebase/firestore/drinkProgress';
+import {useAppDispatch, useAppSelector} from 'src/store/hooks';
+import {updateUserActivityAction} from 'src/store/reducer/thunks/activityActions';
+import {activitySelector, userSelector} from 'src/store/selectors';
 import {getEndDayISO, getStartDayISO} from 'src/utils/dateTimeHelper';
-import DatePicker from 'react-native-date-picker';
+import Header from '../components/Header.component';
+import StepChart from '../components/StepChart.component';
 
 const StepCounter = () => {
   const theme = useTheme();

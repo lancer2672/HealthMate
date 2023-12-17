@@ -1,14 +1,13 @@
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {useEffect, useState} from 'react';
 import {useNavigation, useRoute} from '@react-navigation/native';
-import {CountdownCircleTimer} from 'react-native-countdown-circle-timer';
-import Entypo from 'react-native-vector-icons/Entypo';
+import {useEffect, useState} from 'react';
+import {Image, StyleSheet, Text, View} from 'react-native';
+import {Button} from 'react-native-paper';
 import {useSelector} from 'react-redux';
+import buttonStyles from 'src/features/theme/styles/button';
+import audioServiceIns from 'src/services/audio/audioIns';
+import {addPoint} from 'src/services/firebase/database/group';
 import {exerciseSelector, userSelector} from 'src/store/selectors';
 import {useTheme} from 'styled-components';
-import {Button} from 'react-native-paper';
-import buttonStyles from 'src/features/theme/styles/button';
-import {addPoint} from 'src/services/firebase/database/group';
 
 const FinishScreen = () => {
   const route = useRoute<any>();
@@ -32,14 +31,18 @@ const FinishScreen = () => {
     return res;
   };
   const navigationToHome = () => {
-    navigation.navigate('ExerciseHome');
+    navigation.replace('AppTabs', {screen: 'Home'});
   };
+  const handleShareResult = async () => {};
   useEffect(() => {
     if (user.groupId) {
       const point = getTotalDuration();
       addPoint({userId: user.uid, groupId: user.groupId, point});
     }
   }, [user.groupId]);
+  useEffect(() => {
+    audioServiceIns.stop();
+  }, []);
   return (
     <View style={{flex: 1}}>
       <View style={{flex: 1, alignItems: 'center'}}>
@@ -90,20 +93,20 @@ const FinishScreen = () => {
             </Text>
           </View>
         </View>
-        <Button
-          style={[
-            buttonStyles.primary,
-            {
-              width: 200,
-              backgroundColor: theme.green1,
-              borderColor: theme.green1,
-              alignSelf: 'center'
-            }
-          ]}
-          mode="contained"
-          onPress={navigationToHome}>
-          Finish
-        </Button>
+        <View>
+          <Button
+            style={[buttonStyles.primary, styles.btn(theme)]}
+            mode="contained"
+            onPress={navigationToHome}>
+            Finish
+          </Button>
+          <Button
+            style={[buttonStyles.primary, styles.btn(theme)]}
+            mode="contained"
+            onPress={handleShareResult}>
+            Share to group
+          </Button>
+        </View>
       </View>
     </View>
   );
@@ -138,6 +141,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 20
   },
+  btn: theme => ({
+    width: 200,
+    backgroundColor: theme.green1,
+    borderColor: theme.green1,
+    alignSelf: 'center'
+  }),
   subTitle: {
     // fontWeight: 'bold',
     fontSize: 16

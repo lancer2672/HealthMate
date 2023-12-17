@@ -1,14 +1,11 @@
+import {memo, useState} from 'react';
 import {
+  Dimensions,
   StyleSheet,
   Text,
-  View,
-  Image,
   TouchableOpacity,
-  Modal,
-  Dimensions
+  View
 } from 'react-native';
-import React, {useContext, memo, useState} from 'react';
-import AntDesign from 'react-native-vector-icons/AntDesign';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useDispatch} from 'react-redux';
 import {removePlaylistAction} from 'src/store/reducer/thunks/playlistAction';
@@ -96,7 +93,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 12,
     borderWidth: 2,
-    marginHorizontal: 12
+    margin: 12
     // elevation: 2
   },
   boxWithShadow: {

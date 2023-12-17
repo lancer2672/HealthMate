@@ -1,22 +1,10 @@
-import {
-  View,
-  Text,
-  Keyboard,
-  Pressable,
-  TouchableOpacity,
-  Image,
-  StyleSheet,
-  TextInput,
-  FlatList,
-  ScrollView
-} from 'react-native';
-import React, {useState} from 'react';
+import {useState} from 'react';
+import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import MonthYearPicker from '../../../components/MonthYearPicker';
 import Calendar from '../../meal/components/Calendar.component';
 
 export default function MealCalendar({navigation}) {
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   const colors = [
     '#8B0000',
@@ -32,8 +20,8 @@ export default function MealCalendar({navigation}) {
     navigation.navigate('DetailMealDate', {
       data: {
         day: day,
-        month: selectedMonth,
-        year: selectedYear
+        month: selectedDate.getMonth(),
+        year: selectedDate.getFullYear()
       }
     });
   };
@@ -58,15 +46,13 @@ export default function MealCalendar({navigation}) {
         </View>
         <View style={styles.calendarContainer}>
           <MonthYearPicker
-            selectedYear={selectedYear}
-            setSelectedYear={setSelectedYear}
-            selectedMonth={selectedMonth}
-            setSelectedMonth={setSelectedMonth}
+            selectedDate={selectedDate}
+            onDateChange={setSelectedDate}
             textColor="black"
           />
           <Calendar
-            selectedMonth={selectedMonth}
-            selectedYear={selectedYear}
+            selectedMonth={selectedDate.getMonth()}
+            selectedYear={selectedDate.getFullYear()}
             onDatePress={onDatePress}
           />
           <View

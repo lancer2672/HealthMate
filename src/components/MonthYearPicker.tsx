@@ -1,50 +1,35 @@
+import {memo, useCallback, useEffect, useRef, useState} from 'react';
 import {
-  StyleSheet,
   Dimensions,
+  FlatList,
+  StyleSheet,
   Text,
   TouchableOpacity,
-  View,
-  FlatList
+  View
 } from 'react-native';
-import React, {
-  useEffect,
-  useRef,
-  useLayoutEffect,
-  useState,
-  useCallback
-} from 'react';
-import Entypo from 'react-native-vector-icons/Entypo';
 import MonthPicker from 'react-native-month-year-picker';
+import Entypo from 'react-native-vector-icons/Entypo';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
-
-const MonthYearPicker = ({
-  selectedYear,
-  setSelectedYear,
-  selectedMonth,
-  setSelectedMonth,
-  textColor
-}) => {
+const ITEM_WIDTH = SCREEN_WIDTH - 160;
+const MonthYearPicker = ({selectedDate, onDateChange, textColor}) => {
   const ref = useRef();
-  const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
   const [initialScrollIndex, setInitialScrollToIndex] = useState(false);
   const textcolor = textColor || 'white';
   useEffect(() => {
-    setInitialScrollToIndex(selectedMonth);
+    setInitialScrollToIndex(selectedDate.getMonth());
   }, []);
-  console.log('SelectedMonth', selectedMonth);
+  console.log('Month year picker selectedDate', selectedDate);
   const showPicker = useCallback(value => setShow(value), []);
   const onValueChange = useCallback(
     (event, newDate) => {
-      const selectedDate = newDate || date;
+      const selectedDate = newDate;
 
       showPicker(false);
-      setDate(selectedDate);
-      setSelectedMonth(selectedDate.getMonth());
-      setSelectedYear(selectedDate.getFullYear());
+      onDateChange(selectedDate);
     },
-    [date, showPicker]
+    [selectedDate, showPicker]
   );
 
   const months = [
@@ -62,32 +47,29 @@ const MonthYearPicker = ({
     'December'
   ];
   const onLeftClick = () => {
-    let newMonth = selectedMonth - 1;
-    if (newMonth < 0) {
-      newMonth = 11;
-
-      setSelectedYear(selectedYear - 1);
-    }
-    setSelectedMonth(newMonth);
+    const newDate = new Date(
+      selectedDate.getFullYear(),
+      selectedDate.getMonth() - 1
+    );
+    onDateChange(newDate);
   };
   const onRightClick = () => {
-    let newMonth = selectedMonth + 1;
-    if (newMonth > 11) {
-      newMonth = 0;
+    const newDate = new Date(
+      selectedDate.getFullYear(),
+      selectedDate.getMonth() + 1
+    );
 
-      setSelectedYear(selectedYear + 1);
-    }
-    setSelectedMonth(newMonth);
+    onDateChange(newDate);
   };
 
   useEffect(() => {
-    console.log('Called', selectedMonth);
+    console.log('Called', selectedDate);
     ref.current?.scrollToIndex({
-      index: selectedMonth,
+      index: selectedDate.getMonth(),
       animated: true,
       viewPosition: 0
     });
-  }, [selectedMonth]);
+  }, [selectedDate]);
   return (
     <View
       style={{
@@ -104,6 +86,12 @@ const MonthYearPicker = ({
           contentContainerStyle={{flexGrow: 1}}
           data={months}
           horizontal
+          initialScrollIndex={selectedDate.getMonth()}
+          getItemLayout={(data, index) => ({
+            length: ITEM_WIDTH,
+            offset: ITEM_WIDTH * index,
+            index
+          })}
           pagingEnabled={true}
           onScrollToIndexFailed={info => {
             const wait = new Promise(resolve => setTimeout(resolve, 500));
@@ -119,7 +107,7 @@ const MonthYearPicker = ({
           renderItem={({item, index}) => (
             <MonthYearItem
               item={item}
-              selectedYear={selectedYear}
+              selectedYear={selectedDate.getFullYear()}
               onPress={showPicker}
               textcolor={textcolor}></MonthYearItem>
           )}
@@ -146,9 +134,9 @@ const MonthYearItem = ({onPress, item, selectedYear, textcolor}) => {
     <TouchableOpacity
       onPress={onPress}
       style={{
-        width: SCREEN_WIDTH - 160,
+        width: ITEM_WIDTH,
         // width: SCREEN_WIDTH,
-
+        height: 30,
         justifyContent: 'center',
         alignItems: 'center'
       }}>
@@ -164,7 +152,7 @@ const MonthYearItem = ({onPress, item, selectedYear, textcolor}) => {
     </TouchableOpacity>
   );
 };
-export default MonthYearPicker;
+export default memo(MonthYearPicker);
 
 const styles = StyleSheet.create({
   date: {textAlign: 'center', fontSize: 20, color: 'white', fontWeight: 'bold'}

@@ -1,5 +1,5 @@
 import messaging from '@react-native-firebase/messaging';
-import {useCallback, useEffect} from 'react';
+import {useEffect} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {requestNotificationPermission} from 'src/permissions';
 
@@ -23,16 +23,14 @@ const useNotification = () => {
   const navigation = useNavigation();
   const {user} = useSelector(userSelector);
   const {todayProgress} = useSelector(waterTrackingSelector);
+  console.log('todayProgress', todayProgress);
+  const addWaterAmount = amount => {
+    console.log('called', todayProgress);
+    if (todayProgress && todayProgress.id) {
+      dispatch(addSession({drinkProgressId: todayProgress.id, amount}));
+    }
+  };
 
-  const addWaterAmount = useCallback(
-    amount => {
-      console.log('called', todayProgress);
-      if (todayProgress && todayProgress.id) {
-        dispatch(addSession({drinkProgressId: todayProgress.id, amount}));
-      }
-    },
-    [todayProgress]
-  );
   const setupFCMMessaging = async () => {
     const FCMToken = await getMessagingToken();
     dispatch(saveFCMToken({FCMToken, userId: user.uid}));
@@ -44,6 +42,10 @@ const useNotification = () => {
     await exerciseNotificationIns.displayNotification({body, title});
   };
   useEffect(() => {
+    registerForegroundService(addWaterAmount);
+  }, [todayProgress]);
+  useEffect(() => {
+    requestNotificationPermission();
     (async () => {
       await trackingNotificationIns.checkingBatterySavingEnabled();
       await trackingNotificationIns.displayActivityTrackingNotification();
@@ -51,9 +53,8 @@ const useNotification = () => {
         water: todayProgress.totalAmount
       });
     })();
-    requestNotificationPermission();
     checkForInitialNotification();
-    registerForegroundService(addWaterAmount);
+
     setupFCMMessaging();
     setUpMessagingListener();
     createNotifeeChannel();

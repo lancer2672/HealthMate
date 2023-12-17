@@ -1,41 +1,36 @@
-import {
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-  Image,
-  Text,
-  View,
-  TouchableWithoutFeedback,
-  Modal
-} from 'react-native';
-import React, {useEffect, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import Feather from 'react-native-vector-icons/Feather';
-import DraggableFlatList, {
-  NestableScrollContainer,
-  NestableDraggableFlatList
-} from 'react-native-draggable-flatlist';
+import {useEffect, useState} from 'react';
+import {
+  Image,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View
+} from 'react-native';
+import DraggableFlatList from 'react-native-draggable-flatlist';
 import {Modal as PaperModal, Portal} from 'react-native-paper';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import Feather from 'react-native-vector-icons/Feather';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import {exerciseSelector, userSelector} from 'src/store/selectors';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {Button} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
+import InputText from 'src/components/TextInput';
+import {DISABLE_MUSIC} from 'src/constants';
+import buttonStyles from 'src/features/theme/styles/button';
+import {setCurrentExercise} from 'src/store/reducer/exerciseSlice';
 import {
   removeExerciseAction,
-  updateExerciseAction,
   updatePlanExerciseAction
 } from 'src/store/reducer/thunks/exerciseActions';
-import {useTheme} from 'styled-components';
-import {Button} from 'react-native-paper';
-import buttonStyles from 'src/features/theme/styles/button';
+import {exerciseSelector, userSelector} from 'src/store/selectors';
 import {convertSecondsToMinutesAndSeconds} from 'src/utils/dateTimeHelper';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import {setCurrentExercise} from 'src/store/reducer/exerciseSlice';
-import InputText from 'src/components/TextInput';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {DISABLE_MUSIC} from 'src/constants';
+import {useTheme} from 'styled-components';
 const DetailPlan = () => {
   const [selectedIndex, setSelectedIndex] = useState();
 
@@ -64,15 +59,15 @@ const DetailPlan = () => {
     }
   };
   const handleOnDragEnd = ({data, from, to}) => {
-    console.log('on drag end data', from, to);
     const newList = [...listExercise];
     [newList[from], newList[to]] = [newList[to], newList[from]];
+    console.log('on drag end data', newList, from, to);
     if (!selectedPlan.isRecommendedPlan) {
       dispatch(
-        updateExerciseAction({
+        updatePlanExerciseAction({
           userId: user.uid,
           id: selectedPlan.id,
-          newExerciseList: newList
+          exercise: newList
         })
       );
     }
@@ -209,16 +204,12 @@ export const DetailPlanItem = ({
         }}
         style={[
           {
-            backgroundColor: isSelected ? 'gray' : 'white'
+            backgroundColor: 'gray'
           },
           styles.item
         ]}
         onPress={() => onSelect(index)}>
-        <View
-          style={[
-            styles.circleNumber,
-            {backgroundColor: isSelected ? theme.secondary : 'gray'}
-          ]}>
+        <View style={[styles.circleNumber, {backgroundColor: theme.secondary}]}>
           <Text style={[styles.number]}>{index + 1}</Text>
         </View>
         <View
@@ -241,7 +232,7 @@ export const DetailPlanItem = ({
             style={[
               styles.itemName,
               {
-                color: isSelected ? 'white' : 'gray'
+                color: 'white'
               }
             ]}>
             {exercise.name}
@@ -250,7 +241,7 @@ export const DetailPlanItem = ({
             style={[
               styles.itemTime,
               {
-                color: isSelected ? 'white' : 'gray'
+                color: 'white'
               }
             ]}>
             {convertSecondsToMinutesAndSeconds(exercise.duration)}
@@ -259,22 +250,14 @@ export const DetailPlanItem = ({
         <TouchableOpacity
           onPress={navigateToDetailExercise}
           style={styles.itemIcon}>
-          <AntDesign
-            name="questioncircleo"
-            size={24}
-            color={isSelected ? 'white' : 'gray'}
-          />
+          <AntDesign name="questioncircleo" size={24} color={'white'} />
         </TouchableOpacity>
         {/* not allowed to modify recommended exercise */}
         {selectedPlan.isRecommendedPlan ? (
           <></>
         ) : (
           <TouchableOpacity onPress={openMenu}>
-            <Feather
-              name="more-vertical"
-              size={24}
-              color={isSelected ? 'white' : 'gray'}
-            />
+            <Feather name="more-vertical" size={24} color={'white'} />
           </TouchableOpacity>
         )}
       </TouchableOpacity>
@@ -306,7 +289,7 @@ const BottomMenu = ({visible, onClose, openUpdateModal, exercise}) => {
     dispatch(
       removeExerciseAction({
         userId: user.uid,
-        planName: selectedPlan.planName,
+        planId: selectedPlan.id,
         exerciseName: exercise.name
       })
     );
@@ -351,19 +334,25 @@ const UpdateExerciseModal = ({visible, onClose, exercise}) => {
   const dispatch = useDispatch<any>();
   const handleUpdatePlanExercise = () => {
     if (breakDuration === -1 || duration === -1) return;
-
-    const newExercise = {
-      ...exercise,
-      breakDuration,
-      duration
-    };
+    const newListExercise = selectedPlan.exercise.map(ex => {
+      if (ex.id === exercise.id) {
+        return {
+          ...exercise,
+          breakDuration,
+          duration
+        };
+      }
+      return ex;
+    });
+    console.log('newListExercise', newListExercise);
     dispatch(
       updatePlanExerciseAction({
         userId: user.uid,
         id: selectedPlan.id,
-        exercise: newExercise
+        exercise: newListExercise
       })
     );
+    onClose();
   };
   const handleClose = () => {
     onClose();

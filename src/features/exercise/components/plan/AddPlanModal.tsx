@@ -1,23 +1,15 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  TouchableOpacity,
-  Pressable
-} from 'react-native';
-import React, {useState} from 'react';
+import {useState} from 'react';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
-import {TouchableWithoutFeedback, FlatList, Modal} from 'react-native';
-import PlanItem from '../PlanItem';
+import {FlatList, Modal, TouchableWithoutFeedback} from 'react-native';
 import {Button} from 'react-native-paper';
 import {useToast} from 'react-native-toast-notifications';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {useDispatch, useSelector} from 'react-redux';
-import {exerciseSelector, userSelector} from 'src/store/selectors';
-import {addExerciseAction} from 'src/store/reducer/thunks/exerciseActions';
 import InputText from 'src/components/TextInput';
+import {addExerciseAction} from 'src/store/reducer/thunks/exerciseActions';
+import {exerciseSelector, userSelector} from 'src/store/selectors';
+import PlanItem from '../PlanItem';
 
 const AddPlanModal = ({visible, onClose, exercise}) => {
   const [selectedItems, setSelectedItems] = useState({});
@@ -37,13 +29,13 @@ const AddPlanModal = ({visible, onClose, exercise}) => {
         breakDuration
       };
       console.log('selectedPlans', selectedItems, newEx);
-      for (let [planName, value] of Object.entries(selectedItems)) {
+      for (let [planId, value] of Object.entries(selectedItems)) {
         //item selected
         if (value == true) {
           dispatch(
             addExerciseAction({
               userId: user.uid,
-              planName,
+              planId,
               exercise: newEx
             })
           );
@@ -71,12 +63,12 @@ const AddPlanModal = ({visible, onClose, exercise}) => {
     setBreakDuration(0);
     setSelectedItems({});
   };
-  const toggleSelectedItem = planName => {
+  const toggleSelectedItem = planId => {
     setSelectedItems(prev => {
-      const newValue = !!prev[planName];
+      const newValue = !!prev[planId];
       return {
         ...prev,
-        [planName]: !newValue
+        [planId]: !newValue
       };
     });
   };
@@ -107,15 +99,10 @@ const AddPlanModal = ({visible, onClose, exercise}) => {
               renderItem={({item, index}) => (
                 <TouchableOpacity
                   style={{
-                    backgroundColor: selectedItems[item.planName]
-                      ? 'gray'
-                      : 'white'
+                    backgroundColor: selectedItems[item.id] ? 'gray' : 'white'
                   }}
-                  onPress={() => toggleSelectedItem(item.planName)}>
-                  <PlanItem
-                    isSelected={selectedItems[item.planName]}
-                    plan={item}
-                  />
+                  onPress={() => toggleSelectedItem(item.id)}>
+                  <PlanItem isSelected={selectedItems[item.id]} plan={item} />
                 </TouchableOpacity>
               )}
               keyExtractor={item => `${item.name}plan`}

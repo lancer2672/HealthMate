@@ -1,11 +1,9 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {createSlice} from '@reduxjs/toolkit';
 import {
   getTodayActivityAction,
   getTodayStepGoalAction,
   updateUserActivityAction
 } from './thunks/activityActions';
-import {DEFAULT_STEP_GOAL} from 'src/constants';
 const initialState = {
   todaySteps: 0,
   stepTarget: 0,
@@ -45,10 +43,10 @@ export const activitySlice = createSlice({
         });
     });
     builder.addCase(updateUserActivityAction.fulfilled, (state, {payload}) => {
-      console.log('updateUserActivityAction', payload);
       if (payload) {
         const {field, value} = payload;
         state[field] = value;
+        console.log('updateUserActivityAction.fulfilled', state[field]);
       }
     });
     builder.addCase(getTodayActivityAction.fulfilled, (state, {payload}) => {
@@ -57,6 +55,8 @@ export const activitySlice = createSlice({
       state[field] = value;
     });
     builder.addCase(getTodayStepGoalAction.fulfilled, (state, {payload}) => {
+      console.log('getTodayActivityAction stepTarget', payload);
+
       state.stepTarget = payload;
     });
   }

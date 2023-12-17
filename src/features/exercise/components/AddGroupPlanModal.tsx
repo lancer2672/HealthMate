@@ -15,7 +15,6 @@ import {Button} from 'react-native-paper';
 import {useToast} from 'react-native-toast-notifications';
 import {useDispatch, useSelector} from 'react-redux';
 import {exerciseSelector, userSelector} from 'src/store/selectors';
-import {addExerciseAction} from 'src/store/reducer/thunks/exerciseActions';
 import {setGroupPlan} from 'src/services/firebase/database/group';
 
 const AddGroupPlanModal = ({visible, onClose}) => {
