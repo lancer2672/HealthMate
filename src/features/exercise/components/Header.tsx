@@ -1,13 +1,9 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {useState} from 'react';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import Feather from 'react-native-vector-icons/Feather';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {useNavigation} from '@react-navigation/native';
+import {useState} from 'react';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-import {useSelector} from 'react-redux';
-import {useTheme} from 'styled-components';
-import {userSelector} from 'src/store/selectors';
 import SideMenu from './SideMenu';
 
 const Header = ({}) => {
@@ -17,6 +13,9 @@ const Header = ({}) => {
   const navigationToExericseGroup = () => {
     navigation.navigate('ExerciseGroup');
   };
+  const navigateToUserProfile = () => {
+    navigation.navigate('UserProfile');
+  };
   const openSideMenu = () => {
     setVisible(true);
   };
@@ -25,9 +24,9 @@ const Header = ({}) => {
       <View>
         <Text style={styles.date}>Healthmate</Text>
       </View>
-      <View style={{flexDirection: 'row'}}>
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
         <TouchableOpacity
-          style={{paddingHorizontal: 4, marginHorizontal: 12}}
+          style={{paddingHorizontal: 4, marginHorizontal: 8}}
           onPress={navigationToExericseGroup}>
           <MaterialIcons name="group" size={24} color="black" />
         </TouchableOpacity>
@@ -38,8 +37,14 @@ const Header = ({}) => {
           <Feather name="bell" size={28} color="black" />
           <View style={styles.dot}></View>
         </TouchableOpacity> */}
-
-        <TouchableOpacity style={{paddingHorizontal: 4}} onPress={openSideMenu}>
+        <TouchableOpacity
+          style={{paddingHorizontal: 4, marginHorizontal: 8}}
+          onPress={navigateToUserProfile}>
+          <Ionicons name="person" size={20} color="black" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{paddingHorizontal: 4, marginHorizontal: 8}}
+          onPress={openSideMenu}>
           <Ionicons name="settings" size={30} color="black" />
         </TouchableOpacity>
         <SideMenu

@@ -1,9 +1,10 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
 import {
+  loginUser,
   logout,
   registerUser,
-  loginUser,
   saveToken,
+  updateUserInfo
 } from '../../../services/firebase/firestore/user';
 
 export const logoutUser = createAsyncThunk(
@@ -15,7 +16,7 @@ export const logoutUser = createAsyncThunk(
       console.log('Logout error', er);
       return thunkAPI.rejectWithValue(er.message);
     }
-  },
+  }
 );
 
 export const register = createAsyncThunk(
@@ -27,7 +28,7 @@ export const register = createAsyncThunk(
       console.log('Register error', error.message);
       return thunkAPI.rejectWithValue(error.message);
     }
-  },
+  }
 );
 
 export const login = createAsyncThunk('user/login', async (data, thunkAPI) => {
@@ -48,5 +49,16 @@ export const saveFCMToken = createAsyncThunk(
       console.log('Save FCMToken error', error.message);
       return thunkAPI.rejectWithValue(error.message);
     }
-  },
+  }
+);
+export const updateUserInfoAction = createAsyncThunk(
+  'user/updateUserInfo',
+  async (data, thunkAPI) => {
+    try {
+      return await updateUserInfo(data);
+    } catch (error) {
+      console.log('Update user info error', error.message);
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
 );
