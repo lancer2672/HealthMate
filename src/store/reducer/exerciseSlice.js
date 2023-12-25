@@ -1,9 +1,7 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {createSlice} from '@reduxjs/toolkit';
 import {
   addExerciseAction,
   addPlanAction,
-  getPlanAction,
   removeExerciseAction,
   removePlanAction,
   saveHistoryExerciseAction,
@@ -22,7 +20,7 @@ const initialState = {
   error: null
 };
 // createPlanAction
-const actions = [addPlanAction, addExerciseAction, removePlanAction];
+const actions = [addPlanAction, addExerciseAction];
 const exerciseAction = [removeExerciseAction, updatePlanExerciseAction];
 
 export const exerciseSlice = createSlice({
@@ -33,7 +31,8 @@ export const exerciseSlice = createSlice({
       state.selectedPlan = action.payload;
     },
     setPlans: (state, action) => {
-      state.plans = action.payload;
+      const plans = action.payload;
+      state.plans = plans.filter(p => !p.deletedAt);
     },
     setWorkoutPlan: (state, action) => {
       state.workoutPlan = action.payload;
@@ -47,10 +46,14 @@ export const exerciseSlice = createSlice({
   },
   extraReducers: builder => {
     builder.addCase(updateWorkoutPlanAction.fulfilled, (state, action) => {
+      console.log('updateWorkoutPlanAction.fulfilled', action.payload);
       state.workoutPlan = action.payload;
     });
     builder.addCase(updateDailyWorkoutPlanAction.fulfilled, (state, action) => {
       state.workoutPlan = action.payload;
+    });
+    builder.addCase(removePlanAction.fulfilled, (state, action) => {
+      state.plans = action.payload;
     });
     builder.addCase(saveHistoryExerciseAction.fulfilled, (state, action) => {
       // state.doExercise = [];
@@ -78,7 +81,11 @@ export const exerciseSlice = createSlice({
         })
         .addCase(action.fulfilled, (state, action) => {
           state.isLoading = false;
-          state.selectedPlan = action.payload;
+          const newSelectedPlan = action.payload;
+          state.selectedPlan = newSelectedPlan;
+          state.plans = state.plans.map(plan =>
+            plan.id === newSelectedPlan.id ? newSelectedPlan : plan
+          );
         })
         .addCase(action.rejected, (state, action) => {
           state.isLoading = false;

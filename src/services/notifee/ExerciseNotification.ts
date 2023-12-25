@@ -1,5 +1,4 @@
-import notifee, {AndroidImportance} from '@notifee/react-native';
-import {Alert} from 'react-native';
+import notifee, { AndroidImportance, AndroidStyle } from '@notifee/react-native';
 
 class ExerciseNotification {
   notificationId: string;
@@ -30,9 +29,13 @@ class ExerciseNotification {
     await notifee.displayNotification({
       id: this.notificationId,
       title: title,
-      body: body,
+      body: '',
       android: {
-        channelId: this.channelId
+        channelId: this.channelId,
+        style: {
+          type: AndroidStyle.BIGTEXT,
+          text: body
+        }
       }
     });
   }

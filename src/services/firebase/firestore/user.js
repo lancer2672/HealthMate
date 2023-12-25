@@ -1,6 +1,6 @@
-import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 const usersRef = firestore().collection('user');
 
 export async function logout({userId}) {
@@ -76,5 +76,32 @@ export async function getUserData(userId) {
     return user.data();
   } catch (error) {
     console.log('Get user error', error.message);
+  }
+}
+export async function updateUserInfo({
+  uid,
+  nickname,
+  gender,
+  dateOfBirth,
+  email,
+  BMI
+}) {
+  const user = auth().currentUser;
+  if (user) {
+    await user.updateProfile({
+      displayName: nickname,
+      email: email
+    });
+
+    const userData = {
+      nickname: nickname,
+      gender: gender,
+      dateOfBirth: dateOfBirth,
+      email: email,
+      BMI: BMI
+    };
+    await usersRef.doc(uid).update(userData);
+
+    return userData;
   }
 }

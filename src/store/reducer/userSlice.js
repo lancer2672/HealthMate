@@ -1,6 +1,11 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {createSlice} from '@reduxjs/toolkit';
-import {login, logoutUser, register, saveFCMToken} from './thunks/userActions';
+import {
+  login,
+  logoutUser,
+  register,
+  saveFCMToken,
+  updateUserInfoAction
+} from './thunks/userActions';
 const initialState = {
   user: null,
   isLoading: false,
@@ -36,6 +41,9 @@ export const userSlice = createSlice({
     builder.addCase(login.fulfilled, (state, {payload}) => {
       console.log(payload);
       state.user = payload;
+    });
+    builder.addCase(updateUserInfoAction.fulfilled, (state, {payload}) => {
+      state.user = {...state.user, ...payload};
     });
   }
 });

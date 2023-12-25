@@ -1,25 +1,22 @@
+import {useNavigation} from '@react-navigation/native';
+import {useEffect, useState} from 'react';
 import {
   Dimensions,
-  FlatList,
-  Image,
   ImageBackground,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View
 } from 'react-native';
-import React, {useState, useEffect} from 'react';
-import ExerciseCardItemScreen from '../components/exercise/ExerciseCardItem';
-import {ScrollView} from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
+import {useDispatch} from 'react-redux';
+import exerciseApi from 'src/api/exerciseApi';
+import {PLAN_TYPES} from 'src/constants';
 import usePlans from 'src/hooks/usePlan';
-import {EXERCISE_BASE_URL, PLAN_TYPES} from 'src/constants';
+import {setSelectedPlan} from 'src/store/reducer/exerciseSlice';
 import ListExerciseBody from '../components/exercise/ListExerciseBody';
 import ListTargetExercise from '../components/exercise/ListTargetExercise';
-import exerciseApi from 'src/api/exerciseApi';
-import {useNavigation} from '@react-navigation/native';
-import {useDispatch, useSelector} from 'react-redux';
-import {setSelectedPlan} from 'src/store/reducer/exerciseSlice';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
@@ -115,7 +112,6 @@ function GroupAndUserPlan({navigation}) {
         autoPlayInterval={2500}
         data={[todayPlan, groupPlan].filter(a => a)}
         scrollAnimationDuration={1000}
-        onSnapToItem={index => console.log('current index:', index)}
         renderItem={({item}) => (
           <TouchableOpacity
             onPress={() => handleNavigateToDetailPlan(item)}

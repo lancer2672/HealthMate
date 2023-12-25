@@ -1,12 +1,11 @@
 import {RAPID_HOST} from '@env';
 import axios from 'axios';
 
-const UrlAPI = 'http://10.0.31.80:3000';
 const axiosClient = axios.create({
-  baseURL: UrlAPI,
+  baseURL: '',
   headers: {
     'Content-Type': 'application/json',
-    'X-RapidAPI-KEY': '885131f8a3msh35a2dadbfc16193p152129jsne637c2c5354b',
+    'X-RapidAPI-KEY': '76692100bfmsh12db6b3c511fe06p1d86aajsn80727a805449',
     'X-RapidAPI-Host': RAPID_HOST
   }
 });

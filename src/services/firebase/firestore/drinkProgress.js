@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import firestore from '@react-native-firebase/firestore';
-import {transformDrinkProgressData} from '../../../utils/tranformData';
 import {DEFAULT_WATER_AMOUNT} from '../../../constants';
+import {transformDrinkProgressData} from '../../../utils/tranformData';
 const drinkHistoryRef = firestore().collection('drinkProgress');
 
 export async function addNewDrinkProgress({userId, date, goal}) {
@@ -56,8 +56,8 @@ export async function getDrinkProgressByDate({userId, date}) {
   }
 }
 export async function getDrinkProgressByMonth({userId, year, month}) {
-  const startDate = new Date(year, month - 1, 1);
-  const endDate = new Date(year, month, 0);
+  const startDate = new Date(year, month, 1);
+  const endDate = new Date(year, month + 1, 0);
   console.log({userId, year, month});
   const userDrinkProgressRef = drinkHistoryRef
     .where('userId', '==', userId)

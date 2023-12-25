@@ -1,34 +1,30 @@
+import {useNavigation, useRoute} from '@react-navigation/native';
+import {useEffect, useState} from 'react';
 import {
+  Alert,
   Image,
   StyleSheet,
-  TouchableOpacity,
   Text,
-  View,
-  Dimensions,
-  Alert
+  TouchableOpacity,
+  View
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {useNavigation, useRoute} from '@react-navigation/native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Button} from 'react-native-paper';
-import Carousel from 'react-native-snap-carousel';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import buttonStyles from 'src/features/theme/styles/button';
-import PlanListModal from '../components/plan/AddPlanModal';
-import {useTheme} from 'styled-components';
-import {CountdownCircleTimer} from 'react-native-countdown-circle-timer';
 import {useDispatch, useSelector} from 'react-redux';
-import {exerciseSelector, userSelector} from 'src/store/selectors';
 import Timer from 'src/components/Timer';
+import buttonStyles from 'src/features/theme/styles/button';
+import {withBackButtonHandler} from 'src/hoc/withBackBtnHandler';
+import audioServiceIns from 'src/services/audio/audioIns';
 import {
   setCurrentExercise,
   setDoExercise
 } from 'src/store/reducer/exerciseSlice';
-import {withBackButtonHandler} from 'src/hoc/withBackBtnHandler';
 import {saveHistoryExerciseAction} from 'src/store/reducer/thunks/exerciseActions';
-import audioServiceIns from 'src/services/audio/audioIns';
+import {exerciseSelector, userSelector} from 'src/store/selectors';
 import notifyUser from 'src/utils/notifyUser';
+import {useTheme} from 'styled-components';
 
 const DoExercise = () => {
   const {currentExercise, doExercise, selectedPlan} =
@@ -50,7 +46,7 @@ const DoExercise = () => {
         {
           text: 'Quit',
           onPress: () => {
-            navigation.navigate('ExerciseHome');
+            navigation.navigate('Home');
             dispatch(setCurrentExercise(null));
             dispatch(setDoExercise([]));
             setIsPlaying(false);

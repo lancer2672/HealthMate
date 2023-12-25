@@ -40,7 +40,9 @@ class AudioService {
   skipToPrevious = async () => {
     await TrackPlayer.skipToPrevious();
   };
-
+  stop = async () => {
+    await TrackPlayer.stop();
+  };
   clearPlaylist = async () => {
     await TrackPlayer.reset();
   };

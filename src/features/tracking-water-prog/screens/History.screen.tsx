@@ -1,26 +1,22 @@
-import React, {useState, useEffect, useCallback, useMemo} from 'react';
+import {useEffect, useState} from 'react';
 import {
   Dimensions,
   StyleSheet,
   Text,
-  View,
-  TouchableOpacity
+  TouchableOpacity,
+  View
 } from 'react-native';
-import HistoryChart from '../components/HistoryChart';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import {useSelector} from 'react-redux';
-import {
-  getDrinkProgressByDate,
-  getDrinkProgressByMonth
-} from '../../../services/firebase/firestore/drinkProgress';
-import MonthYearPicker from '../../../components/MonthYearPicker';
 import {useTheme} from 'styled-components';
-import {date} from 'yup';
+import MonthYearPicker from '../../../components/MonthYearPicker';
+import {getDrinkProgressByMonth} from '../../../services/firebase/firestore/drinkProgress';
+import HistoryChart from '../components/HistoryChart';
+import {userSelector} from 'src/store/selectors';
 export default function WaterTrackingHistory() {
   const theme = useTheme();
-  const {user} = useSelector(state => state.user);
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const {user} = useSelector(userSelector);
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [hasChartData, setHasChartData] = useState(false);
   const [chartData, setChartData] = useState({
     datasets: [{data: [0]}],
@@ -69,8 +65,8 @@ export default function WaterTrackingHistory() {
     setIsLoading(true);
     getDrinkProgressByMonth({
       userId: user.uid,
-      year: selectedYear,
-      month: selectedMonth + 1
+      year: selectedDate.getFullYear(),
+      month: selectedDate.getMonth()
     })
       .then(data => {
         console.log('Dataaaaa', data);
@@ -83,7 +79,7 @@ export default function WaterTrackingHistory() {
       .finally(() => {
         setIsLoading(false);
       });
-  }, [selectedMonth, selectedYear]);
+  }, [selectedDate]);
 
   const handleData = data => {
     if (!data || data.length === 0) return;
@@ -114,7 +110,7 @@ export default function WaterTrackingHistory() {
     const currentYear = currentDate.getFullYear();
 
     const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
-    if (selectedMonth === currentMonth) {
+    if (selectedDate.getMonth() === currentMonth) {
       const maxDay = currentDate.getDate();
       lastDayOfMonth.setDate(maxDay);
     }
@@ -144,10 +140,8 @@ export default function WaterTrackingHistory() {
         <TouchableOpacity onPress={null}></TouchableOpacity>
         <Text style={styles.heading}>Your Progress</Text>
         <MonthYearPicker
-          selectedMonth={selectedMonth}
-          selectedYear={selectedYear}
-          setSelectedYear={setSelectedYear}
-          setSelectedMonth={setSelectedMonth}></MonthYearPicker>
+          selectedDate={selectedDate}
+          onDateChange={setSelectedDate}></MonthYearPicker>
       </View>
       <View style={styles.content}>
         <View style={styles.subContent}>

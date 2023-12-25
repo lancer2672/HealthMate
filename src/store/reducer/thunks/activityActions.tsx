@@ -1,7 +1,7 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
 import {
-  updateUserActivity,
-  getTodayStepsGoal
+  getTodayStepsGoal,
+  updateUserActivity
 } from '../../../services/firebase/database/activity';
 
 export const updateUserActivityAction = createAsyncThunk<
@@ -9,9 +9,8 @@ export const updateUserActivityAction = createAsyncThunk<
   {userId: string, field: string, value: Number}
 >('activity/updateUserActivityAction', async (data, thunkAPI) => {
   try {
-    console.log('updateUserActivityAction', data);
     const res = await updateUserActivity(data);
-    return res;
+    return data;
   } catch (er: any) {
     console.log('update today step error', er);
     return thunkAPI.rejectWithValue(er.message);

@@ -1,21 +1,14 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {useCallback, useEffect} from 'react';
+import {useEffect} from 'react';
 import {AppState} from 'react-native';
 
 import {useDispatch, useSelector} from 'react-redux';
-import {
-  addSession,
-  getDateProgress
-} from 'src/store/reducer/thunks/waterTrackingActions';
+import {getDateProgress} from 'src/store/reducer/thunks/waterTrackingActions';
 import DetailNutriFood from '../features/food/screens/DetailNutriFood.screen';
 import LogFood from '../features/food/screens/LogFood.screen';
 import SearchFood from '../features/food/screens/SearchFood.screen';
 import DetailMealDate from '../features/meal/screens/DetailMealDate.screen';
 import EditFood from '../features/meal/screens/EditFood.screen';
-import {
-  checkForInitialNotification,
-  registerForegroundService
-} from '../services/notifee/notification';
 
 import googleFit from 'react-native-google-fit';
 import StepCounter from 'src/features/counting-steps/screens/StepCounter.screen';
@@ -30,6 +23,7 @@ import AddSongToPlaylist from 'src/features/exercise/screens/music/AddSongToPlay
 import DetailPlaylist from 'src/features/exercise/screens/music/DetailPlaylist';
 import SelectMusic from 'src/features/exercise/screens/music/SelectMusic';
 import DetailPlan from 'src/features/exercise/screens/plan/DetailPlan';
+import UserProfile from 'src/features/profile/screens/UserProfile';
 import WaterTrackingHistory from 'src/features/tracking-water-prog/screens/History.screen';
 import WaterTracking from 'src/features/tracking-water-prog/screens/WaterTracking.screen';
 import {useActivity} from 'src/hooks/useActivity';
@@ -91,6 +85,7 @@ export const AppNavigator = () => {
       <Stack.Screen name="AppTabs" component={Tabs} />
       <Stack.Screen name="WaterTracking" component={WaterTracking} />
       <Stack.Screen name="ListExercise" component={ListExercise} />
+      <Stack.Screen name="UserProfile" component={UserProfile} />
       <Stack.Screen name="StepCounter" component={StepCounter} />
       <Stack.Screen name="SelectMusic" component={SelectMusic} />
       <Stack.Screen name="ExerciseGroup" component={ExerciseGroup} />

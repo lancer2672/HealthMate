@@ -1,18 +1,15 @@
 import {NavigationContainer} from '@react-navigation/native';
 import {useEffect, useState} from 'react';
-import {View, ActivityIndicator, StatusBar} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {ActivityIndicator, StatusBar, View} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 
 import {AuthNavigator} from './Auth.navigation';
 // import {AppNavigator} from './app.navigator';
-import {setIsLoading} from '../store/reducer/appSlice';
-import {AppNavigator} from './App.navigation';
 import auth from '@react-native-firebase/auth';
-import {setUser} from '../store/reducer/userSlice';
-import {setPlans, setWorkoutPlan} from 'src/store/reducer/exerciseSlice';
 import {getUserData} from 'src/services/firebase/firestore/user';
-import exerciseApi from 'src/api/exerciseApi';
+import {setPlans, setWorkoutPlan} from 'src/store/reducer/exerciseSlice';
+import {setUser} from '../store/reducer/userSlice';
+import {AppNavigator} from './App.navigation';
 StatusBar.setBackgroundColor('black');
 const Navigator = () => {
   const {user} = useSelector(state => state.user);
