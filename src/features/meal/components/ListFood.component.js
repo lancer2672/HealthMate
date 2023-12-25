@@ -43,7 +43,7 @@ const ListFood = ({mealName, foodMeal, handleNavigateSeacrch, navigation}) => {
           </TouchableOpacity>
         </View>
         <View>
-          <Text style={styles.mealName}>{totalCalories}</Text>
+          <Text style={styles.mealName}>{totalCalories.toFixed(1)}</Text>
         </View>
       </View>
       <View

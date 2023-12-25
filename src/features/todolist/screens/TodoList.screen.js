@@ -31,6 +31,7 @@ export default function Todolist({navigation}) {
   const [isAddTaskModalVisible, setAddTaskModalVisible] = useState(false);
 
   useEffect(() => {
+    console.log('user34', user);
     if (user) {
       dispatch(
         getTask({
@@ -41,7 +42,7 @@ export default function Todolist({navigation}) {
   }, []);
 
   useEffect(() => {
-    console.log('task', tasks);
+    console.log('task', tasks[0].notificationTime);
   }, [tasks]);
 
   const handleAddTask = newTaskTitle => {
@@ -56,6 +57,25 @@ export default function Todolist({navigation}) {
     //   }
     // ]);
     setAddTaskModalVisible(false);
+  };
+
+  const formatTimestamp = timestamp => {
+    const milliseconds =
+      timestamp.seconds * 1000 + Math.round(timestamp.nanoseconds / 1e6);
+
+    const date = new Date(milliseconds);
+
+    const dayOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][
+      date.getDay()
+    ];
+
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+    // const formattedTime = `${dayOfWeek}, ${hours}:${minutes}`;
+    const formattedTime = `${hours}:${minutes}`;
+
+    return formattedTime;
   };
 
   return (
@@ -131,6 +151,25 @@ export default function Todolist({navigation}) {
                   >
                     {item.title}
                   </Text>
+                  <View
+                    style={{
+                      borderRadius: 15,
+                      borderWidth: 1,
+                      borderColor: 'gray',
+                      marginLeft: 10,
+                      padding: 4
+                    }}>
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        color: 'gray',
+                        textDecorationLine: item.isComplete
+                          ? 'line-through'
+                          : 'none'
+                      }}>
+                      {formatTimestamp(item.notificationTime)}
+                    </Text>
+                  </View>
                 </View>
                 <TouchableOpacity style={{paddingTop: 4}}>
                   {item.isComplete ? (

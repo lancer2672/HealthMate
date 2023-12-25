@@ -230,7 +230,9 @@ export default function EditFood({route, navigation}) {
               </View>
             </View>
             <View style={{justifyContent: 'flex-end'}}>
-              <Text style={styles.text}>{foodData.realCalories}</Text>
+              <Text style={styles.text}>
+                {foodData.realCalories.toFixed(1)}
+              </Text>
               <Text>cal</Text>
             </View>
           </View>

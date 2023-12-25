@@ -193,9 +193,14 @@ export default function LogFood({route, navigation}) {
       };
       dispatch(addFoodMeal(foodMeal));
     }
-    navigation.navigate('DetailMealDate', {
+    console.log('date1111', date);
+    const newDate = new Date(date);
+    navigation.pop();
+    navigation.push('DetailMealDate', {
       data: {
-        date: date
+        day: newDate.getDate(),
+        month: newDate.getMonth(),
+        year: newDate.getFullYear()
       }
     });
   };

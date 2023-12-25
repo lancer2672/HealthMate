@@ -1,5 +1,5 @@
 // AddTask.js
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -26,6 +26,7 @@ const AddTask = ({isVisible, onClose, onAddTask}) => {
   const [newTask, setNewTask] = useState('');
   const [description, setDescription] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [addButtonDisabled, setAddButtonDisabled] = useState(true);
 
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
@@ -66,6 +67,14 @@ const AddTask = ({isVisible, onClose, onAddTask}) => {
     }
   };
 
+  useEffect(() => {
+    if (newTask.trim() !== '') {
+      setAddButtonDisabled(false);
+    } else {
+      setAddButtonDisabled(true);
+    }
+  }, [newTask]);
+
   return (
     <Modal
       transparent
@@ -98,25 +107,22 @@ const AddTask = ({isVisible, onClose, onAddTask}) => {
               style={{
                 padding: 14,
                 borderRadius: 25,
-                backgroundColor: 'gray'
+                backgroundColor: addButtonDisabled ? 'gray' : 'green'
               }}
               onPress={handleAddTask}>
-              <AntDesign name="arrowup" size={24} color="black" />
+              <AntDesign
+                name="arrowup"
+                size={24}
+                color={addButtonDisabled ? 'black' : 'white'}
+              />
             </TouchableOpacity>
           </View>
           <TextInput
             style={styles.input}
-            placeholder="Enter description"
+            placeholder="Description"
             value={description}
             onChangeText={text => setDescription(text)}
           />
-          {/* <Button title="Show Date Picker" onPress={showDatePicker} />
-          <DateTimePickerModal
-            isVisible={isDatePickerVisible}
-            mode="datetime"
-            onConfirm={handleConfirm}
-            onCancel={hideDatePicker}
-          /> */}
           <View
             style={{
               flexDirection: 'row',

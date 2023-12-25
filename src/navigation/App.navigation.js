@@ -106,7 +106,14 @@ export const AppNavigator = () => {
         name="WaterTrackingHistory"
         component={WaterTrackingHistory}
       />
-      <Stack.Screen name="DetailMealDate" component={DetailMealDate} />
+      <Stack.Screen
+        name="DetailMealDate"
+        component={DetailMealDate}
+        options={{
+          headerShown: true,
+          headerTitle: 'Back'
+        }}
+      />
       <Stack.Screen
         name="EditFood"
         component={EditFood}

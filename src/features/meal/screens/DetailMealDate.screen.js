@@ -5,7 +5,8 @@ import {
   Image,
   StyleSheet,
   TextInput,
-  FlatList
+  FlatList,
+  ScrollView
 } from 'react-native';
 import React, {useEffect, useState, useReducer} from 'react';
 // import SearchInput from '../components/SearchInput.component';
@@ -121,7 +122,7 @@ export default function DetailMealDate({route, navigation}) {
   }, [foodMeals]);
 
   return (
-    <View style={{flex: 1, backgroundColor: 'white'}}>
+    <ScrollView style={{flex: 1, backgroundColor: 'white'}}>
       <TouchableOpacity
         style={{padding: 10}}
         onPress={() => {
@@ -212,7 +213,7 @@ export default function DetailMealDate({route, navigation}) {
           />
         </View>
       )}
-    </View>
+    </ScrollView>
   );
 }
 
