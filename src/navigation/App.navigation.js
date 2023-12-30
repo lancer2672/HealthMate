@@ -23,7 +23,8 @@ import AddSongToPlaylist from 'src/features/exercise/screens/music/AddSongToPlay
 import DetailPlaylist from 'src/features/exercise/screens/music/DetailPlaylist';
 import SelectMusic from 'src/features/exercise/screens/music/SelectMusic';
 import DetailPlan from 'src/features/exercise/screens/plan/DetailPlan';
-import UserProfile from 'src/features/profile/screens/UserProfile';
+import EditProfile from 'src/features/settings/screens/EditProfile.screen';
+import Settings from 'src/features/settings/screens/Setting.screen';
 import WaterTrackingHistory from 'src/features/tracking-water-prog/screens/History.screen';
 import WaterTracking from 'src/features/tracking-water-prog/screens/WaterTracking.screen';
 import {useActivity} from 'src/hooks/useActivity';
@@ -83,9 +84,11 @@ export const AppNavigator = () => {
       screenOptions={{headerShown: false}}
       initialRouteName="AppTabs">
       <Stack.Screen name="AppTabs" component={Tabs} />
+
       <Stack.Screen name="WaterTracking" component={WaterTracking} />
       <Stack.Screen name="ListExercise" component={ListExercise} />
-      <Stack.Screen name="UserProfile" component={UserProfile} />
+      <Stack.Screen name="EditProfile" component={EditProfile} />
+      <Stack.Screen name="Settings" component={Settings} />
       <Stack.Screen name="StepCounter" component={StepCounter} />
       <Stack.Screen name="SelectMusic" component={SelectMusic} />
       <Stack.Screen name="ExerciseGroup" component={ExerciseGroup} />
@@ -101,6 +104,7 @@ export const AppNavigator = () => {
         name="WaterTrackingHistory"
         component={WaterTrackingHistory}
       />
+
       <Stack.Screen name="DetailMealDate" component={DetailMealDate} />
       <Stack.Screen
         name="EditFood"

@@ -11,11 +11,10 @@ import CustomEditText from 'src/components/EditText';
 import {Avatar} from 'react-native-paper';
 import {updateUserInfoAction} from 'src/store/reducer/thunks/userActions';
 import {userSelector} from 'src/store/selectors';
-import GenderSelection from '../components/GenderSelection';
 
 const dayjs = require('dayjs');
 
-const UserProfile = ({navigation}) => {
+const EditProfile = ({navigation}) => {
   const {user} = useSelector(userSelector);
 
   const dispatch = useDispatch();
@@ -169,13 +168,6 @@ const UserProfile = ({navigation}) => {
             dateOfBirth == null ? new Date() : dateOfBirth
           }></RNDateTimePicker>
       )}
-      <GenderSelection
-        visible={showGenderSelection}
-        onClose={() => {
-          setShowGenderSelection(false);
-        }}
-        gender={gender}
-        setGender={setGender}></GenderSelection>
     </ScrollView>
   );
 };
@@ -211,4 +203,4 @@ const Heading = styled.Text`
   font-size: 28px;
   color: black;
 `;
-export default UserProfile;
+export default EditProfile;

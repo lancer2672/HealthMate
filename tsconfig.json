@@ -22,5 +22,5 @@
       "jsx": "preserve"
   },
   "exclude": ["node_modules", "build"],
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.js","**/*.tsx"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.js","**/*.tsx", "src/features/settings/screens/EditProfile.screen.js", "src/features/settings/screens/EditProfile.screen.jsx"]
 }
