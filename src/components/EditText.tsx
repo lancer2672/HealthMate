@@ -1,10 +1,13 @@
-import {Pressable, StyleSheet, Text, TextInput, View} from 'react-native';
+import {Pressable, StyleSheet, Text, View} from 'react-native';
+import {TextInput} from 'react-native-paper';
 
 const CustomEditText = ({
   style,
   label,
   defaultValue,
   value,
+  inputMode,
+  afix,
   onChangeText = null,
   onPress = null,
   editable = true
@@ -14,11 +17,15 @@ const CustomEditText = ({
       <Text style={styles.label}>{label}</Text>
       <View pointerEvents={editable ? 'auto' : 'none'}>
         <TextInput
+          inputMode={inputMode}
           onChangeText={onChangeText}
           editable={editable}
           value={value}
           numberOfLines={1}
+          underlineColor="transparent"
+          activeUnderlineColor="transparent"
           style={[styles.input]}
+          right={<TextInput.Affix textStyle={{color: 'black'}} text={afix} />}
           defaultValue={defaultValue}></TextInput>
       </View>
     </Pressable>
@@ -37,13 +44,14 @@ const styles = StyleSheet.create({
   },
   label: {
     marginTop: 2,
-    marginLeft: 12,
+    marginLeft: 8,
     color: 'gray'
   },
   input: {
-    marginLeft: 12,
     marginBottom: 4,
     fontSize: 18,
+    padding: 0,
+    backgroundColor: 'transparent',
     fontWeight: '500'
   }
 });

@@ -3,13 +3,13 @@ import {useEffect} from 'react';
 import {ActivityIndicator, StatusBar, View} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 
-import {AuthNavigator} from './Auth.navigation';
-// import {AppNavigator} from './app.navigator';
 import auth from '@react-native-firebase/auth';
+import GetUserInfo from 'src/features/user-info/screens/GetUserInfor.screen';
 import {getUserData} from 'src/services/firebase/firestore/user';
 import {setPlans, setWorkoutPlan} from 'src/store/reducer/exerciseSlice';
 import {setUser} from '../store/reducer/userSlice';
 import {AppNavigator} from './App.navigation';
+import {AuthNavigator} from './Auth.navigation';
 
 StatusBar.setBackgroundColor('black');
 const Navigator = () => {
@@ -20,10 +20,11 @@ const Navigator = () => {
   useEffect(() => {
     (async () => {
       const user = auth().currentUser;
-      let data = await getUserData(user.uid);
-      if (!data) data = {};
-
-      dispatch(setUser({user: {...user, ...data}}));
+      if (user) {
+        let data = await getUserData(user.uid);
+        if (!data) data = {};
+        dispatch(setUser({user: data}));
+      }
     })();
   }, []);
   console.log('user state', user);
@@ -37,15 +38,13 @@ const Navigator = () => {
   return (
     <NavigationContainer>
       {user ? (
-        <View
-          style={{
-            flex: 1
-          }}>
-          <StatusBar></StatusBar>
-          <AppNavigator></AppNavigator>
-        </View>
+        user.isGetInformation ? (
+          <AppNavigator />
+        ) : (
+          <GetUserInfo />
+        )
       ) : (
-        <AuthNavigator></AuthNavigator>
+        <AuthNavigator />
       )}
 
       {appState.isLoading && (

@@ -15,16 +15,19 @@ import store from './src/store';
 const SEEN_ONBOARD = 'hasSeenOnboard';
 export default function App() {
   const [hasSeenOnboard, setHasSeenOnboard] = useState(false);
+
+  const handleOnboardDone = async () => {
+    await AsyncStorage.setItem(SEEN_ONBOARD, 'true');
+    setHasSeenOnboard(true);
+  };
+
   useEffect(() => {
     (async () => {
       const userHasSeenOnboard = await AsyncStorage.getItem(SEEN_ONBOARD);
       setHasSeenOnboard(userHasSeenOnboard);
     })();
   }, []);
-  const handleOnboardDone = async () => {
-    await AsyncStorage.setItem(SEEN_ONBOARD, 'true');
-    setHasSeenOnboard(true);
-  };
+
   return !hasSeenOnboard ? (
     <OnboardComponent onDone={handleOnboardDone} />
   ) : (

@@ -1,33 +1,40 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import {clearPlaylists} from 'src/features/exercise/components/playlist/data/playlistService';
 const usersRef = firestore().collection('user');
 
 export async function logout({userId}) {
   try {
     await AsyncStorage.multiRemove(['userId', 'token', 'refreshToken']);
     await usersRef.doc(userId).delete('FCMToken');
+    await clearPlaylists();
+    await auth().signOut();
+
+    console.log('User logged out', userId);
   } catch (er) {
     console.log('Logout error', er);
   }
 }
 
-export async function registerUser({email, password, ...rest}) {
+export async function registerUser({email, password, name, ...rest}) {
   const userCredential = await auth().createUserWithEmailAndPassword(
     email,
     password
   );
   const user = userCredential.user;
-  console.log('user', user);
+  console.log('register user', user);
   if (user) {
     // Gửi email xác minh
     await user.sendEmailVerification();
-
     const userData = {
       uid: user.uid,
       email: user.email,
+      name,
+      isGetInformation: false,
       weeklyPlan: {},
       plans: [],
+      exerciseHistory: [],
       ...rest
     };
     await usersRef.doc(user.uid).set(userData);
@@ -78,29 +85,10 @@ export async function getUserData(userId) {
     console.log('Get user error', error.message);
   }
 }
-export async function updateUserInfo({
-  uid,
-  nickname,
-  gender,
-  dateOfBirth,
-  email,
-  BMI
-}) {
+export async function updateUserInfo({userId, userData}) {
   const user = auth().currentUser;
   if (user) {
-    await user.updateProfile({
-      displayName: nickname,
-      email: email
-    });
-
-    const userData = {
-      nickname: nickname,
-      gender: gender,
-      dateOfBirth: dateOfBirth,
-      email: email,
-      BMI: BMI
-    };
-    await usersRef.doc(uid).update(userData);
+    await usersRef.doc(userId).update(userData);
 
     return userData;
   }

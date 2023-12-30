@@ -11,10 +11,10 @@ function usePlans() {
   const [groupPlan, setGroupPlan] = useState();
 
   useEffect(() => {
-    if (workoutPlan) {
+    if (workoutPlan && plans.length > 0) {
       const today = new Date().getDay();
       const todayWorkoutPlan = plans.find(p => p.id === workoutPlan[today]);
-      console.log('workoutPlan', todayWorkoutPlan, today);
+      console.log('workoutPlan', plans, workoutPlan, todayWorkoutPlan, today);
       setTodayPlan({
         ...todayWorkoutPlan,
         isRecommendedPlan: true,

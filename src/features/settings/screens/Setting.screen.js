@@ -13,6 +13,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
 import {DISABLE_MUSIC} from 'src/constants';
 import useNotification from 'src/hooks/useNotification';
+import {logoutUser} from 'src/store/reducer/thunks/userActions';
 import {userSelector} from 'src/store/selectors';
 import {
   SettingItemWithSwitch,
@@ -26,7 +27,7 @@ const Settings = () => {
   const {isNotificationEnabled, disableNotification} = useNotification();
   const [isHideScreen, setHideMusicScreen] = useState(false);
   const handleLogout = () => {
-    // dispatch(logoutUser());
+    dispatch(logoutUser(user.uid));
   };
 
   useEffect(() => {
@@ -93,7 +94,7 @@ const Settings = () => {
         </Header>
 
         <Body>
-          <SettingCategory>Personal information</SettingCategory>
+          <SettingCategory>Profile</SettingCategory>
           <TouchableOpacity
             onPress={() => {
               navigation.navigate('EditProfile');
@@ -103,10 +104,15 @@ const Settings = () => {
               flexDirection: 'row',
               alignItems: 'center'
             }}>
-            <Avatar source={{uri: user.avatar}}></Avatar>
+            <Avatar
+              source={
+                user.avatar
+                  ? {uri: user.avatar}
+                  : require('../../../assets/imgs/DefaultAvatar.png')
+              }></Avatar>
             <View style={{marginLeft: 12, flex: 1}}>
-              <Text style={{color: 'black', fontSize: 18}}>{user.mail}</Text>
-              <Text style={{color: 'black'}}>Your profile</Text>
+              <Text style={{color: 'black', fontSize: 18}}>{user.name}</Text>
+              <Text style={{color: 'black'}}>{user.email}</Text>
             </View>
             <IconContainer>
               <Entypo name="chevron-right" size={24} color="white" />
@@ -130,7 +136,7 @@ const Settings = () => {
           />
         </Body>
         <LogoutButton onPress={handleLogout}>
-          <LogoutText>Loggout</LogoutText>
+          <LogoutText>Logout</LogoutText>
         </LogoutButton>
       </Animatable.View>
     </Container>

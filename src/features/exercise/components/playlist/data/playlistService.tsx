@@ -11,6 +11,16 @@ export const getPlaylists = async () => {
   }
 };
 
+export const clearPlaylists = async () => {
+  try {
+    await AsyncStorage.removeItem(PLAYLIST_KEY);
+    console.log('clear playlist success');
+  } catch (e) {
+    console.log('er', e);
+    return [];
+  }
+};
+
 export const addSong = async ({playlistName, songs}) => {
   try {
     const playlists = await getPlaylists();
@@ -81,3 +91,59 @@ export const removePlaylist = async playlistName => {
     console.log('er', e);
   }
 };
+
+// import SQLite from 'react-native-sqlite-storage';
+
+// SQLite.DEBUG(true);
+// SQLite.enablePromise(true);
+
+// const database_name = "Playlists.db";
+// const database_version = "1.0";
+// const database_displayname = "SQLite Playlists Database";
+// const database_size = 200000;
+
+// let db;
+
+// export async function initDB() {
+//   try {
+//     db = await SQLite.openDatabase(
+//       database_name,
+//       database_version,
+//       database_displayname,
+//       database_size
+//     );
+//     await db.executeSql('CREATE TABLE IF NOT EXISTS Playlists (name, songs)');
+//   } catch (error) {
+//     console.log(error);
+//   }
+// }
+
+// export async function getPlaylists() {
+//   try {
+//     await initDB();
+//     const results = await db.executeSql('SELECT * FROM Playlists');
+//     let rows = results[0].rows;
+//     let playlists = [];
+//     for (let i = 0; i < rows.length; i++) {
+//       let item = rows.item(i);
+//       playlists.push({
+//         name: item.name,
+//         songs: JSON.parse(item.songs)
+//       });
+//     }
+//     return playlists;
+//   } catch (error) {
+//     console.log(error);
+//     return [];
+//   }
+// }
+
+// export async function addPlaylist(playlistName) {
+//   try {
+//     await initDB();
+//     await db.executeSql('INSERT INTO Playlists (name, songs) VALUES (?, ?)', [playlistName, JSON.stringify([])]);
+//     return getPlaylists();
+//   } catch (error) {
+//     console.log(error);
+//   }
+// }

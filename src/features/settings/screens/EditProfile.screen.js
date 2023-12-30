@@ -1,16 +1,17 @@
-import RNDateTimePicker from '@react-native-community/datetimepicker';
-import {ScrollView, Text, View} from 'react-native';
-import {showMessage} from 'react-native-flash-message';
+import { ScrollView, Text, View } from 'react-native';
+import { showMessage } from 'react-native-flash-message';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import {useDispatch, useSelector} from 'react-redux';
+import Foundation from 'react-native-vector-icons/Foundation';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components/native';
 
-import {useState} from 'react';
+import { useState } from 'react';
 import CustomEditText from 'src/components/EditText';
 
-import {Avatar} from 'react-native-paper';
-import {updateUserInfoAction} from 'src/store/reducer/thunks/userActions';
-import {userSelector} from 'src/store/selectors';
+import { Avatar } from 'react-native-paper';
+import { GENDER } from 'src/constants';
+import { updateUserInfoAction } from 'src/store/reducer/thunks/userActions';
+import { userSelector } from 'src/store/selectors';
 
 const dayjs = require('dayjs');
 
@@ -18,27 +19,24 @@ const EditProfile = ({navigation}) => {
   const {user} = useSelector(userSelector);
 
   const dispatch = useDispatch();
-  const [nickname, setNickname] = useState(user.nickname || user.email);
-  const [gender, setGender] = useState(user.gender || 0);
-  const [dateOfBirth, setDateOfBirth] = useState(
-    user.dateOfBirth ? new Date(user.dateOfBirth) : new Date()
-  );
-
-  const [email, setEmail] = useState(user.email);
-  const [BMI, setBMI] = useState(user.BMI || '');
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showGenderSelection, setShowGenderSelection] = useState(false);
+  const [name, setName] = useState(user.name);
+  const [gender, setGender] = useState(user.gender || 1);
+  const [height, setHeight] = useState(user.height);
+  const [weight, setWeight] = useState(user.weight);
+  const [age, setAge] = useState(user.age);
 
   const handleUpdateUserInfo = async () => {
     const userInfo = {
       uid: user.uid,
-      nickname: nickname,
+      name: name,
       gender: gender,
-      dateOfBirth: dateOfBirth,
-      email: email,
-      BMI: BMI
+      height: height,
+      weight: weight,
+      age: age
     };
-    dispatch(updateUserInfoAction(userInfo))
+    dispatch(
+      updateUserInfoAction({userId: user.uid, userData: {...user, ...userInfo}})
+    )
       .then(() => {
         showMessage({
           message: 'Cập nhật thành công',
@@ -52,28 +50,16 @@ const EditProfile = ({navigation}) => {
         });
       });
   };
-  const onGenderFieldClick = () => {
-    setShowGenderSelection(true);
-  };
-  const onDateOfBirthFieldClick = () => {
-    setShowDatePicker(true);
-  };
+
   const hasCharacter = text => {
     return /[a-zA-Z]/.test(text);
-  };
-  const handleTextChange = value => {
-    if (hasCharacter(value)) {
-    } else {
-      setBMI(value);
-    }
   };
   return (
     <ScrollView
       style={{
-        padding: 20,
+        padding: 12,
         backgroundColor: 'white',
         flex: 1
-        // opacity: showGenderSelection || isLoading ? 0.6 : 1,
       }}>
       <Header>
         <BackButton
@@ -82,7 +68,7 @@ const EditProfile = ({navigation}) => {
           }}>
           <AntDesign name="arrowleft" size={24} color="black" />
         </BackButton>
-        <Heading>Thông tin cá nhân</Heading>
+        <Heading>Personal Information</Heading>
       </Header>
 
       <Body>
@@ -91,7 +77,7 @@ const EditProfile = ({navigation}) => {
           source={
             user.avatar
               ? {uri: user.avatar}
-              : {uri: 'https://i.pravatar.cc/300'}
+              : require('../../../assets/imgs/DefaultAvatar.png')
           }
         />
 
@@ -99,9 +85,9 @@ const EditProfile = ({navigation}) => {
           style={{
             fontSize: 18,
             fontWeight: '500',
-            color: 'white'
+            color: 'black'
           }}>
-          {user.nickname}
+          {user.name}
         </Text>
         <Text
           style={{
@@ -120,57 +106,97 @@ const EditProfile = ({navigation}) => {
           }}></View>
 
         <CustomEditText
-          label="Tên"
+          label="Name"
           style={{width: '100%'}}
-          value={nickname}
-          onChangeText={newText => setNickname(newText)}></CustomEditText>
+          value={name}
+          onChangeText={newText => setName(newText)}></CustomEditText>
         <View style={{flexDirection: 'row'}}>
           <CustomEditText
-            label="Giới tính"
-            onPress={onGenderFieldClick}
-            style={{flex: 1, marginRight: 20}}
-            editable={false}
-            value={gender == 0 ? 'Male' : 'Female'}></CustomEditText>
+            label="Height"
+            onChangeText={setHeight}
+            style={{flex: 1.2, marginRight: 12}}
+            inputMode={'numeric'}
+            afix=" cm"
+            value={height}></CustomEditText>
           <CustomEditText
-            label={'Ngày sinh'}
+            label={'Weight'}
+            style={{flex: 1.2, marginRight: 12}}
+            inputMode={'numeric'}
+            value={weight}
+            afix=" kg"
+            onChangeText={setWeight}></CustomEditText>
+          <CustomEditText
+            label={'Age'}
             style={{flex: 1}}
-            editable={false}
-            value={dayjs(dateOfBirth).format('DD-MM-YYYY')}
-            onPress={onDateOfBirthFieldClick}></CustomEditText>
+            inputMode={'numeric'}
+            value={age}
+            onChangeText={setAge}></CustomEditText>
         </View>
-        <CustomEditText
-          label={'Email'}
-          style={{width: '100%'}}
-          value={email}
-          onChangeText={newText => setEmail(newText)}></CustomEditText>
-        <CustomEditText
-          label={'BMI'}
-          style={{width: '100%'}}
-          value={BMI}
-          onChangeText={handleTextChange}></CustomEditText>
+
+        <GenderSubContainer>
+          <Text style={{marginLeft: 12, marginTop: 4}}>Gender</Text>
+          <View style={{flexDirection: 'row', width: '100%'}}>
+            <Card
+              onPress={() => {
+                setGender(GENDER.MALE);
+              }}
+              style={[
+                {backgroundColor: gender === GENDER.MALE ? '#d4d4d4' : 'white'}
+              ]}>
+              <Foundation name="male-symbol" size={40} color="#0000FF" />
+              <Title>Male</Title>
+            </Card>
+            <Card
+              onPress={() => {
+                setGender(GENDER.FEMALE);
+              }}
+              style={[
+                {
+                  backgroundColor:
+                    gender === GENDER.FEMALE ? '#d4d4d4' : 'white'
+                }
+              ]}>
+              <Foundation name="female-symbol" size={40} color="#FFC0CB" />
+              <Title>Female</Title>
+            </Card>
+          </View>
+        </GenderSubContainer>
       </Body>
 
       <SaveBtn onPress={handleUpdateUserInfo}>
-        <SaveBtnText>Lưu</SaveBtnText>
+        <SaveBtnText>Save</SaveBtnText>
       </SaveBtn>
-
-      {showDatePicker && (
-        <RNDateTimePicker
-          maximumDate={new Date()}
-          mode="date"
-          onChange={(e, date) => {
-            if (e.type == 'set') {
-              setDateOfBirth(date);
-            }
-            setShowDatePicker(false);
-          }}
-          value={
-            dateOfBirth == null ? new Date() : dateOfBirth
-          }></RNDateTimePicker>
-      )}
     </ScrollView>
   );
 };
+
+const Card = styled.TouchableOpacity`
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  margin-vertical: 12px;
+  margin-horizontal: 20px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 5px;
+  shadow-color: gray;
+  shadow-offset: 0px 2px;
+  shadow-opacity: 0.8;
+  shadow-radius: 2px;
+  elevation: 2;
+`;
+
+const GenderSubContainer = styled.View`
+  width: 100%;
+  border-width: 1px;
+  border-radius: 12px;
+`;
+
+const Title = styled.Text`
+  font-weight: bold;
+  font-size: 16px;
+  color: black;
+`;
 
 const Header = styled.View`
   flex-direction: row;

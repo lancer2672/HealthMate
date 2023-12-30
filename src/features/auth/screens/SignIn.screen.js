@@ -1,26 +1,23 @@
+import { useRef, useState } from 'react';
 import {
-  View,
-  Text,
-  Keyboard,
-  Pressable,
-  TouchableOpacity,
   Image,
-  StyleSheet
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import React, {useState, useEffect, useRef} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
+import { WEB_API_KEY } from '@env';
 import {
   GoogleSignin,
   statusCodes
 } from '@react-native-google-signin/google-signin';
-import InputText from '../components/InputText.component';
-import {accountSchema, handleValidateField} from '../../../utils/validation';
-import {setIsLoading} from '../../../store/reducer/appSlice';
-import {login} from '../../../store/reducer/thunks/userActions';
 import logoHealthMate from '../../../assets/imgs/LogoHealthMate.png';
-import SignUp from './SignUp.screen';
-import {WEB_API_KEY} from '@env';
+import { login } from '../../../store/reducer/thunks/userActions';
+import { accountSchema, handleValidateField } from '../../../utils/validation';
+import InputText from '../components/InputText.component';
 
 GoogleSignin.configure({
   webClientId: WEB_API_KEY,
@@ -35,37 +32,11 @@ const Login = ({navigation}) => {
   const [validationErrors, setValidationErrors] = useState({});
   const refInputName = useRef();
   const refInputPassword = useRef();
-  // const toggleSavePasswordCheck = () => {
-  //   setSavePassword(!savePassword);
-  // };
-  // const handleLoginSuccess = async (loginData, isLoading, isSuccess) => {
-  //   try {
-  //     if (isSuccess) {
-  //       const payload = {savePassword, ...loginData};
-  //       dispatch(setUser(payload));
-  //     }
-  //   } catch (er) {
-  //     console.log('err', er);
-  //   }
-  //   dispatch(setIsLoading(isLoading));
-  // };
 
-  // useEffect(() => {
-  //   handleLoginSuccess(loginGGData, isLoginGGLoading, isLoginGGSuccess);
-  // }, [isLoginGGLoading]);
-
-  // useEffect(() => {
-  //   handleLoginSuccess(data, isLoginLoading, isSuccess);
-  // }, [isLoginLoading]);
 
   const handleLogin = () => {
     refInputName.current.blur();
     refInputPassword.current.blur();
-    // console.log(Object.keys(validationErrors).length);
-    // if (Object.keys(validationErrors).length == 0) {
-    //   const data = login({email, password});
-    //   console.log('data', data);
-    // }
     console.log('email1', email);
     if (email !== '' || password !== '') {
       dispatch(login({email, password}));

@@ -11,3 +11,12 @@ export const PLAN_TYPES = {
   TODAY: 'todayPlan',
   GROUP: 'groupPlan'
 };
+export const GOAL = {
+  FITTER: 1,
+  FIT: 2,
+  LOSE_WEIGHT: 3
+};
+export const GENDER = {
+  MALE: 1,
+  FEMALE: 2
+};

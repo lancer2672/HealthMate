@@ -79,7 +79,6 @@ const Personal = () => {
           style={styles.imgBg}
           source={require('../../../assets/imgs/man_exercise.png')}></ImageBackground>
       </TouchableOpacity>
-      <Text style={styles.title}>Start a plan</Text>
       <GroupAndUserPlan navigation={navigation}></GroupAndUserPlan>
       <Text style={styles.title}>Target exercise</Text>
       <ListTargetExercise></ListTargetExercise>
@@ -100,9 +99,12 @@ function GroupAndUserPlan({navigation}) {
   };
 
   console.log('[todayPlan, groupPlan]', [todayPlan, groupPlan]);
-
+  if (!todayPlan && !groupPlan) {
+    return <></>;
+  }
   return (
     <View style={{flex: 1}}>
+      <Text style={styles.title}>Start a plan</Text>
       <Carousel
         loop
         width={SCREEN_WIDTH - 20}
