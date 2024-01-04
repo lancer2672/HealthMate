@@ -1,15 +1,13 @@
-import React, {useState, useEffect, useContext, useMemo, memo} from 'react';
+import {useNavigation} from '@react-navigation/native';
+import {useEffect, useState} from 'react';
 import {
-  View,
+  Dimensions,
+  ImageBackground,
   StyleSheet,
   Text,
-  ImageBackground,
-  Dimensions,
-  TouchableOpacity
+  TouchableOpacity,
+  View
 } from 'react-native';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import {useNavigation} from '@react-navigation/native';
 import exerciseApi from 'src/api/exerciseApi';
 
 const {width} = Dimensions.get('screen');

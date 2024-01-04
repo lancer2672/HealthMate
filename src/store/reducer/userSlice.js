@@ -12,6 +12,7 @@ const initialState = {
   success: false,
   error: null
 };
+
 const actions = [logoutUser, register, login, saveFCMToken];
 export const userSlice = createSlice({
   name: 'user',

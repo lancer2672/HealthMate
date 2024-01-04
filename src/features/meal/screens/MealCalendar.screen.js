@@ -17,7 +17,7 @@ export default function MealCalendar({navigation}) {
 
   const onDatePress = day => {
     console.log('Day pressed:', day);
-    navigation.navigate('DetailMealDate', {
+    navigation.navigate('TodayMealDate', {
       data: {
         day: day,
         month: selectedDate.getMonth(),

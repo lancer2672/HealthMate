@@ -1,7 +1,7 @@
-import GoogleFit, {BucketUnit, Scopes} from 'react-native-google-fit';
-import {requestActivityRecognitionPermission} from '../permissions';
-import {getEndDayISO, getStartDayISO} from 'src/utils/dateTimeHelper';
+import GoogleFit, { BucketUnit, Scopes } from 'react-native-google-fit';
 import { trackingNotificationIns } from 'src/services/notifee/TrackingNotification';
+import { getEndDayISO, getStartDayISO } from 'src/utils/dateTimeHelper';
+import { requestActivityRecognitionPermission } from '../permissions';
 
 const SAVE_RECORD_TIME_INTERVAL = 6000;
 
@@ -26,7 +26,6 @@ const enableTrackingUserActivities = async () => {
   var authorized = GoogleFit.isAuthorized;
   if (authorized) {
     if (await requestActivityRecognitionPermission()) {
-      console.log('StartTracking');
       GoogleFit.startRecording(
         params => {
           console.log('params', params);
@@ -59,7 +58,7 @@ export const observerActivity = async (
   handleAddStep: (steps: number) => void,
   handleUpdateTotalSteps: (totalSteps: number) => void,
   handleSaveUserActivityRecords: ({ calorie, distance, moveMins }: any) => Promise<any>
-  
+    
 ) => {
   let saveRecordTimeout: any = null;
   const startDate = getStartDayISO(new Date());
@@ -75,14 +74,15 @@ export const observerActivity = async (
   saveRecordTimeout = setTimeout(()=>saveRecords(0,promises,handleUpdateTotalSteps,handleSaveUserActivityRecords), SAVE_RECORD_TIME_INTERVAL);
   
   let newUnupdatedStep = 0;
+  
   GoogleFit.observeSteps((result: any) => {
+
     handleAddStep(result.steps);
     if (saveRecordTimeout) { 
-      
       newUnupdatedStep += result.steps
-      console.log("STEPS",newUnupdatedStep, result.steps)
       clearTimeout(saveRecordTimeout);
     } 
+    console.log("observeSteps",{newUnupdatedStep, result})
     saveRecordTimeout = setTimeout(() => {
       saveRecords(newUnupdatedStep, promises, handleUpdateTotalSteps, handleSaveUserActivityRecords)
       newUnupdatedStep = 0
@@ -92,9 +92,7 @@ export const observerActivity = async (
 
 const saveRecords = async (newUnupdatedStep, promises, handleUpdateTotalSteps,handleSaveUserActivityRecords) => {
   const [todayTotalSteps, calorie, distance, moveMins] = await Promise.all(promises)
-  console.log("set saveRecordTimeout",todayTotalSteps + newUnupdatedStep, newUnupdatedStep)
   handleUpdateTotalSteps(todayTotalSteps + newUnupdatedStep);
-
   await handleSaveUserActivityRecords({ calorie, distance, moveMins });
   await trackingNotificationIns.updateNotification({distance: Math.trunc(distance),steps:todayTotalSteps + newUnupdatedStep})
   
@@ -111,7 +109,7 @@ export const getPeriodCalories = async (startDate: string, endDate: string) => {
     };
 
     const res = await GoogleFit.getDailyCalorieSamples(opt);
-    return res[0]?.calorie;
+    return res[0]?.calorie ;
   } catch (er) {
     console.log(er);
   }

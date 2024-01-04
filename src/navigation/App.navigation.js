@@ -7,12 +7,12 @@ import {getDateProgress} from 'src/store/reducer/thunks/waterTrackingActions';
 import DetailNutriFood from '../features/food/screens/DetailNutriFood.screen';
 import LogFood from '../features/food/screens/LogFood.screen';
 import SearchFood from '../features/food/screens/SearchFood.screen';
-import DetailMealDate from '../features/meal/screens/DetailMealDate.screen';
 import EditFood from '../features/meal/screens/EditFood.screen';
 
 import googleFit from 'react-native-google-fit';
 import StepCounter from 'src/features/counting-steps/screens/StepCounter.screen';
 import ListExercise from 'src/features/exercise/components/exercise/ListExercise';
+import ListExerciseBody from 'src/features/exercise/components/exercise/ListExerciseBody';
 import BreakScreen from 'src/features/exercise/screens/Break.screen';
 import DetailExercise from 'src/features/exercise/screens/DetailExercise';
 import DoExercise from 'src/features/exercise/screens/DoExercise';
@@ -100,12 +100,12 @@ export const AppNavigator = () => {
       <Stack.Screen name="DetailPlan" component={DetailPlan} />
       <Stack.Screen name="DetailExercise" component={DetailExercise} />
       <Stack.Screen name="DetailPlaylist" component={DetailPlaylist} />
+      <Stack.Screen name="ListExerciseBody" component={ListExerciseBody} />
       <Stack.Screen
         name="WaterTrackingHistory"
         component={WaterTrackingHistory}
       />
 
-      <Stack.Screen name="DetailMealDate" component={DetailMealDate} />
       <Stack.Screen
         name="EditFood"
         component={EditFood}

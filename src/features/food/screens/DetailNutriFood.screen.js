@@ -1,14 +1,11 @@
 import {
-  View,
+  Image,
+  ScrollView,
+  StyleSheet,
   Text,
   TouchableOpacity,
-  Image,
-  StyleSheet,
-  TextInput,
-  FlatList,
-  ScrollView
+  View
 } from 'react-native';
-import React, {useEffect, useState, useReducer} from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import NutriFact from 'src/components/NutriFact';

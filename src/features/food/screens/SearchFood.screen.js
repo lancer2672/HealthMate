@@ -1,16 +1,9 @@
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  TextInput,
-  ScrollView
-} from 'react-native';
-import React, {useState, useEffect} from 'react';
-import SearchInput from '../components/SearchInput.component';
-import ListCommonFood from '../components/ListCommonFood.component';
-import ListBrandedFood from '../components/ListBrandedFood.component';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
+import {useEffect, useState} from 'react';
+import {ScrollView, StyleSheet, Text} from 'react-native';
+import ListBrandedFood from '../components/ListBrandedFood.component';
+import ListCommonFood from '../components/ListCommonFood.component';
+import SearchInput from '../components/SearchInput.component';
 
 const Tab = createMaterialTopTabNavigator();
 

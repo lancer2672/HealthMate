@@ -1,22 +1,18 @@
+import {useNavigation} from '@react-navigation/native';
+import {useEffect, useState} from 'react';
 import {
   Dimensions,
   Image,
-  Pressable,
   StyleSheet,
   Text,
   TouchableOpacity,
   View
 } from 'react-native';
-import React, {useEffect, useLayoutEffect, useState} from 'react';
-import Feather from 'react-native-vector-icons/Feather';
-import {PlanType} from 'src/types/plan.type';
-import BottomMenu from './BottomMenu';
 import {useDispatch, useSelector} from 'react-redux';
-import {exerciseSelector} from 'src/store/selectors';
-import {useNavigation} from '@react-navigation/native';
 import {setSelectedPlan} from 'src/store/reducer/exerciseSlice';
-import {useTheme} from 'styled-components';
+import {exerciseSelector} from 'src/store/selectors';
 import {convertSecondsToMinutesAndSeconds} from 'src/utils/dateTimeHelper';
+import {useTheme} from 'styled-components';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 type WorkoutItemProps = {

@@ -1,7 +1,7 @@
-import {StyleSheet, Text, FlatList, TouchableOpacity, View} from 'react-native';
-import React, {useState, useEffect} from 'react';
 import {useNavigation} from '@react-navigation/native';
-import exerciseApi from 'src/api/exerciseApi';
+import {useEffect, useState} from 'react';
+import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import Feather from 'react-native-vector-icons/Feather';
 import TargetExerciseItem from './TargetExerciseItem';
 
 const data = [
@@ -30,6 +30,9 @@ const ListTargetExercise = () => {
   const [targetList, setTargetList] = useState(data);
   const navigation = useNavigation();
 
+  const navigateToSearchScreen = () => {
+    navigation.navigate('ListExerciseBody');
+  };
   useEffect(() => {
     (async () => {
       //   const list = await exerciseApi.getTargetList();
@@ -38,16 +41,30 @@ const ListTargetExercise = () => {
   }, []);
 
   return (
-    <View>
-      <FlatList
-        contentContainerStyle={{marginBottom: 20, marginTop: 4}}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        data={targetList}
-        keyExtractor={(item, index) => `x1${index}`}
-        renderItem={({item}) => <TargetExerciseItem target={item} />}
-      />
-    </View>
+    <>
+      <View
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+        <Text style={styles.title}>Target exercise</Text>
+        <TouchableOpacity onPress={navigateToSearchScreen} style={{padding: 4}}>
+          <Feather name="search" size={24} color="black" />
+        </TouchableOpacity>
+      </View>
+      <View>
+        <FlatList
+          contentContainerStyle={{marginBottom: 20, marginTop: 4}}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          data={targetList}
+          keyExtractor={(item, index) => `x1${index}`}
+          renderItem={({item}) => <TargetExerciseItem target={item} />}
+        />
+      </View>
+    </>
   );
 };
 
@@ -57,5 +74,10 @@ const styles = StyleSheet.create({
   target: {
     color: 'gray',
     fontSize: 24
+  },
+  title: {
+    fontSize: 20,
+    marginVertical: 8,
+    fontWeight: 'bold'
   }
 });

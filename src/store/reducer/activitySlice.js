@@ -7,6 +7,9 @@ import {
 const initialState = {
   todaySteps: 0,
   stepTarget: 0,
+  moveMins: 0,
+  distance: 0,
+  calories: 0,
   isLoading: false,
   error: null
 };
@@ -29,6 +32,10 @@ export const activitySlice = createSlice({
     updateTodayActivity: (state, action) => {
       const {field, value} = action.payload;
       state[field] = Number(value).toFixed(2);
+    },
+    updateTodayActivityIndexes: (state, action) => {
+      const indexes = action.payload;
+      state = {...state, indexes};
     }
   },
   extraReducers: builder => {
@@ -62,5 +69,9 @@ export const activitySlice = createSlice({
   }
 });
 
-export const {updateTodayActivity, addTodayStep, setTodaySteps} =
-  activitySlice.actions;
+export const {
+  updateTodayActivity,
+  updateTodayActivityIndexes,
+  addTodayStep,
+  setTodaySteps
+} = activitySlice.actions;

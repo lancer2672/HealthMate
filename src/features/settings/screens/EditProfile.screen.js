@@ -1,20 +1,28 @@
-import { ScrollView, Text, View } from 'react-native';
-import { showMessage } from 'react-native-flash-message';
+import {Select, SelectItem} from '@ui-kitten/components';
+import {useEffect, useState} from 'react';
+import {ScrollView, Text, View} from 'react-native';
+import {showMessage} from 'react-native-flash-message';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Foundation from 'react-native-vector-icons/Foundation';
-import { useDispatch, useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import CustomEditText from 'src/components/EditText';
 import styled from 'styled-components/native';
 
-import { useState } from 'react';
-import CustomEditText from 'src/components/EditText';
-
-import { Avatar } from 'react-native-paper';
-import { GENDER } from 'src/constants';
-import { updateUserInfoAction } from 'src/store/reducer/thunks/userActions';
-import { userSelector } from 'src/store/selectors';
+import {Avatar} from 'react-native-paper';
+import {GENDER, LIFE_STYLE} from 'src/constants';
+import {updateUserInfoAction} from 'src/store/reducer/thunks/userActions';
+import {userSelector} from 'src/store/selectors';
+import {mappingLifeStyleValue} from 'src/utils/tranformData';
 
 const dayjs = require('dayjs');
 
+const Life_Style = [
+  LIFE_STYLE.SEDENTARY,
+  LIFE_STYLE.LIGHTLY_ACTIVE,
+  LIFE_STYLE.MODERATELY_ACTIVE,
+  LIFE_STYLE.VERY_ACTIVE,
+  LIFE_STYLE.EXTREMELY_ACTIVE
+];
 const EditProfile = ({navigation}) => {
   const {user} = useSelector(userSelector);
 
@@ -23,16 +31,18 @@ const EditProfile = ({navigation}) => {
   const [gender, setGender] = useState(user.gender || 1);
   const [height, setHeight] = useState(user.height);
   const [weight, setWeight] = useState(user.weight);
+  const [lifestyle, setLifestyle] = useState(user.lifestyle);
   const [age, setAge] = useState(user.age);
-
+  const [selectedIndex, setSelectedIndex] = useState(null);
   const handleUpdateUserInfo = async () => {
     const userInfo = {
       uid: user.uid,
-      name: name,
-      gender: gender,
-      height: height,
-      weight: weight,
-      age: age
+      name,
+      gender,
+      height,
+      weight,
+      lifestyle,
+      age
     };
     dispatch(
       updateUserInfoAction({userId: user.uid, userData: {...user, ...userInfo}})
@@ -50,10 +60,16 @@ const EditProfile = ({navigation}) => {
         });
       });
   };
-
-  const hasCharacter = text => {
-    return /[a-zA-Z]/.test(text);
+  const handleSelectLifeStyle = index => {
+    console.log('handleSelectLifeStyle', index.row);
+    setSelectedIndex(index);
   };
+  useEffect(() => {
+    if (selectedIndex) {
+      const findLifeStyle = Life_Style[selectedIndex.row];
+      setLifestyle(findLifeStyle);
+    }
+  }, [selectedIndex]);
   return (
     <ScrollView
       style={{
@@ -133,6 +149,26 @@ const EditProfile = ({navigation}) => {
             onChangeText={setAge}></CustomEditText>
         </View>
 
+        <Select
+          style={{
+            width: '100%',
+            borderColor: 'gray',
+            borderWidth: 1,
+            borderRadius: 4,
+            marginBottom: 12
+          }}
+          selectedIndex={selectedIndex}
+          onSelect={handleSelectLifeStyle}
+          value={
+            selectedIndex
+              ? mappingLifeStyleValue(Life_Style[selectedIndex.row])
+              : 'Your life style'
+          }
+          placeholder="Your life style">
+          {Life_Style.map(i => (
+            <SelectItem title={mappingLifeStyleValue(i)} />
+          ))}
+        </Select>
         <GenderSubContainer>
           <Text style={{marginLeft: 12, marginTop: 4}}>Gender</Text>
           <View style={{flexDirection: 'row', width: '100%'}}>
@@ -190,6 +226,7 @@ const GenderSubContainer = styled.View`
   width: 100%;
   border-width: 1px;
   border-radius: 12px;
+  border-color: gray;
 `;
 
 const Title = styled.Text`

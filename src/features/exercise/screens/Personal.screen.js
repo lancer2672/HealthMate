@@ -10,12 +10,13 @@ import {
   View
 } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import exerciseApi from 'src/api/exerciseApi';
 import {PLAN_TYPES} from 'src/constants';
 import usePlans from 'src/hooks/usePlan';
 import {setSelectedPlan} from 'src/store/reducer/exerciseSlice';
-import ListExerciseBody from '../components/exercise/ListExerciseBody';
+import {userSelector} from 'src/store/selectors';
+import {getCalorieTdee} from 'src/utils/calorieCalculator';
 import ListTargetExercise from '../components/exercise/ListTargetExercise';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -23,20 +24,44 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 const Personal = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
+
+  return (
+    <ScrollView style={styles.container}>
+      <UserCalorie navigation={navigation}></UserCalorie>
+      <RecommendedPlan navigation={navigation}></RecommendedPlan>
+      <GroupAndUserPlan navigation={navigation}></GroupAndUserPlan>
+      <ListTargetExercise></ListTargetExercise>
+    </ScrollView>
+  );
+};
+
+export default Personal;
+
+const RecommendedPlan = ({navigation}) => {
+  const dispatch = useDispatch();
   const [recommendedPlan, setRecommendedPlan] = useState(null);
+
   const navigateToDetailPlan = () => {
     if (recommendedPlan) {
       dispatch(setSelectedPlan(recommendedPlan));
       navigation.navigate('DetailPlan');
     }
   };
+
   const getRecommendedExercises = async () => {
+    // 4.5  , 3.4 , 5.5. 10
     const exerciseIds = ['0001', '0464', '1311', '0514'];
-    const exercisePromises = exerciseIds.map(id =>
-      exerciseApi.getExerciseById(id)
-    );
+    const estimatedMET = [4.5, 3.4, 5.5, 10];
+    const exercisePromises = exerciseIds.map(async (id, i) => {
+      const ex = await exerciseApi.getExerciseById(id);
+      return {
+        ...ex,
+        MET: estimatedMET[i]
+      };
+    });
     return await Promise.all(exercisePromises);
   };
+  console.log('recommendedPlan', recommendedPlan);
   const createRecommendedPlan = exercises => {
     const updatedExercises = exercises.map(exercise => ({
       ...exercise,
@@ -60,8 +85,9 @@ const Personal = () => {
       }
     })();
   }, []);
+
   return (
-    <ScrollView style={styles.container}>
+    <>
       <Text style={styles.title}>Recommended for you</Text>
       <TouchableOpacity
         onPress={navigateToDetailPlan}
@@ -79,16 +105,22 @@ const Personal = () => {
           style={styles.imgBg}
           source={require('../../../assets/imgs/man_exercise.png')}></ImageBackground>
       </TouchableOpacity>
-      <GroupAndUserPlan navigation={navigation}></GroupAndUserPlan>
-      <Text style={styles.title}>Target exercise</Text>
-      <ListTargetExercise></ListTargetExercise>
-      <ListExerciseBody></ListExerciseBody>
-    </ScrollView>
+    </>
   );
 };
+function UserCalorie({navigation}) {
+  const {user} = useSelector(userSelector);
+  const [calorieNeedToday, setCalorieNeedToday] = useState(0);
 
-export default Personal;
-
+  useEffect(() => {
+    if (user) {
+      const calorie = getCalorieTdee({...user});
+      setCalorieNeedToday(calorie);
+    }
+  }, [user]);
+  console.log('calorieNeedToday', calorieNeedToday);
+  return <View style={{flex: 1}}></View>;
+}
 function GroupAndUserPlan({navigation}) {
   const {todayPlan, groupPlan} = usePlans();
   const dispatch = useDispatch();
@@ -98,7 +130,6 @@ function GroupAndUserPlan({navigation}) {
     navigation.navigate('DetailPlan');
   };
 
-  console.log('[todayPlan, groupPlan]', [todayPlan, groupPlan]);
   if (!todayPlan && !groupPlan) {
     return <></>;
   }

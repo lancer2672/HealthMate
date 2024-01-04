@@ -1,20 +1,17 @@
-import React, {useState} from 'react';
-import {
-  View,
-  TextInput,
-  FlatList,
-  Text,
-  TouchableOpacity,
-  Button,
-  Image,
-  StyleSheet,
-  ScrollView
-} from 'react-native';
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {capitalizeFirstLetter} from 'src/utils/tranformData';
 
 const ListCommonFood = ({date, mealName, searchResults, navigation}) => {
   const commonResults = Array.from(
     new Set(searchResults.common?.map(item => item.tag_id) ?? [])
-  ).map(tagId => searchResults.common.find(item => item.tag_id === tagId));
+  )
+    .map(tagId => searchResults.common.find(item => item.tag_id === tagId))
+    .map(i => {
+      return {
+        ...i,
+        food_name: capitalizeFirstLetter(i.food_name)
+      };
+    });
 
   const handleNavigateLogFood = item => {
     console.log('date', date);
@@ -28,7 +25,7 @@ const ListCommonFood = ({date, mealName, searchResults, navigation}) => {
       }
     });
   };
-
+  console.log('commonResults', commonResults);
   return (
     <>
       {commonResults.map((item, index) => (

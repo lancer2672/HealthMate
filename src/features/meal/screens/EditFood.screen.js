@@ -244,7 +244,7 @@ export default function EditFood({route, navigation}) {
             <View style={{flexDirection: 'row', gap: 5}}>
               <Text style={[styles.text, {fontWeight: 'bold'}]}>When:</Text>
               <Text style={styles.text}>
-                {checkDate(foodData.date)}, {foodData.mealName}
+                {/* {checkDate(foodData.date)}, {foodData.mealName} */}
               </Text>
             </View>
             <FontAwesome name="pencil" size={20} color="black" />

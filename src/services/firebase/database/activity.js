@@ -15,7 +15,14 @@ export async function updateUserActivity({userId, field, value}) {
     );
     const snapshot = await userActivityRef.once('value');
     const data = snapshot.val();
-    await userActivityRef.update({...data, [field]: value});
+
+    console.log('updateUserActivity data', {
+      data,
+      userId,
+      field,
+      value
+    });
+    await userActivityRef.update({[field]: value});
   } catch (er) {
     console.log('update steps error', er);
   }
@@ -77,6 +84,7 @@ export async function getStepsByMonth({userId, date}) {
         data.push(step);
       });
     });
+    console.log('getStepsByMonth', {date, data});
     return data;
   } catch (error) {
     console.log('Error getting steps by month', error);

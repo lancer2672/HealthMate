@@ -13,13 +13,16 @@ function usePlans() {
   useEffect(() => {
     if (workoutPlan && plans.length > 0) {
       const today = new Date().getDay();
-      const todayWorkoutPlan = plans.find(p => p.id === workoutPlan[today]);
-      console.log('workoutPlan', plans, workoutPlan, todayWorkoutPlan, today);
-      setTodayPlan({
-        ...todayWorkoutPlan,
-        isRecommendedPlan: true,
-        type: PLAN_TYPES.TODAY
-      });
+      const todayWorkoutPlan = plans.find(
+        p => p.id === workoutPlan[today] && p.exercise > 0
+      );
+      if (todayWorkoutPlan) {
+        setTodayPlan({
+          ...todayWorkoutPlan,
+          isRecommendedPlan: true,
+          type: PLAN_TYPES.TODAY
+        });
+      }
     }
   }, [workoutPlan]);
 
