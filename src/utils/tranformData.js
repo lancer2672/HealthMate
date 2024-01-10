@@ -1,4 +1,4 @@
-import {LIFE_STYLE} from 'src/constants';
+import {GOAL, LIFE_STYLE} from 'src/constants';
 import {UrlApi} from './constant';
 
 export const transformUserData = user => {
@@ -39,6 +39,18 @@ export const mappingLifeStyleValue = value => {
       return 'Very active';
     case LIFE_STYLE.EXTREMELY_ACTIVE:
       return 'Extremely active';
+    default:
+      return '';
+  }
+};
+export const mappingGoal = value => {
+  switch (value) {
+    case GOAL.FIT:
+      return 'Keep fit';
+    case GOAL.FITTER:
+      return 'Get fitter';
+    case GOAL.LOSE_WEIGHT:
+      return 'Lose weight';
     default:
       return '';
   }

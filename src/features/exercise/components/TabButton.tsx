@@ -25,7 +25,10 @@ const TabButton = ({onButtonClick}) => {
             key={`das${index}`}
             style={[
               styles.button,
-              {backgroundColor: selectedIndex == index ? theme.secondary : null}
+              {
+                backgroundColor:
+                  selectedIndex == index ? theme.secondary : 'white'
+              }
             ]}
             mode="contained"
             textColor="black"

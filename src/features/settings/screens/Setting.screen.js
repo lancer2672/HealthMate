@@ -1,9 +1,10 @@
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import {Avatar} from '@ui-kitten/components';
 import {useEffect, useState} from 'react';
-import {FlatList, Text, TouchableOpacity, View} from 'react-native';
+import {FlatList, Modal, Text, TouchableOpacity, View} from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import styled from 'styled-components/native';
 
@@ -13,7 +14,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
 import {DISABLE_MUSIC} from 'src/constants';
 import useNotification from 'src/hooks/useNotification';
-import {logoutUser} from 'src/store/reducer/thunks/userActions';
+import {
+  logoutUser,
+  updateUserInfoAction
+} from 'src/store/reducer/thunks/userActions';
 import {userSelector} from 'src/store/selectors';
 import {
   SettingItemWithSwitch,
@@ -26,6 +30,7 @@ const Settings = () => {
   const {user} = useSelector(userSelector);
   const {isNotificationEnabled, disableNotification} = useNotification();
   const [isHideScreen, setHideMusicScreen] = useState(false);
+  const [visible, setVisible] = useState(false);
   const handleLogout = () => {
     dispatch(logoutUser(user.uid));
   };
@@ -55,14 +60,14 @@ const Settings = () => {
       icon: 'bell',
       iconColor: '#8024c7',
       backgroundIconColor: '#ae9bbd',
-      defaultSwitchValue: isNotificationEnabled,
+      defaultSwitchgoal: isNotificationEnabled,
       onClick: async () => {
         await disableNotification();
       }
     },
     {
       name: 'Skip music selection screen',
-      defaultSwitchValue: isHideScreen,
+      defaultSwitchgoal: isHideScreen,
       icon: 'note',
       iconColor: '#2442c7',
       backgroundIconColor: '#9b9ebd',
@@ -127,6 +132,19 @@ const Settings = () => {
               keyExtractor={item => item.name}
             />
           </View>
+
+          <SettingCategory>Goal</SettingCategory>
+          <View>
+            <SettingItemWithoutSwitch
+              onClick={() => {
+                setVisible(true);
+              }}
+              name={mappingGoal(user.goal)}
+              icon="man"
+              backgroundIconColor={'#b2bf4d'}
+              iconColor={'#666e2a'}
+            />
+          </View>
           <SettingCategory>General</SettingCategory>
 
           <FlatList
@@ -138,6 +156,9 @@ const Settings = () => {
         <LogoutButton onPress={handleLogout}>
           <LogoutText>Logout</LogoutText>
         </LogoutButton>
+        <GoalModal
+          visible={visible}
+          onClose={() => setVisible(false)}></GoalModal>
       </Animatable.View>
     </Container>
   );
@@ -192,3 +213,142 @@ const Heading = styled.Text`
 `;
 
 export default Settings;
+
+import {StyleSheet} from 'react-native';
+import {showMessage} from 'react-native-flash-message';
+import {GOAL} from 'src/constants';
+import {mappingGoal} from 'src/utils/tranformData';
+
+const GoalModal = ({visible, onClose}) => {
+  const {user} = useSelector(userSelector);
+  const [goal, setGoal] = useState(user.goal);
+  const dispatch = useDispatch();
+  const handleUpdateUserInfo = () => {
+    const userInfo = {
+      uid: user.uid,
+      goal
+    };
+    dispatch(
+      updateUserInfoAction({userId: user.uid, userData: {...user, ...userInfo}})
+    );
+    showMessage({
+      message: 'Cập nhật thành công',
+      type: 'success'
+    });
+  };
+  const saveUserGoal = () => {
+    if (goal) {
+      handleUpdateUserInfo();
+    }
+    onClose();
+  };
+  const navigateBack = () => {};
+  return (
+    <Modal visible={visible} onRequestClose={onClose} animationIn="fade">
+      <View style={styles.container}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <TouchableOpacity onPress={onClose}>
+            <Ionicons name="arrow-back" size={28} color="black" />
+          </TouchableOpacity>
+          <Text style={styles.question}>Change your goal</Text>
+        </View>
+        <View style={styles.textContainer}>
+          <TouchableOpacity
+            onPress={() => {
+              setGoal(GOAL.FITTER);
+            }}
+            style={[
+              styles.card,
+              {backgroundColor: goal === GOAL.FITTER ? '#d4d4d4' : 'white'}
+            ]}>
+            <Text style={styles.title}>Get fitter</Text>
+            <Text style={styles.subtitle}>Tone up & feel healthy</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              setGoal(GOAL.FIT);
+            }}
+            style={[
+              styles.card,
+              {backgroundColor: goal === GOAL.FIT ? '#d4d4d4' : 'white'}
+            ]}>
+            <Text style={styles.title}>Keep fit</Text>
+            <Text style={styles.subtitle}>Maintain a healthy lifestyle</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              setGoal(GOAL.LOSE_WEIGHT);
+            }}
+            style={[
+              styles.card,
+              {
+                backgroundColor: goal === GOAL.LOSE_WEIGHT ? '#d4d4d4' : 'white'
+              }
+            ]}>
+            <Text style={styles.title}>Lose weight</Text>
+            <Text style={styles.subtitle}>Get motivated & energized</Text>
+          </TouchableOpacity>
+        </View>
+        <View
+          style={{
+            marginTop: 'auto',
+            width: '100%'
+          }}>
+          <TouchableOpacity onPress={saveUserGoal} style={styles.btn}>
+            <Text style={{fontWeight: 'bold', color: 'white', fontSize: 28}}>
+              Save
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    flex: 1
+  },
+  question: {
+    fontSize: 32,
+    fontWeight: '500',
+    marginTop: 12,
+    marginBottom: 24,
+    color: 'black'
+  },
+  card: {
+    marginVertical: 12,
+    marginHorizontal: 30,
+    padding: 20,
+    backgroundColor: '#fff',
+    borderRadius: 5,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 2
+  },
+  textContainer: {
+    width: '100%'
+  },
+  title: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    color: 'black'
+  },
+  subtitle: {
+    color: 'black',
+
+    color: '#6c757d' // Bootstrap's secondary color for a lighter, muted color
+  },
+  btn: {
+    marginBottom: 20,
+    padding: 8,
+    borderRadius: 8,
+    elevation: 2,
+    backgroundColor: '#b5b5b5',
+    alignItems: 'center',
+    marginHorizontal: 20
+  }
+});

@@ -11,12 +11,7 @@ import {
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useEffect, useState} from 'react';
-import {
-  getPeriodDistance,
-  getPeriodSleep,
-  getPeriodSteps,
-  observerActivity
-} from 'src/config/trackingActivities';
+import {getPeriodSteps, observerActivity} from 'src/config/trackingActivities';
 import {DEFAULT_STEP_GOAL} from 'src/constants';
 import {
   activityField,
@@ -28,8 +23,17 @@ import {getEndDayISO, getStartDayISO} from 'src/utils/dateTimeHelper';
 export const useActivity = () => {
   const dispatch = useDispatch();
   const [isEnabled, setIsEnable] = useState(false);
+  const [stepCalorie, setStepCalorie] = useState(0);
   const {user} = useSelector(userSelector);
   const {todayProgress} = useSelector(activitySelector);
+
+  const calculateStepCalorie = moveMins => {
+    const stepMET = 3.5;
+    const calorie = ((stepMET * 3.5 * user.weight) / 200) * moveMins;
+    setStepCalorie(calorie);
+  };
+  console.log('calculateStepCalorie', {stepCalorie});
+
   //step
   const saveUserTotalSteps = steps => {
     //save total steps to database
@@ -44,7 +48,6 @@ export const useActivity = () => {
   };
 
   const handleSaveUserActivityRecords = async activity => {
-    console.log('handleSaveUserActivityRecords', activity);
     await updateUserActivityRecord({userId: user.uid, activity});
     dispatch(updateTodayActivityIndexes(activity));
   };
@@ -88,24 +91,16 @@ export const useActivity = () => {
         observerActivity(
           handleAddSteps,
           saveUserTotalSteps,
-          handleSaveUserActivityRecords
+          handleSaveUserActivityRecords,
+          calculateStepCalorie
         ),
 
         handleGetTodaySteps(),
         handleGetTodayStepGoal(),
         setDefaultStepTarget()
       ]).catch(error => console.error(error));
-
-      getPeriodSleep();
-      (async () => {
-        const startTime = getStartDayISO(new Date());
-        const endTime = getEndDayISO(new Date());
-        const distanceRes = await getPeriodDistance(startTime, endTime);
-
-        console.log('distanceRes', distanceRes);
-      })();
     }
-  }, [isEnabled]);
+  }, [isEnabled, user]);
 
-  return {enableActivityTracking};
+  return {stepCalorie, enableActivityTracking};
 };

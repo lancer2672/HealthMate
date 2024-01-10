@@ -57,8 +57,8 @@ export const getPeriodSteps = async (startDate: string, endDate: string) => {
 export const observerActivity = async (
   handleAddStep: (steps: number) => void,
   handleUpdateTotalSteps: (totalSteps: number) => void,
-  handleSaveUserActivityRecords: ({ calorie, distance, moveMins }: any) => Promise<any>
-    
+  handleSaveUserActivityRecords: ({ calorie, distance, moveMins }: any) => Promise<any>,
+  calculateStepCalorie:(moveMins:number) =>void,
 ) => {
   let saveRecordTimeout: any = null;
   const startDate = getStartDayISO(new Date());
@@ -70,8 +70,10 @@ export const observerActivity = async (
       getPeriodMoveMins(startDate, endDate)
   ]; 
 
-  //get total new unupdated steps in (PeriodSteps function)
+  //get total new unupdated steps in (PeriodSteps function) when first login
   saveRecordTimeout = setTimeout(()=>saveRecords(0,promises,handleUpdateTotalSteps,handleSaveUserActivityRecords), SAVE_RECORD_TIME_INTERVAL);
+  const moveMins = await getPeriodMoveMins(startDate, endDate);
+  calculateStepCalorie(moveMins);
   
   let newUnupdatedStep = 0;
   
@@ -83,9 +85,11 @@ export const observerActivity = async (
       clearTimeout(saveRecordTimeout);
     } 
     console.log("observeSteps",{newUnupdatedStep, result})
-    saveRecordTimeout = setTimeout(() => {
+    saveRecordTimeout = setTimeout(async() => {
       saveRecords(newUnupdatedStep, promises, handleUpdateTotalSteps, handleSaveUserActivityRecords)
       newUnupdatedStep = 0
+      const moveMins = await getPeriodMoveMins(startDate, endDate);
+      calculateStepCalorie(moveMins);
     }, SAVE_RECORD_TIME_INTERVAL);
   });
 };

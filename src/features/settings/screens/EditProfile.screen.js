@@ -46,19 +46,11 @@ const EditProfile = ({navigation}) => {
     };
     dispatch(
       updateUserInfoAction({userId: user.uid, userData: {...user, ...userInfo}})
-    )
-      .then(() => {
-        showMessage({
-          message: 'Cập nhật thành công',
-          type: 'success'
-        });
-      })
-      .catch(() => {
-        showMessage({
-          message: 'Cập nhật thất bại',
-          type: 'danger'
-        });
-      });
+    );
+    showMessage({
+      message: 'Cập nhật thành công',
+      type: 'success'
+    });
   };
   const handleSelectLifeStyle = index => {
     console.log('handleSelectLifeStyle', index.row);

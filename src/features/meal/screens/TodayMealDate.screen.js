@@ -33,6 +33,7 @@ export default function TodayMealDate({route, navigation}) {
   const [completePercent, setCompletePercent] = useState(0);
   const [visible, setMenuVisible] = useState(0);
   const [saveVisible, setMenuSaveVisible] = useState(0);
+  const [createFoodVisible, setCreateFoodVisible] = useState(false);
   const [loadVisible, setMenuLoadVisible] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const theme = useTheme();
@@ -99,7 +100,6 @@ export default function TodayMealDate({route, navigation}) {
   };
 
   useEffect(() => {
-    console.log('user', user);
     if (user) {
       dispatch(
         getFoodMealByDate({
@@ -183,23 +183,29 @@ export default function TodayMealDate({route, navigation}) {
 
       <View style={{paddingHorizontal: 12, marginVertical: 12}}>
         <View style={{flexDirection: 'row'}}>
-          <Text style={{fontWeight: 'bold', fontSize: 16}}>
+          <Text style={{color: 'black', fontWeight: 'bold', fontSize: 16}}>
             {getTotalCalories()}
           </Text>
-          <Text style={{fontSize: 16}}> Calories</Text>
+          <Text style={{color: 'black', fontSize: 16}}> Calories</Text>
         </View>
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
           <Text>
-            <Text style={{fontWeight: 'bold'}}>{getTotalFat()}</Text>
-            <Text> g Fat</Text>
+            <Text style={{color: 'black', fontWeight: 'bold'}}>
+              {getTotalFat()}
+            </Text>
+            <Text style={{color: 'black'}}> g Fat</Text>
           </Text>
           <Text>
-            <Text style={{fontWeight: 'bold'}}>{getTotalProtein()}</Text>
-            <Text> g Protein</Text>
+            <Text style={{color: 'black', fontWeight: 'bold'}}>
+              {getTotalProtein()}
+            </Text>
+            <Text style={{color: 'black'}}> g Protein</Text>
           </Text>
           <Text>
-            <Text style={{fontWeight: 'bold'}}>{getTotalCarbo()}</Text>
-            <Text> g Carbs</Text>
+            <Text style={{color: 'black', fontWeight: 'bold'}}>
+              {getTotalCarbo()}
+            </Text>
+            <Text style={{color: 'black'}}> g Carbs</Text>
           </Text>
         </View>
       </View>
@@ -264,6 +270,9 @@ export default function TodayMealDate({route, navigation}) {
         openLoadMenu={() => {
           setMenuLoadVisible(true);
         }}
+        openCustomFood={() => {
+          setCreateFoodVisible(true);
+        }}
         onClose={() => setMenuVisible(false)}></BottomMenu>
       <SavePlanBottomMenu
         visible={saveVisible}
@@ -272,20 +281,36 @@ export default function TodayMealDate({route, navigation}) {
       <LoadPlanBottomMenu
         visible={loadVisible}
         onClose={() => setMenuLoadVisible(false)}></LoadPlanBottomMenu>
+      <CreateCustomFood
+        visible={createFoodVisible}
+        onClose={() => {
+          setCreateFoodVisible(false);
+        }}></CreateCustomFood>
     </View>
   );
 }
 
 import {Modal, TextInput, TouchableWithoutFeedback} from 'react-native';
 import {Button} from 'react-native-paper';
+
 import {observeTodayMeal, saveMeal} from 'src/services/firebase/database/meal';
-const BottomMenu = ({visible, onClose, openSaveMenu, openLoadMenu, plan}) => {
+const BottomMenu = ({
+  visible,
+  onClose,
+  openCustomFood,
+  openSaveMenu,
+  openLoadMenu,
+  plan
+}) => {
   const {user} = useSelector(userSelector);
   const handleSavePlan = () => {
     onClose();
     openSaveMenu();
   };
-
+  const handleCreateFood = () => {
+    onClose();
+    openCustomFood();
+  };
   const handleLoadMealPlan = () => {
     onClose();
     openLoadMenu();
@@ -306,6 +331,11 @@ const BottomMenu = ({visible, onClose, openSaveMenu, openLoadMenu, plan}) => {
           <View style={menuStyles.body}>
             <View style={menuStyles.options}></View>
 
+            <TouchableOpacity
+              style={[menuStyles.optionContainer]}
+              onPress={handleCreateFood}>
+              <Text style={menuStyles.option}>Add new food</Text>
+            </TouchableOpacity>
             <TouchableOpacity
               style={[menuStyles.optionContainer]}
               onPress={handleSavePlan}>
@@ -418,7 +448,9 @@ const LoadPlanBottomMenu = ({visible, onClose}) => {
                 styles.optionContainer,
                 {flexDirection: 'row', alignItems: 'center'}
               ]}>
-              <PlanDropdown onItemSelected={setSelectedMealPlan}></PlanDropdown>
+              <PlanDropdown
+                selectedItem={selectedMealPlan}
+                onItemSelected={setSelectedMealPlan}></PlanDropdown>
               <TouchableOpacity onPress={handleLoadMealPlan}>
                 <Text
                   style={{
@@ -440,25 +472,17 @@ const LoadPlanBottomMenu = ({visible, onClose}) => {
 };
 
 import {Dropdown} from 'react-native-element-dropdown';
+import CreateCustomFood from 'src/features/food/components/CreateCustomFood';
 
-const weekdate = [
-  {label: 'Sunday', value: 0},
-  {label: 'Monday', value: 1},
-  {label: 'Tuesday', value: 2},
-  {label: 'Wednesday', value: 3},
-  {label: 'Thursday', value: 4},
-  {label: 'Friday', value: 5},
-  {label: 'Saturday', value: 6}
-];
-
-const PlanDropdown = ({onItemSelected}) => {
+const PlanDropdown = ({selectedItem, onItemSelected}) => {
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
   const {user} = useSelector(userSelector);
   const [mealPlans, setMealPlans] = useState([]);
-  const onBodyPartSelected = async item => {
-    setValue(item.value);
-    onItemSelected(item.value);
+  const onItemSelection = async item => {
+    console.log('onItemSelection', item);
+    // setValue(item.value);
+    onItemSelected(() => item.value);
     setIsFocus(false);
   };
   useLayoutEffect(() => {
@@ -491,10 +515,10 @@ const PlanDropdown = ({onItemSelected}) => {
         labelField="label"
         valueField="value"
         placeholder={'Select a meal plan'}
-        value={value}
+        value={selectedItem}
         onFocus={() => setIsFocus(true)}
         onBlur={() => setIsFocus(false)}
-        onChange={onBodyPartSelected}
+        onChange={onItemSelection}
         // renderLeftIcon={() => (
         //   <Ionicons
         //     style={dropdownStyles.icon}
