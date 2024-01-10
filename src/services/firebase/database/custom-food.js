@@ -23,7 +23,7 @@ export async function removeCustomFood({userId, food}) {
     const snapshot = await userFoodRef.once('value');
     const customFood = snapshot.val() || [];
     const updatedFood = customFood.map(item =>
-      item.tag_id === food.tag_id ? {...item, deletedAt} : item
+      item.tag_id === food.tag_id ? {...item, deletedAt: Date.now()} : item
     );
     await userFoodRef.set(updatedFood);
   } catch (er) {
@@ -35,7 +35,8 @@ export function observeCustomFood(userId, callback) {
   const userFoodRef = firebaseDatabase.ref(`${userId}/${CUSTOM_FOOD_DB_NAME}`);
   userFoodRef.on('value', snapshot => {
     const customFood = snapshot.val() || [];
-    const activeFood = customFood.filter(item => item.deletedAt === null);
+    const activeFood = customFood.filter(item => item.deletedAt == null);
+
     callback(activeFood);
   });
 }

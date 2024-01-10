@@ -16,6 +16,8 @@ export async function setHistoryMeal({userId, meal, mealType}) {
 
 export async function addFoodToHistory({userId, mealType, food}) {
   try {
+    console.log('addFoodToHistory', food);
+
     const currentTimeStamp = getSpecificDateTimeStamp();
     const userMealRef = firebaseDatabase.ref(
       `${userId}/${HISTORY_DB_NAME}/${currentTimeStamp}/${mealType}`
@@ -26,6 +28,23 @@ export async function addFoodToHistory({userId, mealType, food}) {
     await userMealRef.set(meal);
   } catch (er) {
     console.log('addFoodToHistory error', er);
+  }
+}
+
+export async function updateFoodHistory({userId, mealType, food}) {
+  try {
+    const currentTimeStamp = getSpecificDateTimeStamp();
+    const userMealRef = firebaseDatabase.ref(
+      `${userId}/${HISTORY_DB_NAME}/${currentTimeStamp}/${mealType}`
+    );
+    const snapshot = await userMealRef.once('value');
+    const meal = snapshot.val() || [];
+    const updatedMeal = meal.map(item =>
+      item.tag_id === food.tag_id ? food : item
+    );
+    await userMealRef.set(updatedMeal);
+  } catch (er) {
+    console.log('updateFoodHistory error', er);
   }
 }
 

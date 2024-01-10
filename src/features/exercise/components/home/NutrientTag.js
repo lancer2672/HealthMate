@@ -24,7 +24,7 @@ const NutrientTag = ({nutrient, absorb, total, background, bgCircle}) => {
       </View>
       <Text style={styles.title}>{nutrient}</Text>
       <Text style={styles.subTitle}>
-        {absorb}/{total} g
+        {absorb.toFixed(2)}/{total.toFixed(2)} g
       </Text>
     </View>
   );

@@ -65,7 +65,7 @@ export const Tabs = () => {
             backgroundColor: theme.green3
           },
           tabBarItemStyle: {
-            marginLeft: route.name === TAB_ROUTES.WATER_TRACKING ? 24 : 0,
+            // marginLeft: route.name === TAB_ROUTES.WATER_TRACKING ? 24 : 0,
             marginRight: route.name === TAB_ROUTES.FOOD ? 24 : 0
           },
           tabBarIcon: ({focused, _, size}) => {

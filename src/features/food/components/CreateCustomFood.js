@@ -21,14 +21,15 @@ const CreateCustomFood = ({visible, onClose}) => {
   const {user} = useAppSelector(userSelector);
   const [selectedImage, setSelectedImage] = useState();
   const [newFood, setNewFood] = useState({
-    name: '',
+    foodName: '',
     realCalories: '0',
     realCarbo: '0',
     realProtein: '0',
     realFat: '0',
     photo: {},
-    // 4gram, 4unit ...
-    amount: ''
+    isCustomFood: true,
+    realQty: '1',
+    realUnit: ''
   });
   const theme = useTheme();
   const onInputChange = (field, value) => {
@@ -77,7 +78,7 @@ const CreateCustomFood = ({visible, onClose}) => {
       realProtein: '0',
       realFat: '0',
       photo: {},
-      amount: ''
+      realUnit: ''
     });
   };
   return (
@@ -111,16 +112,16 @@ const CreateCustomFood = ({visible, onClose}) => {
             <CustomEditText
               label={'Name'}
               placeholder={'Name'}
-              value={newFood.name}
-              style={{width: '50%', marginRight: 12}}
-              onChangeText={newText => onInputChange('name', newText)}
+              value={newFood.foodName}
+              style={{width: '60%', marginRight: 12}}
+              onChangeText={newText => onInputChange('foodName', newText)}
             />
             <CustomEditText
               label={'Amount'}
               placeholder={''}
-              value={newFood.amount}
-              style={{width: '50%'}}
-              onChangeText={newText => onInputChange('amount', newText)}
+              value={newFood.realUnit}
+              style={{width: '40%'}}
+              onChangeText={newText => onInputChange('realUnit', newText)}
             />
           </View>
           <View

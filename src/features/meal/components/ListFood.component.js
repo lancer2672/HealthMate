@@ -112,7 +112,7 @@ const ListFood = ({mealName, foodMeal, handleNavigateSeacrch, navigation}) => {
           </TouchableOpacity>
         </View>
         <View>
-          <Text style={styles.mealName}>{countTotalCalorie()}</Text>
+          <Text style={styles.mealName}>{countTotalCalorie()} kcal </Text>
         </View>
       </View>
       <View
