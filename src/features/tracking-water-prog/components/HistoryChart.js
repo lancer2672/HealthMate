@@ -1,8 +1,5 @@
-import React, {memo} from 'react';
-import {Dimensions, ScrollView, StyleSheet, View} from 'react-native';
-import {Text, Surface} from 'react-native-paper';
+import {Dimensions, ScrollView, StyleSheet} from 'react-native';
 import {LineChart} from 'react-native-chart-kit';
-import {splitObj, today} from '../utils';
 import {useTheme} from 'styled-components';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -32,10 +29,10 @@ function HistoryChart({chartData}) {
     barPercentage: 0.5
   };
   return (
-    <ScrollView horizontal contentOffset={{x: 10000, y: 0}}>
+    <ScrollView horizontal contentOffset={{x: 200, y: 0}}>
       <LineChart
         data={chartData}
-        width={700}
+        width={2000}
         height={300}
         style={{flex: 1}}
         chartConfig={chartConfig}

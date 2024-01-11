@@ -1,19 +1,17 @@
-import React, {useEffect} from 'react';
-import {Image, Pressable, View, StyleSheet} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {useTheme} from 'styled-components/native';
-import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import Feather from 'react-native-vector-icons/Feather';
+import {Pressable, StyleSheet, View} from 'react-native';
 import Entypo from 'react-native-vector-icons/Entypo';
+import Feather from 'react-native-vector-icons/Feather';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
+import {useTheme} from 'styled-components/native';
 
-import WaterTracking from 'src/features/tracking-water-prog/screens/WaterTracking.screen';
 import StepCounter from 'src/features/counting-steps/screens/StepCounter.screen';
 import ExerciseHome from 'src/features/exercise/screens/ExerciseHome.screen';
-import {opacity} from 'react-native-reanimated/lib/typescript/reanimated2/Colors';
+import TodayMealDate from 'src/features/meal/screens/TodayMealDate.screen';
 import Todolist from 'src/features/todolist/screens/TodoList.screen';
-import MealCalendar from 'src/features/meal/screens/MealCalendar.screen';
+import WaterTracking from 'src/features/tracking-water-prog/screens/WaterTracking.screen';
 const ExerciseHomeButton = ({children, onPress}) => {
   const theme = useTheme();
   return (
@@ -27,7 +25,7 @@ const ExerciseHomeButton = ({children, onPress}) => {
 
 export const TAB_ROUTES = {
   NOTE: 'Note',
-  FOOD: 'Food',
+  FOOD: 'TodayMealDate',
   HOME: 'Home',
   WATER_TRACKING: 'WaterTracking',
   STEP_COUNTER: 'StepCounter'
@@ -67,7 +65,7 @@ export const Tabs = () => {
             backgroundColor: theme.green3
           },
           tabBarItemStyle: {
-            marginLeft: route.name === TAB_ROUTES.WATER_TRACKING ? 24 : 0,
+            // marginLeft: route.name === TAB_ROUTES.WATER_TRACKING ? 24 : 0,
             marginRight: route.name === TAB_ROUTES.FOOD ? 24 : 0
           },
           tabBarIcon: ({focused, _, size}) => {
@@ -79,7 +77,7 @@ export const Tabs = () => {
         };
       }}>
       <Tab.Screen name={TAB_ROUTES.NOTE} component={Todolist} />
-      <Tab.Screen name={TAB_ROUTES.FOOD} component={MealCalendar} />
+      <Tab.Screen name={TAB_ROUTES.FOOD} component={TodayMealDate} />
       <Tab.Screen
         name={TAB_ROUTES.HOME}
         component={ExerciseHome}

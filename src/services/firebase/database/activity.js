@@ -1,4 +1,4 @@
-import {getSpecificDateTimeStamp} from 'src/utils/dateTimeHelper';
+import { getSpecificDateTimeStamp } from 'src/utils/dateTimeHelper';
 import firebaseDatabase from './index';
 
 const DB_NAME = 'activity';
@@ -15,7 +15,14 @@ export async function updateUserActivity({userId, field, value}) {
     );
     const snapshot = await userActivityRef.once('value');
     const data = snapshot.val();
-    await userActivityRef.update({...data, [field]: value});
+
+    console.log('updateUserActivity data', {
+      data,
+      userId,
+      field,
+      value
+    });
+    await userActivityRef.update({[field]: value});
   } catch (er) {
     console.log('update steps error', er);
   }
@@ -77,6 +84,7 @@ export async function getStepsByMonth({userId, date}) {
         data.push(step);
       });
     });
+    console.log('getStepsByMonth', {date, data});
     return data;
   } catch (error) {
     console.log('Error getting steps by month', error);
@@ -85,6 +93,20 @@ export async function getStepsByMonth({userId, date}) {
 }
 
 export async function getTodayStepsGoal({userId}) {
+  try {
+    const currentTimeStamp = getSpecificDateTimeStamp();
+    const userActivityRef = firebaseDatabase.ref(
+      `${userId}/${DB_NAME}/${currentTimeStamp}`
+    );
+    let data = (await userActivityRef.once('value')).val();
+    return data?.stepTarget || 0;
+  } catch (error) {
+    console.log('Error getting step goal', error);
+    return 0;
+  }
+}
+
+export async function getTodayStepsCalorie({userId}) {
   try {
     const currentTimeStamp = getSpecificDateTimeStamp();
     const userActivityRef = firebaseDatabase.ref(

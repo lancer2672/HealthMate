@@ -1,20 +1,9 @@
-import {
-  Pressable,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
-} from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
-import {FlatList} from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import {Button, Searchbar, Snackbar} from 'react-native-paper';
 import {useNavigation, useRoute} from '@react-navigation/native';
-import buttonStyles from 'src/features/theme/styles/button';
+import {useState} from 'react';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useDispatch, useSelector} from 'react-redux';
 import {playlistSelector} from 'src/store/selectors';
-import {addSongAction} from 'src/store/reducer/thunks/playlistAction';
-import ListSong from '../components/playlist/ListSong';
 
 const ScreenHeader = ({title}) => {
   const route = useRoute<any>();

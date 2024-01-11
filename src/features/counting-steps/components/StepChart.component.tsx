@@ -1,12 +1,11 @@
-import React, {memo, useEffect, useRef, useState} from 'react';
-import {Dimensions, ScrollView, StyleSheet, View} from 'react-native';
-import {Text, Surface} from 'react-native-paper';
+import {useEffect, useRef, useState} from 'react';
+import {Dimensions, ScrollView, View} from 'react-native';
 import {LineChart} from 'react-native-chart-kit';
-import {useTheme} from 'styled-components';
+import {Rect, Svg, Text} from 'react-native-svg';
+import {useSelector} from 'react-redux';
 import {getStepsByMonth} from 'src/services/firebase/database/activity';
 import {userSelector} from 'src/store/selectors';
-import {useSelector} from 'react-redux';
-import {getDateMonthLabel} from 'src/utils/chartDataHelper';
+import {useTheme} from 'styled-components';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
@@ -22,6 +21,12 @@ function StepChart({selectedDate, setSelectedDate}) {
   const [chartData, setChartData] = useState({
     labels: ['22/2'],
     datasets: [{data: [129]}]
+  });
+  let [tooltipPos, setTooltipPos] = useState({
+    x: 0,
+    y: 0,
+    visible: false,
+    value: 0
   });
   const getDataChartFromStepMonth = (stepMonthData: StepData[]) => {
     const map = new Map();
@@ -68,7 +73,20 @@ function StepChart({selectedDate, setSelectedDate}) {
         animated: true
       });
     }
-    // {index: 1, value: 4189, dataset: {data:[4]}, x: 198, y: 16, …}
+
+    let isSamePoint = tooltipPos.x === data.x && tooltipPos.y === data.y;
+
+    // if clicked on the same point again toggle visibility
+    // else,render tooltip to new position and update its value
+    isSamePoint
+      ? setTooltipPos(previousState => {
+          return {
+            ...previousState,
+            value: data.value,
+            visible: !previousState.visible
+          };
+        })
+      : setTooltipPos({x: data.x, value: data.value, y: data.y, visible: true});
   };
   useEffect(() => {
     (async () => {
@@ -79,7 +97,7 @@ function StepChart({selectedDate, setSelectedDate}) {
       getDataChartFromStepMonth(stepMonthData);
       console.log('useEffect', stepMonthData, selectedDate.getMonth());
     })();
-  }, [selectedDate.getMonth()]);
+  }, [selectedDate?.getMonth()]);
 
   const chartConfig: any = {
     backgroundColor: theme.background,
@@ -111,7 +129,31 @@ function StepChart({selectedDate, setSelectedDate}) {
       ) : (
         <LineChart
           data={chartData}
-          width={600}
+          width={2000}
+          decorator={() => {
+            return tooltipPos.visible ? (
+              <View>
+                <Svg>
+                  <Rect
+                    x={tooltipPos.x - 15}
+                    y={tooltipPos.y + 10}
+                    width="40"
+                    height="30"
+                    fill="black"
+                  />
+                  <Text
+                    x={tooltipPos.x + 5}
+                    y={tooltipPos.y + 30}
+                    fill="white"
+                    fontSize="16"
+                    fontWeight="bold"
+                    textAnchor="middle">
+                    {tooltipPos.value}
+                  </Text>
+                </Svg>
+              </View>
+            ) : null;
+          }}
           onDataPointClick={onDataPointClick}
           height={300}
           style={{flex: 1}}
@@ -122,19 +164,22 @@ function StepChart({selectedDate, setSelectedDate}) {
   );
 }
 
-const styles = StyleSheet.create({
-  surface: {
-    flex: 1,
-    padding: 10,
-    width: SCREEN_WIDTH,
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    elevation: 1
-  },
-  graph: {
-    flex: 1,
-    width: SCREEN_WIDTH
-  }
-});
-
+const ToolTip = () => {
+  return (
+    <View>
+      <Svg>
+        <Rect x={80} y={110} width="40" height="30" fill="black" />
+        <Text
+          x={100}
+          y={130}
+          fill="white"
+          fontSize="16"
+          fontWeight="bold"
+          textAnchor="middle">
+          0.0
+        </Text>
+      </Svg>
+    </View>
+  );
+};
 export default StepChart;

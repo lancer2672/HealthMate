@@ -1,21 +1,14 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  TouchableOpacity,
-  Pressable
-} from 'react-native';
-import React, {useState} from 'react';
+import {useState} from 'react';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
-import {TouchableWithoutFeedback, FlatList, Modal} from 'react-native';
-import PlanItem from './PlanItem';
+import {FlatList, Modal, TouchableWithoutFeedback} from 'react-native';
 import {Button} from 'react-native-paper';
 import {useToast} from 'react-native-toast-notifications';
 import {useDispatch, useSelector} from 'react-redux';
-import {exerciseSelector, userSelector} from 'src/store/selectors';
 import {setGroupPlan} from 'src/services/firebase/database/group';
+import {exerciseSelector, userSelector} from 'src/store/selectors';
+import PlanItem from './PlanItem';
 
 const AddGroupPlanModal = ({visible, onClose}) => {
   const {plans} = useSelector(exerciseSelector);

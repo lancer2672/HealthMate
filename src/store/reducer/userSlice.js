@@ -9,8 +9,10 @@ import {
 const initialState = {
   user: null,
   isLoading: false,
+  success: false,
   error: null
 };
+
 const actions = [logoutUser, register, login, saveFCMToken];
 export const userSlice = createSlice({
   name: 'user',
@@ -37,10 +39,12 @@ export const userSlice = createSlice({
     });
     builder.addCase(register.fulfilled, (state, {payload}) => {
       console.log(payload);
+      state.isLoading = false;
     });
     builder.addCase(login.fulfilled, (state, {payload}) => {
       console.log(payload);
       state.user = payload;
+      state.isLoading = false;
     });
     builder.addCase(updateUserInfoAction.fulfilled, (state, {payload}) => {
       state.user = {...state.user, ...payload};

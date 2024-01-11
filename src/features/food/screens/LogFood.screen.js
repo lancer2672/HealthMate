@@ -1,21 +1,12 @@
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Image,
-  StyleSheet,
-  TextInput,
-  FlatList,
-  Button
-} from 'react-native';
-import React, {useCallback, useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import ListFoodCard from '../components/ListFoodCard.component';
 
+import {API_KEY_NUTRITIONIX, APP_ID_NUTRITIONIX} from '@env';
 import axios from 'axios';
-import {APP_ID_NUTRITIONIX, API_KEY_NUTRITIONIX} from '@env';
+import {addFoodToHistory} from 'src/services/firebase/database/meal-history';
 import {useAppDispatch, useAppSelector} from 'src/store/hooks';
 import {userSelector} from 'src/store/selectors';
-import {addFoodMeal} from '../../../store/reducer/thunks/foodMealActions';
 
 export default function LogFood({route, navigation}) {
   const {date, mealName, item, type} = route.params.data;
@@ -173,36 +164,46 @@ export default function LogFood({route, navigation}) {
 
   const handleLogFood = async () => {
     if (foodCommon.length !== 0 || foodBranded.length !== 0) {
-      const foodMeal = {
-        userId: user.uid,
-        mealName: mealName,
-        date: date,
-        food: {
-          type: 'common',
-          foodName: foodCommon[0].food_name,
-          photo: foodCommon[0].photo,
-          realQty: foodCommon[0].realQty,
-          realUnit: foodCommon[0].realUnit,
-          realGrams: foodCommon[0].realGrams,
-          realCalories: foodCommon[0].nf_calories,
-          nix_item_id: type === 'branded' ? foodCommon[0].nix_item_id : null,
-          realProtein: foodCommon[0].nf_protein,
-          realFat: foodCommon[0].nf_total_fat,
-          realCarbo: foodCommon[0].nf_total_carbohydrate
-        }
+      // const foodMeal = {
+      //   userId: user.uid,
+      //   mealName: mealName,
+      //   date: date,
+      //   food: {
+      //     type: 'common',
+      //     foodName: foodCommon[0].food_name,
+      //     photo: foodCommon[0].photo,
+      //     realQty: foodCommon[0].realQty,
+      //     realUnit: foodCommon[0].realUnit,
+      //     realGrams: foodCommon[0].realGrams,
+      //     realCalories: foodCommon[0].nf_calories,
+      //     nix_item_id: type === 'branded' ? foodCommon[0].nix_item_id : null,
+      //     realProtein: foodCommon[0].nf_protein,
+      //     realFat: foodCommon[0].nf_total_fat,
+      //     realCarbo: foodCommon[0].nf_total_carbohydrate,
+      //     realCarbo: foodCommon[0].nf_total_carbohydrate,
+      //     tag_id: foodCommon[0].tags.tag_id
+      //   }
+      // };
+      const food = {
+        type: 'common',
+        foodName: foodCommon[0].food_name,
+        photo: foodCommon[0].photo,
+        realQty: foodCommon[0].realQty,
+        realUnit: foodCommon[0].realUnit,
+        realGrams: foodCommon[0].realGrams,
+        realCalories: foodCommon[0].nf_calories,
+        nix_item_id: type === 'branded' ? foodCommon[0].nix_item_id : null,
+        realProtein: foodCommon[0].nf_protein,
+        realFat: foodCommon[0].nf_total_fat,
+        realCarbo: foodCommon[0].nf_total_carbohydrate,
+        realCarbo: foodCommon[0].nf_total_carbohydrate,
+        tag_id: foodCommon[0].tags.tag_id,
+        isDone: false
       };
-      dispatch(addFoodMeal(foodMeal));
+      await addFoodToHistory({userId: user.uid, mealType: mealName, food});
+      // dispatch(addFoodMeal(foodMeal));
     }
-    console.log('date1111', date);
-    const newDate = new Date(date);
-    navigation.pop();
-    navigation.push('DetailMealDate', {
-      data: {
-        day: newDate.getDate(),
-        month: newDate.getMonth(),
-        year: newDate.getFullYear()
-      }
-    });
+    navigation.navigate('TodayMealDate');
   };
 
   return (

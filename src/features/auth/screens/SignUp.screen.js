@@ -1,27 +1,19 @@
+import {useRef, useState} from 'react';
 import {
-  View,
-  Text,
-  Keyboard,
-  Pressable,
-  TouchableOpacity,
+  ActivityIndicator,
   Image,
   StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import React, {useState, useEffect, useRef} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 
-import {
-  GoogleSignin,
-  statusCodes,
-} from '@react-native-google-signin/google-signin';
-import InputText from '../components/InputText.component';
-import {accountSchema, handleValidateField} from '../../../utils/validation';
-import {setIsLoading} from '../../../store/reducer/appSlice';
-import {register} from '../../../store/reducer/thunks/userActions';
+import {userSelector} from 'src/store/selectors';
 import logoHealthMate from '../../../assets/imgs/LogoHealthMate.png';
-import {WEB_API_KEY} from '@env';
+import {register} from '../../../store/reducer/thunks/userActions';
+import {accountSchema, handleValidateField} from '../../../utils/validation';
+import InputText from '../components/InputText.component';
 
 export default function Register({navigation}) {
   const [name, setName] = useState('');
@@ -29,7 +21,7 @@ export default function Register({navigation}) {
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [validationErrors, setValidationErrors] = useState({});
-
+  const {isLoading} = useSelector(userSelector);
   const refInputName = useRef();
   const refInputEmail = useRef();
   const refInputNewPassword = useRef();
@@ -37,27 +29,24 @@ export default function Register({navigation}) {
 
   const dispatch = useDispatch();
 
-  const handleRegister = () => {
-    console.log('name', name);
-    console.log('email', email);
-    console.log('newPassword', newPassword);
+  const handleRegister = async () => {
     if (name || email || newPassword) {
-      dispatch(register({email, password: newPassword}));
+      dispatch(register({email, password: newPassword, name}));
     }
   };
-
   const navigateToLoginScreen = () => {
     // setError(null);
     navigation.navigate('Login', {});
   };
   return (
-    // <KeyboardAvoidingView
-    //   behavior={Platform.OS === 'android' ? 'padding' : 'height'}
-    //   style={{flex: 1}}>
-
-    // </KeyboardAvoidingView>
-
-    <View style={styles.container}>
+    <View style={[styles.container, {opacity: isLoading ? 0.8 : 1}]}>
+      {isLoading && (
+        <ActivityIndicator
+          style={StyleSheet.absoluteFillObject}
+          size="large"
+          color="#0000ff"
+        />
+      )}
       <Image source={logoHealthMate} style={{width: 250, height: 250}} />
       <View style={{flexDirection: 'column', alignItems: 'center', gap: 2}}>
         <InputText
@@ -72,7 +61,7 @@ export default function Register({navigation}) {
               'name',
               name,
               validationErrors,
-              setValidationErrors,
+              setValidationErrors
             )
           }></InputText>
         {validationErrors.name && (
@@ -91,7 +80,7 @@ export default function Register({navigation}) {
               'email',
               email,
               validationErrors,
-              setValidationErrors,
+              setValidationErrors
             )
           }></InputText>
         {validationErrors.email && (
@@ -110,7 +99,7 @@ export default function Register({navigation}) {
               'newPassword',
               newPassword,
               validationErrors,
-              setValidationErrors,
+              setValidationErrors
             )
           }
           placeholder={'Mật khẩu'}></InputText>
@@ -131,7 +120,7 @@ export default function Register({navigation}) {
               confirmNewPassword,
               validationErrors,
               setValidationErrors,
-              {newPassword},
+              {newPassword}
             )
           }
           placeholder={'Nhập lại mật khẩu'}></InputText>
@@ -148,7 +137,7 @@ export default function Register({navigation}) {
             textAlign: 'center',
             fontSize: 16,
             fontWeight: 'bold',
-            color: 'white',
+            color: 'white'
           }}>
           Đăng ký
         </Text>
@@ -159,7 +148,7 @@ export default function Register({navigation}) {
           marginTop: 12,
           flexDirection: 'row',
           alignItems: 'center',
-          justifyContent: 'center',
+          justifyContent: 'center'
         }}>
         <Text style={{fontSize: 16, color: 'black'}}>Bạn đã có tài khoản?</Text>
         <TouchableOpacity onPress={navigateToLoginScreen}>
@@ -168,7 +157,7 @@ export default function Register({navigation}) {
               marginLeft: 2,
               fontWeight: '500',
               fontSize: 16,
-              color: '#01819E',
+              color: '#01819E'
             }}>
             Đăng nhập ngay
           </Text>
@@ -183,7 +172,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'white',
+    backgroundColor: 'white'
   },
   btnSignUp: {
     width: '30%',
@@ -191,6 +180,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     padding: 12,
     borderRadius: 25,
-    backgroundColor: '#01819E',
-  },
+    backgroundColor: '#01819E'
+  }
 });

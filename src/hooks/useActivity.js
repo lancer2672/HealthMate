@@ -1,41 +1,43 @@
 import {useDispatch, useSelector} from 'react-redux';
 import {
+  addTodayStep,
+  setTodaySteps,
+  updateTodayActivityIndexes
+} from 'src/store/reducer/activitySlice';
+import {
   getTodayStepGoalAction,
   updateUserActivityAction
 } from 'src/store/reducer/thunks/activityActions';
-import {
-  updateTodayActivity,
-  setTodaySteps,
-  addTodayStep
-} from 'src/store/reducer/activitySlice';
 
-import {
-  observerActivity,
-  getPeriodSteps,
-  observeCalories,
-  getPeriodDistance,
-  getPeriodSleep
-} from 'src/config/trackingActivities';
-import {activitySelector, userSelector} from 'src/store/selectors';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useEffect, useState} from 'react';
+import {getPeriodSteps, observerActivity} from 'src/config/trackingActivities';
+import {DEFAULT_STEP_GOAL} from 'src/constants';
 import {
   activityField,
   updateUserActivityRecord
 } from 'src/services/firebase/database/activity';
-import {observeDistance, getTodayDistance} from 'src/config/trackingActivities';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {DEFAULT_STEP_GOAL} from 'src/constants';
+import {activitySelector, userSelector} from 'src/store/selectors';
 import {getEndDayISO, getStartDayISO} from 'src/utils/dateTimeHelper';
-import {addSession} from 'src/store/reducer/thunks/waterTrackingActions';
 
 export const useActivity = () => {
   const dispatch = useDispatch();
   const [isEnabled, setIsEnable] = useState(false);
+  const [stepCalorie, setStepCalorie] = useState(0);
   const {user} = useSelector(userSelector);
   const {todayProgress} = useSelector(activitySelector);
+
+  const calculateStepCalorie = moveMins => {
+    const stepMET = 3.5;
+    const calorie = ((stepMET * 3.5 * user.weight) / 200) * moveMins;
+    setStepCalorie(calorie);
+  };
+  console.log('calculateStepCalorie', {stepCalorie});
+
   //step
   const saveUserTotalSteps = steps => {
     //save total steps to database
+    console.log('saveUserTotalSteps', user.uid, steps);
     dispatch(
       updateUserActivityAction({
         userId: user.uid,
@@ -47,8 +49,11 @@ export const useActivity = () => {
 
   const handleSaveUserActivityRecords = async activity => {
     await updateUserActivityRecord({userId: user.uid, activity});
+    dispatch(updateTodayActivityIndexes(activity));
   };
   const handleAddSteps = steps => {
+    console.log('handleAddSteps', steps);
+
     dispatch(addTodayStep({steps}));
   };
 
@@ -86,24 +91,16 @@ export const useActivity = () => {
         observerActivity(
           handleAddSteps,
           saveUserTotalSteps,
-          handleSaveUserActivityRecords
+          handleSaveUserActivityRecords,
+          calculateStepCalorie
         ),
 
         handleGetTodaySteps(),
         handleGetTodayStepGoal(),
         setDefaultStepTarget()
       ]).catch(error => console.error(error));
-
-      getPeriodSleep();
-      (async () => {
-        const startTime = getStartDayISO(new Date());
-        const endTime = getEndDayISO(new Date());
-        const distanceRes = await getPeriodDistance(startTime, endTime);
-
-        console.log('distanceRes', distanceRes);
-      })();
     }
-  }, [isEnabled]);
+  }, [isEnabled, user]);
 
-  return {enableActivityTracking};
+  return {stepCalorie, enableActivityTracking};
 };

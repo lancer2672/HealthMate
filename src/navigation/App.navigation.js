@@ -7,12 +7,12 @@ import {getDateProgress} from 'src/store/reducer/thunks/waterTrackingActions';
 import DetailNutriFood from '../features/food/screens/DetailNutriFood.screen';
 import LogFood from '../features/food/screens/LogFood.screen';
 import SearchFood from '../features/food/screens/SearchFood.screen';
-import DetailMealDate from '../features/meal/screens/DetailMealDate.screen';
 import EditFood from '../features/meal/screens/EditFood.screen';
 
 import googleFit from 'react-native-google-fit';
 import StepCounter from 'src/features/counting-steps/screens/StepCounter.screen';
 import ListExercise from 'src/features/exercise/components/exercise/ListExercise';
+import ListExerciseBody from 'src/features/exercise/components/exercise/ListExerciseBody';
 import BreakScreen from 'src/features/exercise/screens/Break.screen';
 import DetailExercise from 'src/features/exercise/screens/DetailExercise';
 import DoExercise from 'src/features/exercise/screens/DoExercise';
@@ -23,7 +23,8 @@ import AddSongToPlaylist from 'src/features/exercise/screens/music/AddSongToPlay
 import DetailPlaylist from 'src/features/exercise/screens/music/DetailPlaylist';
 import SelectMusic from 'src/features/exercise/screens/music/SelectMusic';
 import DetailPlan from 'src/features/exercise/screens/plan/DetailPlan';
-import UserProfile from 'src/features/profile/screens/UserProfile';
+import EditProfile from 'src/features/settings/screens/EditProfile.screen';
+import Settings from 'src/features/settings/screens/Setting.screen';
 import WaterTrackingHistory from 'src/features/tracking-water-prog/screens/History.screen';
 import WaterTracking from 'src/features/tracking-water-prog/screens/WaterTracking.screen';
 import {useActivity} from 'src/hooks/useActivity';
@@ -83,9 +84,11 @@ export const AppNavigator = () => {
       screenOptions={{headerShown: false}}
       initialRouteName="AppTabs">
       <Stack.Screen name="AppTabs" component={Tabs} />
+
       <Stack.Screen name="WaterTracking" component={WaterTracking} />
       <Stack.Screen name="ListExercise" component={ListExercise} />
-      <Stack.Screen name="UserProfile" component={UserProfile} />
+      <Stack.Screen name="EditProfile" component={EditProfile} />
+      <Stack.Screen name="Settings" component={Settings} />
       <Stack.Screen name="StepCounter" component={StepCounter} />
       <Stack.Screen name="SelectMusic" component={SelectMusic} />
       <Stack.Screen name="ExerciseGroup" component={ExerciseGroup} />
@@ -97,18 +100,12 @@ export const AppNavigator = () => {
       <Stack.Screen name="DetailPlan" component={DetailPlan} />
       <Stack.Screen name="DetailExercise" component={DetailExercise} />
       <Stack.Screen name="DetailPlaylist" component={DetailPlaylist} />
+      <Stack.Screen name="ListExerciseBody" component={ListExerciseBody} />
       <Stack.Screen
         name="WaterTrackingHistory"
         component={WaterTrackingHistory}
       />
-      <Stack.Screen
-        name="DetailMealDate"
-        component={DetailMealDate}
-        options={{
-          headerShown: true,
-          headerTitle: 'Back'
-        }}
-      />
+
       <Stack.Screen
         name="EditFood"
         component={EditFood}

@@ -1,5 +1,5 @@
-import {StyleSheet, Text, View} from 'react-native';
-import React, {useState} from 'react';
+import {useState} from 'react';
+import {StyleSheet, View} from 'react-native';
 import {Button} from 'react-native-paper';
 import {useTheme} from 'styled-components';
 
@@ -10,12 +10,13 @@ const TabButton = ({onButtonClick}) => {
     onButtonClick(index);
   };
   const theme = useTheme();
-  const buttons = ['Exercise', 'Plan'];
+  const buttons = ['Personal', 'Plan'];
   return (
     <View
       style={{
         paddingHorizontal: 4,
         flexDirection: 'row',
+        paddingVertical: 0,
         justifyContent: 'space-between'
       }}>
       {buttons.map((button, index) => {
@@ -24,7 +25,10 @@ const TabButton = ({onButtonClick}) => {
             key={`das${index}`}
             style={[
               styles.button,
-              {backgroundColor: selectedIndex == index ? theme.secondary : null}
+              {
+                backgroundColor:
+                  selectedIndex == index ? theme.secondary : 'white'
+              }
             ]}
             mode="contained"
             textColor="black"
@@ -41,9 +45,9 @@ export default TabButton;
 
 const styles = StyleSheet.create({
   button: {
-    borderRadius: 12,
+    borderRadius: 8,
     borderWidth: 2,
-    marginVertical: 12,
+    marginVertical: 4,
     flex: 1,
     // minWidth: 100,
     marginHorizontal: 6,

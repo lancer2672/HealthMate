@@ -17,7 +17,6 @@ import enableTrackingUserActivities, {
 } from 'src/config/trackingActivities';
 import {DEFAULT_STEP_GOAL} from 'src/constants';
 import {getStepsByMonth} from 'src/services/firebase/database/activity';
-import {setGoal} from 'src/services/firebase/firestore/drinkProgress';
 import {useAppDispatch, useAppSelector} from 'src/store/hooks';
 import {updateUserActivityAction} from 'src/store/reducer/thunks/activityActions';
 import {activitySelector, userSelector} from 'src/store/selectors';
@@ -28,20 +27,20 @@ import StepChart from '../components/StepChart.component';
 const StepCounter = () => {
   const theme = useTheme();
   const dispatch = useAppDispatch();
-  const {todaySteps, todayCalories, todayDistance, stepTarget} =
-    useSelector(activitySelector);
+  const [isModalVisible, setModalVisible] = useState(false);
+  const {todaySteps, todayCalories, stepTarget} = useSelector(activitySelector);
   const {user} = useAppSelector(userSelector);
   const [monthSteps, setMonthSteps] = useState(new Date().getMonth());
   console.log('todayCalories', todayCalories);
-  const [isModalVisible, setModalVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [distance, setDistance] = useState(0);
   const [steps, setSteps] = useState(0);
   const [calories, setCalories] = useState(0);
+  const [stepCalorie, setStepCalorie] = useState(0);
   const [moveMinutes, setMoveMinutes] = useState(0);
   const [showDatePicker, setShowDatePicker] = useState(false);
 
-  const setTarget = async (target: number) => {
+  const setTarget = async target => {
     if (target >= 0) {
       dispatch(
         updateUserActivityAction({
@@ -56,7 +55,7 @@ const StepCounter = () => {
 
   useEffect(() => {
     (async () => {
-      await getStepsByMonth({userId: user.uid, month: new Date().getMonth()});
+      await getStepsByMonth({userId: user.uid, date: new Date()});
     })();
   }, [monthSteps]);
   useEffect(() => {
@@ -72,6 +71,7 @@ const StepCounter = () => {
           setSteps(todaySteps);
         } else {
           const stepRes = await getPeriodSteps(startTime, endTime);
+          console.log('selectdDate getPeriodSteps', {todaySteps, stepRes});
           setSteps(stepRes || 0);
         }
 
@@ -83,10 +83,17 @@ const StepCounter = () => {
 
         const moveRes = await getPeriodMoveMins(startTime, endTime);
         setMoveMinutes(moveRes || 0);
+
+        const stepCal = getStepCalorie(moveRes);
+        setStepCalorie(stepCal.toFixed(2));
       }
     })();
   }, [selectedDate, todaySteps]);
 
+  const getStepCalorie = moveMins => {
+    const stepMET = 3.5;
+    return ((stepMET * 3.5 * user.weight) / 200) * moveMins;
+  };
   return (
     <View style={[styles.container, {backgroundColor: theme.background}]}>
       <Header
@@ -118,7 +125,7 @@ const StepCounter = () => {
             name={'energy'}
             size={38}
             color={'white'}></SimpleLineIcons>
-          <Text style={styles.textIcon}>{calories} kcal</Text>
+          <Text style={styles.textIcon}>{stepCalorie} kcal</Text>
         </View>
         <View style={{alignItems: 'center'}}>
           <Ionicons

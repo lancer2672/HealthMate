@@ -1,8 +1,9 @@
-import React, {useEffect, useState} from 'react';
-import {View, StyleSheet} from 'react-native';
-import {Searchbar} from 'react-native-paper';
+import {API_KEY_NUTRITIONIX, APP_ID_NUTRITIONIX} from '@env';
 import axios from 'axios';
-import {APP_ID_NUTRITIONIX, API_KEY_NUTRITIONIX} from '@env';
+import {useState} from 'react';
+import {StyleSheet, View} from 'react-native';
+import {Searchbar} from 'react-native-paper';
+import {capitalizeFirstLetter} from 'src/utils/tranformData';
 
 const SearchInput = ({handleSetSearchResults}) => {
   const [searchText, setSearchText] = useState('');
@@ -26,7 +27,14 @@ const SearchInput = ({handleSetSearchResults}) => {
             }
           }
         );
-        handleSetSearchResults(response.data);
+        console.log('handleSetSearchResults', response.data);
+        handleSetSearchResults({
+          ...response.data,
+          common: response.data.common.map(t => ({
+            ...t,
+            tag_name: capitalizeFirstLetter(t.tag_name)
+          }))
+        });
       } catch (error) {
         console.error('Error searching for food:', error);
       }

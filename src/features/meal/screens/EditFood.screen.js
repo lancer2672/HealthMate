@@ -1,24 +1,21 @@
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Image,
-  StyleSheet,
-  TextInput,
-  FlatList,
-  ScrollView
-} from 'react-native';
-import React, {useEffect, useState, useReducer} from 'react';
+import {API_KEY_NUTRITIONIX, APP_ID_NUTRITIONIX} from '@env';
 import axios from 'axios';
-import {APP_ID_NUTRITIONIX, API_KEY_NUTRITIONIX} from '@env';
+import {format} from 'date-fns';
+import {useEffect, useState} from 'react';
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from 'react-native';
+import RNPickerSelect from 'react-native-picker-select';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {SwipeListView} from 'react-native-swipe-list-view';
-import RNPickerSelect from 'react-native-picker-select';
-import {format, set} from 'date-fns';
 import NutriFact from 'src/components/NutriFact';
-import {setIsLoading} from 'src/store/reducer/appSlice';
 
 export default function EditFood({route, navigation}) {
   const {mealName, foodMeal} = route.params.data;
@@ -249,7 +246,7 @@ export default function EditFood({route, navigation}) {
             <View style={{flexDirection: 'row', gap: 5}}>
               <Text style={[styles.text, {fontWeight: 'bold'}]}>When:</Text>
               <Text style={styles.text}>
-                {checkDate(foodData.date)}, {foodData.mealName}
+                {/* {checkDate(foodData.date)}, {foodData.mealName} */}
               </Text>
             </View>
             <FontAwesome name="pencil" size={20} color="black" />

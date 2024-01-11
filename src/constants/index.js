@@ -11,3 +11,22 @@ export const PLAN_TYPES = {
   TODAY: 'todayPlan',
   GROUP: 'groupPlan'
 };
+export const GOAL = {
+  FITTER: 1,
+  FIT: 2,
+  LOSE_WEIGHT: 3
+};
+export const GENDER = {
+  MALE: 1,
+  FEMALE: 2
+};
+export const CALORIE_DEFICLIT_DEFAULT = 500;
+export const CALORIE_SURPLUS_RATE_DEFAULT = 0.1;
+
+export const LIFE_STYLE = {
+  SEDENTARY: 1.2,
+  LIGHTLY_ACTIVE: 1.375,
+  MODERATELY_ACTIVE: 1.55,
+  VERY_ACTIVE: 1.725,
+  EXTREMELY_ACTIVE: 1.9
+};

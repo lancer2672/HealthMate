@@ -1,11 +1,9 @@
-import {StyleSheet, Text, FlatList, TouchableOpacity, View} from 'react-native';
-import React, {useState, useEffect} from 'react';
-import axiosClient from 'src/api/axiosClient';
-import {EXERCISE_BASE_URL} from 'src/constants';
+import {useNavigation} from '@react-navigation/native';
+import {useEffect, useState} from 'react';
+import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import exerciseApi from 'src/api/exerciseApi';
 import DropDownCategory from '../DropdownCategory';
 import ExerciseCardItem from './ExerciseCardItem';
-import {useNavigation} from '@react-navigation/native';
-import exerciseApi from 'src/api/exerciseApi';
 
 const ListExerciseBody = () => {
   const [searchExercise, setSearchExercise] = useState([]);
@@ -20,7 +18,7 @@ const ListExerciseBody = () => {
   }, []);
 
   const viewAll = () => {
-    navigation.navigate('ListExercise', {
+    navigation.replace('ListExercise', {
       exercises: searchExercise
     });
   };
@@ -31,7 +29,7 @@ const ListExerciseBody = () => {
   };
 
   return (
-    <View>
+    <View style={{flex: 1, backgroundColor: 'white'}}>
       <View
         style={{
           flexDirection: 'row',
@@ -49,9 +47,8 @@ const ListExerciseBody = () => {
       </View>
       <FlatList
         contentContainerStyle={{marginBottom: 20, marginTop: 4}}
-        horizontal
         removeClippedSubviews={false}
-        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
         onEndReachedThreshold={0.5}
         onEndReached={handleLoadMore}
         keyExtractor={(item, index) => `x3${index}`}
