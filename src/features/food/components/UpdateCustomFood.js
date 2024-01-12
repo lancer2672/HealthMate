@@ -14,23 +14,16 @@ import {showMessage} from 'react-native-flash-message';
 import ImagePicker from 'react-native-image-crop-picker';
 import CustomEditText from 'src/components/EditText';
 import {saveImageFile} from 'src/services/firebase';
-import {addCustomFood} from 'src/services/firebase/database/custom-food';
+import {updateCustomFood} from 'src/services/firebase/database/custom-food';
 import {useAppSelector} from 'src/store/hooks';
 import {userSelector} from 'src/store/selectors';
-const CreateCustomFood = ({visible, onClose}) => {
+const UpdateCustomFood = ({visible, food, onClose}) => {
   const {user} = useAppSelector(userSelector);
-  const [selectedImage, setSelectedImage] = useState();
-  const [newFood, setNewFood] = useState({
-    foodName: '',
-    realCalories: '0',
-    realCarbo: '0',
-    realProtein: '0',
-    realFat: '0',
-    photo: {},
-    isCustomFood: true,
-    realQty: '1',
-    realUnit: ''
-  });
+  const [selectedImage, setSelectedImage] = useState(
+    food != null && {path: food.photo?.thumb}
+  );
+  const [newFood, setNewFood] = useState(food);
+  console.log('updateCustomFood', {selectedImage, food});
   const theme = useTheme();
   const onInputChange = (field, value) => {
     setNewFood({...newFood, [field]: value});
@@ -47,8 +40,9 @@ const CreateCustomFood = ({visible, onClose}) => {
       console.log(`Error when selecting :`, error);
     }
   };
-  const handleCreateFood = async () => {
-    console.log('imgeUrl', selectedImage);
+
+  const handleUpdateFood = async () => {
+    console.log('imgeUrl', newFood, selectedImage);
     if (!selectedImage) {
       showMessage({
         message: 'Vui lòng chọn ảnh',
@@ -58,12 +52,12 @@ const CreateCustomFood = ({visible, onClose}) => {
     }
     const imageUrl = await saveImageFile(user.uid, selectedImage);
 
-    await addCustomFood({
+    await updateCustomFood({
       userId: user.uid,
-      food: {...newFood, tag_id: Date.now(), photo: {thumb: imageUrl}}
+      food: {...newFood, photo: {thumb: imageUrl}}
     });
     showMessage({
-      message: 'Thêm thành công',
+      message: 'Cập nhật thành công',
       type: 'success'
     });
     onClose();
@@ -71,15 +65,6 @@ const CreateCustomFood = ({visible, onClose}) => {
   };
   const reset = () => {
     setSelectedImage(null);
-    setNewFood({
-      name: '',
-      realCalories: '0',
-      realCarbo: '0',
-      realProtein: '0',
-      realFat: '0',
-      photo: {},
-      realUnit: ''
-    });
   };
   return (
     <Modal
@@ -101,7 +86,7 @@ const CreateCustomFood = ({visible, onClose}) => {
               }}
               resizeMode="cover"
               source={{
-                uri: selectedImage?.path != null ? selectedImage.path : null
+                uri: selectedImage != null ? selectedImage.path : null
               }}></ImageBackground>
           </TouchableOpacity>
           <View
@@ -176,8 +161,8 @@ const CreateCustomFood = ({visible, onClose}) => {
               borderRadius: 12,
               backgroundColor: theme.secondary
             }}
-            onPress={handleCreateFood}>
-            <Text style={{fontWeight: 'bold', fontSize: 18}}>Add</Text>
+            onPress={handleUpdateFood}>
+            <Text style={{fontWeight: 'bold', fontSize: 18}}>Save</Text>
           </TouchableOpacity>
         </Pressable>
       </Pressable>
@@ -185,7 +170,7 @@ const CreateCustomFood = ({visible, onClose}) => {
   );
 };
 
-export default CreateCustomFood;
+export default UpdateCustomFood;
 
 const styles = StyleSheet.create({
   centeredView: {

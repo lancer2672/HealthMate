@@ -187,7 +187,7 @@ function UserCalorie({navigation}) {
         </View>
         <View style={styles.des}>
           <Text style={styles.sub1}>BURNED</Text>
-          <Text style={styles.sub2}>{getCalorieBurnt()} Kcal</Text>
+          <Text style={styles.sub2}>{getCalorieBurnt().toFixed(0)} Kcal</Text>
         </View>
       </View>
 
