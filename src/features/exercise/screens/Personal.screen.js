@@ -179,7 +179,11 @@ function UserCalorie({navigation}) {
           <Text style={styles.sub1}>EATEN</Text>
           <Text style={styles.sub2}>{getCalorieAbsorb()} Kcal</Text>
         </View>
-        <View style={styles.circle}>
+        <View
+          style={[
+            styles.circle,
+            {backgroundColor: getKcalLeft() < 0 ? 'tomato' : '#5cde43'}
+          ]}>
           <Text style={[styles.sub2, {fontSize: 20}]}>
             {getKcalLeft().toFixed(0)}
           </Text>
