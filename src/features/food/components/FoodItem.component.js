@@ -12,9 +12,11 @@ import {removeCustomFood} from 'src/services/firebase/database/custom-food';
 import {useAppSelector} from 'src/store/hooks';
 import {userSelector} from 'src/store/selectors';
 import {useTheme} from 'styled-components';
+import UpdateCustomFood from './UpdateCustomFood';
 
 export default function FoodItem({food, setItemQty, isSelected, onSelect}) {
   const [amount, setAmount] = useState('1');
+  const [visible, setVisible] = useState(false);
   const theme = useTheme();
   const {user} = useAppSelector(userSelector);
   const handleDelFood = async () => {
@@ -27,6 +29,9 @@ export default function FoodItem({food, setItemQty, isSelected, onSelect}) {
   }, [amount]);
   return (
     <TouchableOpacity
+      onLongPress={() => {
+        setVisible(true);
+      }}
       onPress={onSelect}
       style={[
         styles.container,
@@ -34,9 +39,11 @@ export default function FoodItem({food, setItemQty, isSelected, onSelect}) {
       ]}>
       <Image style={styles.img} source={{uri: food.photo.thumb}}></Image>
       <View style={{paddingHorizontal: 12, flex: 1}}>
-        <View style={{flexDirection: 'row'}}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <Text style={[styles.name, {flex: 1}]}>{food.foodName}</Text>
-          <Text style={styles.name}>{food.realCalories} kcal</Text>
+          <Text style={[styles.name, {fontSize: 16}]}>
+            {food.realCalories} kcal
+          </Text>
         </View>
         <Text style={styles.nutrient}>
           {food.realCarbo} g Carbs {food.realFat} g Fat {food.realProtein} g
@@ -72,6 +79,12 @@ export default function FoodItem({food, setItemQty, isSelected, onSelect}) {
             }
           ]}></TextInput>
       </View>
+      <UpdateCustomFood
+        visible={visible}
+        food={food}
+        onClose={() => {
+          setVisible(false);
+        }}></UpdateCustomFood>
     </TouchableOpacity>
   );
 }
@@ -87,11 +100,11 @@ const styles = StyleSheet.create({
   },
   nutrient: {
     color: '#4f4d4d',
-    fontSize: 16
+    fontSize: 15
   },
   name: {
     fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: 16,
     color: 'black'
   },
   img: {

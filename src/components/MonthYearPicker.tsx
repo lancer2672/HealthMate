@@ -120,7 +120,7 @@ const MonthYearPicker = ({selectedDate, onDateChange, textColor}) => {
       {show && (
         <MonthPicker
           onChange={onValueChange}
-          value={date}
+          value={selectedDate}
           minimumDate={new Date(2020, 5)}
           maximumDate={new Date(2025, 5)}
         />

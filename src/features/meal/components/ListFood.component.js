@@ -130,7 +130,7 @@ const ListFood = ({mealName, foodMeal, handleNavigateSeacrch, navigation}) => {
             /> */}
             {foodMeal.map(item => (
               <FoodCard
-                key={item.id}
+                key={item.tag_id}
                 mealName={mealName}
                 foodMeal={item}
                 navigation={navigation}

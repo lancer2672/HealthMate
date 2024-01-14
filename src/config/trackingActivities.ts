@@ -72,8 +72,7 @@ export const observerActivity = async (
 
   //get total new unupdated steps in (PeriodSteps function) when first login
   saveRecordTimeout = setTimeout(()=>saveRecords(0,promises,handleUpdateTotalSteps,handleSaveUserActivityRecords), SAVE_RECORD_TIME_INTERVAL);
-  const moveMins = await getPeriodMoveMins(startDate, endDate);
-  calculateStepCalorie(moveMins);
+
   
   let newUnupdatedStep = 0;
   
@@ -88,8 +87,7 @@ export const observerActivity = async (
     saveRecordTimeout = setTimeout(async() => {
       saveRecords(newUnupdatedStep, promises, handleUpdateTotalSteps, handleSaveUserActivityRecords)
       newUnupdatedStep = 0
-      const moveMins = await getPeriodMoveMins(startDate, endDate);
-      calculateStepCalorie(moveMins);
+  
     }, SAVE_RECORD_TIME_INTERVAL);
   });
 };

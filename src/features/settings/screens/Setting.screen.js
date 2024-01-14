@@ -232,7 +232,7 @@ const GoalModal = ({visible, onClose}) => {
       updateUserInfoAction({userId: user.uid, userData: {...user, ...userInfo}})
     );
     showMessage({
-      message: 'Cập nhật thành công',
+      message: 'Saved successfully',
       type: 'success'
     });
   };

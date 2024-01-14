@@ -1,4 +1,4 @@
-import { getSpecificDateTimeStamp } from 'src/utils/dateTimeHelper';
+import {getSpecificDateTimeStamp} from 'src/utils/dateTimeHelper';
 import firebaseDatabase from './index';
 
 const DB_NAME = 'activity';
@@ -104,6 +104,25 @@ export async function getTodayStepsGoal({userId}) {
     console.log('Error getting step goal', error);
     return 0;
   }
+}
+
+export function observeTodaySavedActivity({userId, onActivityUpdate}) {
+  const currentTimeStamp = getSpecificDateTimeStamp();
+  const userActivityRef = firebaseDatabase.ref(
+    `${userId}/${DB_NAME}/${currentTimeStamp}`
+  );
+
+  // Listen for changes in the activity data
+  const listener = userActivityRef.on('value', snapshot => {
+    const activityData = snapshot.val();
+    // Call the update function with the new data
+    onActivityUpdate(activityData);
+  });
+
+  // Return a cleanup function to remove the listener when the component unmounts
+  return () => {
+    userActivityRef.off('value', listener);
+  };
 }
 
 export async function getTodayStepsCalorie({userId}) {
