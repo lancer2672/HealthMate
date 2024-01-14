@@ -51,7 +51,7 @@ const CreateCustomFood = ({visible, onClose}) => {
     console.log('imgeUrl', selectedImage);
     if (!selectedImage) {
       showMessage({
-        message: 'Vui lòng chọn ảnh',
+        message: 'Please pick a photo',
         type: 'warning'
       });
       return;
@@ -63,7 +63,7 @@ const CreateCustomFood = ({visible, onClose}) => {
       food: {...newFood, tag_id: Date.now(), photo: {thumb: imageUrl}}
     });
     showMessage({
-      message: 'Thêm thành công',
+      message: 'Added successfully',
       type: 'success'
     });
     onClose();

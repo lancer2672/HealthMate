@@ -45,7 +45,7 @@ const UpdateCustomFood = ({visible, food, onClose}) => {
     console.log('imgeUrl', newFood, selectedImage);
     if (!selectedImage) {
       showMessage({
-        message: 'Vui lòng chọn ảnh',
+        message: 'Please pick a photo',
         type: 'warning'
       });
       return;
@@ -57,7 +57,7 @@ const UpdateCustomFood = ({visible, food, onClose}) => {
       food: {...newFood, photo: {thumb: imageUrl}}
     });
     showMessage({
-      message: 'Cập nhật thành công',
+      message: 'Saved successfully',
       type: 'success'
     });
     onClose();
