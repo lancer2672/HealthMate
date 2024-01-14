@@ -120,7 +120,7 @@ const Header = ({currentPage}) => {
   return (
     <View style={{paddingBottom: 2}}>
       <View style={[styles.header]}>
-        <Text style={styles.title}>Step {currentPage + 1} of6</Text>
+        <Text style={styles.title}>Step {currentPage + 1} of 6</Text>
       </View>
       <Progress.Bar
         progress={(currentPage + 1) / 6}

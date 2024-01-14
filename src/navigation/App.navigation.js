@@ -8,7 +8,7 @@ import DetailNutriFood from '../features/food/screens/DetailNutriFood.screen';
 import LogFood from '../features/food/screens/LogFood.screen';
 import SearchFood from '../features/food/screens/SearchFood.screen';
 import EditFood from '../features/meal/screens/EditFood.screen';
-
+import WebViewScreen from 'src/features/exercise/screens/WebviewScreen';
 import googleFit from 'react-native-google-fit';
 import StepCounter from 'src/features/counting-steps/screens/StepCounter.screen';
 import ListExercise from 'src/features/exercise/components/exercise/ListExercise';
@@ -125,6 +125,14 @@ export const AppNavigator = () => {
       />
       <Stack.Screen name="LogFood" component={LogFood} />
       <Stack.Screen name="DetailNutriFood" component={DetailNutriFood} />
+      <Stack.Screen
+        name="WebViewScreen"
+        component={WebViewScreen}
+        options={{
+          headerShown: true,
+          headerTitle: 'Back'
+        }}
+      />
     </Stack.Navigator>
   );
 };

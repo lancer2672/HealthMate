@@ -24,6 +24,7 @@ import {
   getCalorieTdee
 } from 'src/utils/calorieCalculator';
 import ListTargetExercise from '../components/exercise/ListTargetExercise';
+import ListNews from '../components/exercise/ListNews';
 import NutrientTag from '../components/home/NutrientTag';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -38,6 +39,7 @@ const Personal = () => {
       <RecommendedPlan navigation={navigation}></RecommendedPlan>
       <GroupAndUserPlan navigation={navigation}></GroupAndUserPlan>
       <ListTargetExercise></ListTargetExercise>
+      <ListNews></ListNews>
     </ScrollView>
   );
 };
