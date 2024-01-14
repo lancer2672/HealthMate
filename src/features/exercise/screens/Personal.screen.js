@@ -24,8 +24,8 @@ import {
   calculateCaloriesForWeightLoss,
   getCalorieTdee
 } from 'src/utils/calorieCalculator';
-import ListTargetExercise from '../components/exercise/ListTargetExercise';
 import ListNews from '../components/exercise/ListNews';
+import ListTargetExercise from '../components/exercise/ListTargetExercise';
 import NutrientTag from '../components/home/NutrientTag';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -279,7 +279,7 @@ function GroupAndUserPlan({navigation}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 8,
+    paddingHorizontal: 12,
     borderRadius: 12,
     paddingTop: 0
   },

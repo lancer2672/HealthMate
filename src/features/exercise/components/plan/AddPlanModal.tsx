@@ -1,12 +1,18 @@
 import {useState} from 'react';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-
-import {FlatList, Modal, TouchableWithoutFeedback} from 'react-native';
+import {
+  FlatList,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View
+} from 'react-native';
 import {Button} from 'react-native-paper';
 import {useToast} from 'react-native-toast-notifications';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import {useDispatch, useSelector} from 'react-redux';
-import InputText from 'src/components/TextInput';
+import CustomEditText from 'src/components/EditText';
 import {addExerciseAction} from 'src/store/reducer/thunks/exerciseActions';
 import {exerciseSelector, userSelector} from 'src/store/selectors';
 import PlanItem from '../PlanItem';
@@ -107,20 +113,23 @@ const AddPlanModal = ({visible, onClose, exercise}) => {
               )}
               keyExtractor={item => `${item.name}plan`}
             />
-            <View style={{flexDirection: 'row'}}>
-              <InputText
-                style={{flex: 1}}
-                keyboardType="numeric"
+            <View style={{flexDirection: 'row', paddingHorizontal: 6}}>
+              <CustomEditText
+                label={'Duration'}
+                placeholder={'duration'}
+                inputMode={'numeric'}
+                value={duration}
+                style={{width: '44%', marginRight: 12}}
                 onChangeText={setDuration}
-                placeholder="Duration"
-                value={duration}></InputText>
-
-              <InputText
-                style={{flex: 1}}
-                keyboardType="numeric"
+              />
+              <CustomEditText
+                label={'Break duration'}
+                placeholder={'duration'}
+                inputMode={'numeric'}
+                value={breakDuration}
+                style={{width: '44%'}}
                 onChangeText={setBreakDuration}
-                placeholder="Break time"
-                value={breakDuration}></InputText>
+              />
             </View>
             <View
               style={{

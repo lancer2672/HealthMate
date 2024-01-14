@@ -29,7 +29,7 @@ const ListExerciseBody = () => {
   };
 
   return (
-    <View style={{flex: 1, backgroundColor: 'white'}}>
+    <View style={{flex: 1, backgroundColor: 'white', padding: 8}}>
       <View
         style={{
           flexDirection: 'row',

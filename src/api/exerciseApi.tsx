@@ -1,4 +1,4 @@
-import {EXERCISE_BASE_URL} from 'src/constants';
+import {EXERCISE_BASE_URL, SERVER_URL} from 'src/constants';
 import axiosClient from './axiosClient';
 
 const exerciseApi = {
@@ -13,7 +13,6 @@ const exerciseApi = {
     }
   },
   getListBodyPart: async () => {
-    return [];
     try {
       console.log('GetListBodyPart');
       const data = await axiosClient.get(
@@ -28,12 +27,10 @@ const exerciseApi = {
     }
   },
   getTargetList: async () => {
-    return [];
     const data = await axiosClient.get(`${EXERCISE_BASE_URL}/targetList`, {});
     return data.data;
   },
   getExerciseById: async id => {
-    return [];
     const data = await axiosClient.get(
       `${EXERCISE_BASE_URL}/exercise/${id}`,
       {}
@@ -41,7 +38,6 @@ const exerciseApi = {
     return data.data;
   },
   getTargetExercise: async (target, limit) => {
-    return [];
     const data = await axiosClient.get(
       `${EXERCISE_BASE_URL}/target/${target}`,
       {
@@ -53,7 +49,6 @@ const exerciseApi = {
     return data.data;
   },
   getExerciseByBodyPart: async ({bodyPart, limit}) => {
-    return [];
     const data = await axiosClient.get(
       `${EXERCISE_BASE_URL}/bodyPart/${bodyPart}`,
       {
@@ -65,15 +60,11 @@ const exerciseApi = {
     return data.data;
   },
   shareResult: async ({userIds}) => {
-    return [];
-    const data = await axiosClient.get(
-      `${SERVER_URL}/send-notification/${bodyPart}`,
-      {
-        params: {
-          limit
-        }
+    const data = await axiosClient.get(`${SERVER_URL}/send-notification/`, {
+      params: {
+        userIds
       }
-    );
+    });
     return data.data;
   }
 };

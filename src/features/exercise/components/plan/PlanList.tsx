@@ -1,22 +1,9 @@
-import {
-  Pressable,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
-} from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
-import {FlatList} from 'react-native';
-import ExerciseItem from '../ExerciseItem';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import {Searchbar, Snackbar} from 'react-native-paper';
 import {useNavigation, useRoute} from '@react-navigation/native';
-import ExerciseCardItem from './ExerciseCardItem';
-import exerciseApi from 'src/api/exerciseApi';
+import {FlatList, Pressable, StyleSheet} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
+import {setSelectedPlan} from 'src/store/reducer/exerciseSlice';
 import {exerciseSelector, userSelector} from 'src/store/selectors';
 import PlanItem from '../PlanItem';
-import {setSelectedPlan} from 'src/store/reducer/exerciseSlice';
 
 const PlanList = () => {
   const route = useRoute<any>();
@@ -30,7 +17,7 @@ const PlanList = () => {
   };
   return (
     <FlatList
-      contentContainerStyle={{marginBottom: 20}}
+      contentContainerStyle={{marginBottom: 20, padding: 6}}
       removeClippedSubviews={false}
       data={plans}
       renderItem={({item}) => (
