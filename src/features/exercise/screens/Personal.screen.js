@@ -16,6 +16,7 @@ import {GOAL, PLAN_TYPES} from 'src/constants';
 import {useActivity} from 'src/hooks/useActivity';
 import useMeal from 'src/hooks/useMeal';
 import usePlans from 'src/hooks/usePlan';
+import {setHistoryCalorie} from 'src/services/firebase/database/calorie-history';
 import {setSelectedPlan} from 'src/store/reducer/exerciseSlice';
 import {userSelector} from 'src/store/selectors';
 import {
@@ -136,10 +137,13 @@ function UserCalorie({navigation}) {
       }
     }
   }, [user]);
-  console.log('calorieNeedToday', {stepCalorie, foodIndex, calorieNeedToday});
+  console.log('calorieNeedToday', {
+    stepCalorie,
+    data,
+    foodIndex,
+    calorieNeedToday
+  });
   const getKcalLeft = () => {
-    if (!foodIndex) return calorieNeedToday;
-
     const calorieLeft =
       calorieNeedToday - getCalorieAbsorb() + getCalorieBurnt();
     return calorieLeft > 0 ? calorieLeft : 0;
@@ -171,6 +175,17 @@ function UserCalorie({navigation}) {
       setData(foodIndexArr);
     }
   }, [foodIndex]);
+  useEffect(() => {
+    if (user) {
+      const record = {
+        calorieNeed: calorieNeedToday,
+        calorieLeft: getKcalLeft(),
+        nutrient: foodIndex,
+        stepCalorie
+      };
+      setHistoryCalorie({userId: user.uid, record});
+    }
+  }, [user, calorieNeedToday, foodIndex, stepCalorie]);
   return (
     <View style={[styles.container, {backgroundColor: 'black'}]}>
       <Text style={styles.title}>Count Your Daily Calories</Text>
@@ -266,6 +281,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingTop: 0
   },
+
   des: {
     alignItems: 'center',
     marginVertical: 12

@@ -37,7 +37,6 @@ export default function GetUserInfo() {
         goal,
         lifestyle
       };
-      console.log('checkAllFulfilled', newData);
 
       dispatch(
         updateUserInfoAction({

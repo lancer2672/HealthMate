@@ -10,6 +10,7 @@ import SearchFood from '../features/food/screens/SearchFood.screen';
 import EditFood from '../features/meal/screens/EditFood.screen';
 
 import googleFit from 'react-native-google-fit';
+import CalorieRecordHistory from 'src/features/calore-history/screens/CalorieHistory.screen';
 import StepCounter from 'src/features/counting-steps/screens/StepCounter.screen';
 import ListExercise from 'src/features/exercise/components/exercise/ListExercise';
 import ListExerciseBody from 'src/features/exercise/components/exercise/ListExerciseBody';
@@ -96,6 +97,10 @@ export const AppNavigator = () => {
       <Stack.Screen name="ReadyExercise" component={ReadyExercise} />
       <Stack.Screen name="FinishScreen" component={FinishScreen} />
       <Stack.Screen name="BreakScreen" component={BreakScreen} />
+      <Stack.Screen
+        name="CalorieRecordHistory"
+        component={CalorieRecordHistory}
+      />
       <Stack.Screen name="DoExercise" component={DoExercise} />
       <Stack.Screen name="DetailPlan" component={DetailPlan} />
       <Stack.Screen name="DetailExercise" component={DetailExercise} />

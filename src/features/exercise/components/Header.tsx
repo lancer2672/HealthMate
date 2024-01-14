@@ -2,6 +2,7 @@ import {useNavigation} from '@react-navigation/native';
 import {useState} from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 const Header = ({}) => {
@@ -12,7 +13,7 @@ const Header = ({}) => {
     navigation.navigate('ExerciseGroup');
   };
   const navigateToUserProfile = () => {
-    navigation.navigate('UserProfile');
+    navigation.navigate('CalorieRecordHistory');
   };
   const openSideMenu = () => {
     // setVisible(true);
@@ -30,11 +31,15 @@ const Header = ({}) => {
           <MaterialIcons name="group" size={24} color="black" />
         </TouchableOpacity>
 
-        {/* <TouchableOpacity
+        <TouchableOpacity
           style={{paddingHorizontal: 4, marginHorizontal: 8}}
           onPress={navigateToUserProfile}>
-          <Ionicons name="person" size={20} color="black" />
-        </TouchableOpacity> */}
+          <MaterialCommunityIcons
+            name="file-document-multiple"
+            size={24}
+            color="black"
+          />
+        </TouchableOpacity>
         <TouchableOpacity
           style={{paddingHorizontal: 4, marginHorizontal: 8}}
           onPress={openSideMenu}>

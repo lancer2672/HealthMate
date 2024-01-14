@@ -1,31 +1,27 @@
-import {StatusBar} from 'expo-status-bar';
+import {useEffect, useState} from 'react';
 import {Dimensions, StyleSheet, View} from 'react-native';
-import {useState, useRef, useEffect, useLayoutEffect} from 'react';
+import Animated, {
+  Easing,
+  runOnJS,
+  useAnimatedProps,
+  useSharedValue,
+  withTiming
+} from 'react-native-reanimated';
+import Svg, {Path} from 'react-native-svg';
 import Header from '../components/Header';
 import SideMenu from '../components/SideMenu';
-import Animated, {
-  useSharedValue,
-  useAnimatedProps,
-  withRepeat,
-  withTiming,
-  withDelay,
-  runOnJS,
-  Easing
-} from 'react-native-reanimated';
-import Svg, {Circle, Path} from 'react-native-svg';
 
-import {Title, Text, Button, Chip, Snackbar, Portal} from 'react-native-paper';
-import valuesToPercentage, {today} from '../utils';
+import {Button, Chip, Snackbar, Text} from 'react-native-paper';
+import {useDispatch, useSelector} from 'react-redux';
+import Dialog from 'src/components/Dialog';
+import {trackingNotificationIns} from 'src/services/notifee/TrackingNotification';
 import {
   addSession,
-  getDateProgress,
   setDrinkGoal
 } from 'src/store/reducer/thunks/waterTrackingActions';
-import {useDispatch, useSelector} from 'react-redux';
 import {useTheme} from 'styled-components';
-import Dialog from 'src/components/Dialog';
 import BubbleEffect from '../components/BubbleEffect';
-import {trackingNotificationIns} from 'src/services/notifee/TrackingNotification';
+import valuesToPercentage from '../utils';
 const dimension = Dimensions.get('window');
 
 const WAVE_PHASE_HEIGHT = 32;

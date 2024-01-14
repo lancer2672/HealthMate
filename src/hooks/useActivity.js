@@ -101,9 +101,11 @@ export const useActivity = () => {
   useEffect(() => {
     if (user) {
       const onChange = activity => {
-        // console.log('onChange', activity);
-        const calorie = calculateStepCalorie(user, activity.moveMins);
-        setStepCalorie(calorie);
+        if (activity) {
+          // console.log('onChange', activity);
+          const calorie = calculateStepCalorie(user, activity.moveMins);
+          setStepCalorie(calorie);
+        }
       };
       observeTodaySavedActivity({userId: user.uid, onActivityUpdate: onChange});
     }
