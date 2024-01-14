@@ -1,15 +1,24 @@
 import {useNavigation} from '@react-navigation/native';
 import {format} from 'date-fns';
 import {useEffect, useState} from 'react';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Dimensions,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native';
 import DatePicker from 'react-native-date-picker';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import CollapsibleTag from 'src/components/CollapsibleTag';
 import {getHistoryCalorieByDate} from 'src/services/firebase/database/calorie-history';
+import {getHistoryMealByDate} from 'src/services/firebase/database/meal-history';
 import {useAppSelector} from 'src/store/hooks';
 import {userSelector} from 'src/store/selectors';
 import {useTheme} from 'styled-components';
 import CalorieHistoryChart from '../components/Chart';
-
+const SCREEN_WIDTH = Dimensions.get('window').width;
 const CalorieRecordHistory = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -81,8 +90,13 @@ const ENUM_NUTRIENT_NAME = {
 };
 const DetailRecord = ({selectedDate}) => {
   const [data, setData] = useState([]);
+  const [foodData, setFoodData] = useState([]);
+  const [activityData, setActivityData] = useState([]);
   const {user} = useAppSelector(userSelector);
   const mapData = history => {
+    if (!history.nutrient) {
+      setData(null);
+    }
     const mappedData = [];
     for (const [key, value] of Object.entries(history.nutrient)) {
       const item = {
@@ -91,27 +105,126 @@ const DetailRecord = ({selectedDate}) => {
       };
       mappedData.push(item);
     }
-    console.log('mappeddata', mappedData);
+
     setData(mappedData);
+  };
+  const getUserActivityHistory = history => {
+    console.log('getUserActivityHistory', history);
+    if (!history.stepCalorie) return;
+    setActivityData([{name: 'Walking', calorie: history.stepCalorie}]);
+  };
+  const mapMealData = mealHistory => {
+    const food = [];
+    for (const [mealType, value] of Object.entries(mealHistory)) {
+      food.push(...value);
+    }
+    setFoodData(food);
+    console.log('mapMealData', food);
   };
   useEffect(() => {
     if (user) {
-      getHistoryCalorieByDate({
-        userId: user.uid,
-        date: selectedDate
-      })
-        .then(history => {
+      (async () => {
+        const history = await getHistoryCalorieByDate({
+          userId: user.uid,
+          date: selectedDate
+        });
+        if (history) {
           mapData(history);
-        })
-        .catch(er => console.log('get history by date error', er));
+          getUserActivityHistory(history);
+        }
+
+        const mealHistory = await getHistoryMealByDate({
+          userId: user.uid,
+          date: selectedDate
+        });
+        if (mealHistory) {
+          mapMealData(mealHistory);
+        }
+      })();
     }
   }, [user, selectedDate]);
   return (
-    <View style={{flex: 1, padding: 12}}>
-      <Text style={{fontSize: 18, color: 'black', marginVertical: 8}}>
-        Details
-      </Text>
-      {data.map((item, i) => {
+    <ScrollView style={{flex: 1, padding: 6}}>
+      <View style={{marginVertical: 8}}></View>
+
+      <CollapsibleTag
+        title={'Activity'}
+        titleStyle={{color: 'black', fontWeight: '400'}}>
+        <View
+          style={{
+            backgroundColor: 'tomato',
+            borderRadius: 12,
+            marginLeft: 6
+          }}>
+          {activityData?.map((item, i) => {
+            return (
+              <View style={{width: SCREEN_WIDTH - 24}} key={`${i}1243`}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    paddingHorizontal: 20,
+                    paddingVertical: 12
+                  }}>
+                  <Text style={styles.text}>{item.name}</Text>
+                  <Text
+                    style={[
+                      styles.text,
+                      {textAlign: 'right', marginRight: 12}
+                    ]}>
+                    {item.calorie} kcal
+                  </Text>
+                </View>
+              </View>
+            );
+          })}
+        </View>
+      </CollapsibleTag>
+      <View style={{marginVertical: 8}}></View>
+
+      <CollapsibleTag
+        title={'Food'}
+        titleStyle={{color: 'black', fontWeight: '400'}}>
+        <View
+          style={{
+            backgroundColor: 'tomato',
+            borderRadius: 12,
+            marginLeft: 6
+          }}>
+          {foodData?.map((item, i) => {
+            return (
+              <View style={{width: SCREEN_WIDTH - 24}} key={`${i}1243`}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    paddingHorizontal: 20,
+                    paddingVertical: 12
+                  }}>
+                  <Text style={styles.text}>
+                    {item.foodName} (
+                    {(item.realCalories * item.realQty).toFixed(0)} kcal)
+                  </Text>
+                  <Text
+                    style={[
+                      styles.text,
+                      {textAlign: 'right', marginRight: 12}
+                    ]}>
+                    {item.realQty} unit
+                  </Text>
+                </View>
+              </View>
+            );
+          })}
+        </View>
+      </CollapsibleTag>
+
+      {data == null && (
+        <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+          <Text style={{fontWeight: '500', fontSize: 18}}>No data</Text>
+        </View>
+      )}
+      <View style={{marginVertical: 8}}></View>
+
+      {data?.map((item, i) => {
         return (
           <View key={`${i}123`}>
             <View style={styles.separator}></View>
@@ -129,7 +242,7 @@ const DetailRecord = ({selectedDate}) => {
           </View>
         );
       })}
-    </View>
+    </ScrollView>
   );
 };
 const styles = StyleSheet.create({

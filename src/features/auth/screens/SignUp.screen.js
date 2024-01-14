@@ -1,4 +1,4 @@
-import {useRef, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -21,7 +21,7 @@ export default function Register({navigation}) {
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [validationErrors, setValidationErrors] = useState({});
-  const {isLoading} = useSelector(userSelector);
+  const {user, success, isLoading} = useSelector(userSelector);
   const refInputName = useRef();
   const refInputEmail = useRef();
   const refInputNewPassword = useRef();
@@ -38,6 +38,11 @@ export default function Register({navigation}) {
     // setError(null);
     navigation.navigate('Login', {});
   };
+  useEffect(() => {
+    if (!isLoading && success) {
+      navigateToLoginScreen();
+    }
+  }, [success, isLoading]);
   return (
     <View style={[styles.container, {opacity: isLoading ? 0.8 : 1}]}>
       {isLoading && (

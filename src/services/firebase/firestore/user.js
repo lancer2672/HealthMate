@@ -6,10 +6,10 @@ const usersRef = firestore().collection('user');
 
 export async function logout({userId}) {
   try {
-    await AsyncStorage.multiRemove(['userId', 'token', 'refreshToken']);
-    await usersRef.doc(userId).delete('FCMToken');
-    await clearPlaylists();
     await auth().signOut();
+    await AsyncStorage.multiRemove(['userId', 'token', 'refreshToken']);
+    await clearPlaylists();
+    await usersRef.doc(userId).delete('FCMToken');
 
     console.log('User logged out', userId);
   } catch (er) {
@@ -53,14 +53,11 @@ export async function loginUser({email, password}) {
     if (!user.emailVerified) {
       throw new Error('Email not verified');
     }
+    let data = await getUserData(user.uid);
+
+    console.log('getUserData', data);
     // Return user data from userCredential
-    return {
-      uid: user.uid,
-      email: user.email,
-      groupId: null,
-      displayName: user.displayName,
-      photoURL: user.photoURL
-    };
+    return data;
   }
 }
 

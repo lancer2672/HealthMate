@@ -102,7 +102,7 @@ function CalorieHistoryChart({selectedDate}) {
         {chartData == null ? (
           <View
             style={{
-              height: 350,
+              height: 320,
               width: '100%',
               alignItems: 'center'
             }}>
@@ -112,7 +112,7 @@ function CalorieHistoryChart({selectedDate}) {
           <LineChart
             data={chartData}
             width={700}
-            height={350}
+            height={320}
             chartConfig={chartConfig}
           />
         )}

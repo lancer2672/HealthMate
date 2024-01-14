@@ -22,7 +22,10 @@ export default function GetUserInfo() {
   const [lifestyle, setLifestyle] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const checkAllFulfilled = () => {
-    return age && height && weight && gender && goal;
+    if (age && height && weight && gender && goal) {
+      return false;
+    }
+    return true;
   };
   const pagerRef = useRef(null);
   const {user} = useSelector(userSelector);

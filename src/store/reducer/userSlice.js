@@ -40,6 +40,7 @@ export const userSlice = createSlice({
     builder.addCase(register.fulfilled, (state, {payload}) => {
       console.log(payload);
       state.isLoading = false;
+      state.success = true;
     });
     builder.addCase(login.fulfilled, (state, {payload}) => {
       console.log(payload);

@@ -85,7 +85,7 @@ const StepCounter = () => {
         setMoveMinutes(moveRes || 0);
 
         const stepCal = getStepCalorie(moveRes);
-        setStepCalorie(stepCal.toFixed(2));
+        setStepCalorie(stepCal?.toFixed(2) || 0);
       }
     })();
   }, [selectedDate, todaySteps]);

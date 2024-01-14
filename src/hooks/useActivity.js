@@ -101,8 +101,9 @@ export const useActivity = () => {
   useEffect(() => {
     if (user) {
       const onChange = activity => {
-        if (activity) {
+        if (activity && activity.moveMins) {
           // console.log('onChange', activity);
+
           const calorie = calculateStepCalorie(user, activity.moveMins);
           setStepCalorie(calorie);
         }
