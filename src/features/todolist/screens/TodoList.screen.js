@@ -41,9 +41,9 @@ export default function Todolist({navigation}) {
     }
   }, []);
 
-  useEffect(() => {
-    console.log('task', tasks[0].notificationTime);
-  }, [tasks]);
+  // useEffect(() => {
+  //   console.log('task', tasks[0].notificationTime);
+  // }, [tasks]);
 
   const handleAddTask = newTaskTitle => {
     // setTask(prevTasks => [
