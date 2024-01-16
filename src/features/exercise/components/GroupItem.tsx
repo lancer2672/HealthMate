@@ -1,6 +1,4 @@
-import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
-import React, {useContext, memo, useEffect} from 'react';
-import Feather from 'react-native-vector-icons/Feather';
+import {Image, StyleSheet, Text, View} from 'react-native';
 import {useSelector} from 'react-redux';
 import {userSelector} from 'src/store/selectors';
 import {useTheme} from 'styled-components';
@@ -51,7 +49,7 @@ const GroupItem = ({rank, userId, weekPoint, totalPoint}) => {
               color: 'white',
               fontWeight: '500'
             }}>
-            {userId}
+            {user.name || userId}
           </Text>
         </View>
         <Text numberOfLines={1} style={{color: 'white'}}></Text>

@@ -56,8 +56,8 @@ const useNotification = () => {
     registerForegroundService(addWaterAmount);
   }, [todayProgress]);
   useEffect(() => {
+    requestNotificationPermission();
     if (isNotificationEnabled) {
-      requestNotificationPermission();
       (async () => {
         await trackingNotificationIns.checkingBatterySavingEnabled();
         await trackingNotificationIns.displayActivityTrackingNotification();

@@ -1,26 +1,14 @@
-import {
-  View,
-  Text,
-  Keyboard,
-  Pressable,
-  TouchableOpacity,
-  Image,
-  StyleSheet,
-  TextInput,
-  FlatList,
-  ScrollView
-} from 'react-native';
-import React, {useEffect, useState, useReducer} from 'react';
+import {useEffect, useState} from 'react';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import AddTask from '../components/AddTaskModal.component';
-import {useAppDispatch, useAppSelector} from 'src/store/hooks';
-import {userSelector, todolistSelector} from 'src/store/selectors';
 import {useSelector} from 'react-redux';
+import {useAppDispatch} from 'src/store/hooks';
 import {
   getTask,
   updateTaskStatus
 } from 'src/store/reducer/thunks/todolistActions';
-import {set} from 'date-fns';
+import {todolistSelector, userSelector} from 'src/store/selectors';
+import AddTask from '../components/AddTaskModal.component';
 
 export default function Todolist({navigation}) {
   const dispatch = useAppDispatch();
